@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 페이지 — 전자소송 실습 시스템</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0d2b5e;--navy2:#1a3a6b;--navy3:#2952a3;
+  --gold:#b8922a;--gold2:#d4a84b;
+  --bg:#f0f2f7;--surface:#fff;--border:#d8dce8;
+  --text:#1a1f2e;--muted:#5a6480;
+  --green:#16a34a;--red:#dc2626;--orange:#d97706;--blue:#2563eb;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── GNB ── */
+.gnb{background:var(--navy);border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.3);}
+.gnb-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;height:58px;padding:0 24px;gap:20px;}
+.gnb-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.gnb-logo .ico{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),#f0cc78);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.gnb-logo .txt{font-size:15px;font-weight:700;color:#fff;}
+.gnb-logo .txt span{font-size:10px;display:block;color:rgba(255,255,255,.5);font-weight:400;}
+.gnb-badge{background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:.05em;}
+.gnb-back{margin-left:auto;font-size:12px;color:rgba(255,255,255,.7);cursor:pointer;display:flex;align-items:center;gap:5px;}
+.gnb-back:hover{color:#fff;}
+.gnb-user{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;}
+.gnb-user span{font-size:12px;color:#fff;font-weight:600;}
+.btn-logout{height:26px;padding:0 10px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:3px;color:rgba(255,255,255,.75);font-size:11px;cursor:pointer;font-family:inherit;}
+.btn-logout:hover{background:rgba(255,255,255,.25);}
+
+/* ── 레이아웃 ── */
+.layout{max-width:1400px;margin:0 auto;padding:24px;display:flex;gap:20px;align-items:flex-start;}
+.sidebar{width:200px;min-width:200px;position:sticky;top:78px;}
+.main{flex:1;min-width:0;}
+
+/* ── 사이드바 ── */
+.sidebar-nav{background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.sidebar-nav-hd{padding:14px 16px;background:var(--navy2);color:#fff;font-size:12px;font-weight:700;letter-spacing:.05em;}
+.snav-item{display:flex;align-items:center;gap:10px;padding:11px 16px;font-size:13px;color:#555;cursor:pointer;border-bottom:1px solid #f0f2f8;transition:all .15s;}
+.snav-item:last-child{border-bottom:none;}
+.snav-item:hover{background:#f5f7fc;color:var(--navy2);}
+.snav-item.on{background:#eef2fa;color:var(--navy2);font-weight:700;border-left:3px solid var(--navy2);}
+.snav-item .ico{font-size:16px;width:20px;text-align:center;}
+.snav-item .cnt{margin-left:auto;background:var(--navy2);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+
+/* ── 대시보드 카드 ── */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.dash-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px;position:relative;overflow:hidden;}
+.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.dash-card.blue::before{background:var(--blue);}
+.dash-card.green::before{background:var(--green);}
+.dash-card.orange::before{background:var(--orange);}
+.dash-card.red::before{background:var(--red);}
+.dc-label{font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500;}
+.dc-value{font-size:32px;font-weight:700;color:var(--text);line-height:1;margin-bottom:4px;}
+.dc-sub{font-size:11px;color:var(--muted);}
+.dc-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:36px;opacity:.12;}
+
+/* ── 섹션 패널 ── */
+.panel{background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:20px;overflow:hidden;}
+.panel-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.panel-hd-title{font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;}
+.panel-hd-actions{display:flex;gap:8px;align-items:center;}
+.panel-body{padding:20px;}
+
+/* ── 버튼 ── */
+.btn{height:32px;padding:0 14px;border-radius:4px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s;border:none;white-space:nowrap;}
+.btn-navy{background:var(--navy2);color:#fff;}
+.btn-navy:hover{background:var(--navy);}
+.btn-outline{background:#fff;color:var(--navy2);border:1px solid var(--navy2);}
+.btn-outline:hover{background:#eef2f8;}
+.btn-gray{background:#fff;color:#444;border:1px solid var(--border);}
+.btn-gray:hover{background:#f5f7fc;}
+.btn-red{background:#fff;color:var(--red);border:1px solid var(--red);}
+.btn-red:hover{background:#fff5f5;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{background:#15803d;}
+.btn-sm{height:26px;padding:0 10px;font-size:11px;}
+
+/* ── 테이블 ── */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{background:#f5f7fc;padding:10px 12px;font-size:12px;font-weight:700;color:#444;text-align:left;border-bottom:1px solid var(--border);border-right:1px solid #eaecf4;white-space:nowrap;}
+.tbl th:last-child{border-right:none;}
+.tbl td{padding:10px 12px;font-size:12px;color:var(--text);border-bottom:1px solid #eaecf4;border-right:1px solid #eaecf4;vertical-align:middle;}
+.tbl td:last-child{border-right:none;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:#fafbff;}
+
+/* ── 뱃지 ── */
+.badge{display:inline-block;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700;}
+.badge-admin{background:#fef3c7;color:#92400e;}
+.badge-user{background:#dbeafe;color:#1e40af;}
+.badge-active{background:#d1fae5;color:#065f46;}
+.badge-inactive{background:#f3f4f6;color:#6b7280;}
+
+/* ── 검색/필터 바 ── */
+.search-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.search-inp{height:34px;padding:0 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;transition:border .15s;min-width:200px;}
+.search-inp:focus{border-color:var(--navy2);box-shadow:0 0 0 2px rgba(26,58,107,.08);}
+.filter-sel{height:34px;padding:0 10px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:inherit;outline:none;background:#fff;cursor:pointer;}
+
+/* ── 폼 ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fld{display:flex;flex-direction:column;gap:5px;}
+.fld label{font-size:12px;font-weight:600;color:#555;}
+.fld input,.fld select{height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;transition:border .15s;}
+.fld input:focus,.fld select:focus{border-color:var(--navy2);box-shadow:0 0 0 2px rgba(26,58,107,.08);}
+.fld-full{grid-column:1/-1;}
+.ferr{font-size:11px;color:var(--red);margin-top:2px;display:none;}
+.ferr.show{display:block;}
+.req{color:var(--red);}
+
+/* ── 팝업 ── */
+.pop-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+.pop-overlay.show{display:flex;}
+.pop-box{background:#fff;border-radius:10px;box-shadow:0 16px 48px rgba(0,0,0,.2);overflow:hidden;width:480px;max-width:95vw;animation:popIn .2s ease;}
+@keyframes popIn{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.pop-hd{background:var(--navy2);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700;}
+.pop-cl{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;}
+.pop-bd{padding:20px;}
+.pop-ft{padding:0 20px 20px;display:flex;justify-content:flex-end;gap:8px;}
+
+/* ── 토스트 ── */
+@keyframes toastAni{0%{opacity:0;transform:translateX(-50%) translateY(-12px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0}}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:22px;font-size:13px;font-weight:700;z-index:3000;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:toastAni 2.8s ease forwards;pointer-events:none;}
+.toast.ok{background:#16a34a;color:#fff;}
+.toast.err{background:#dc2626;color:#fff;}
+.toast.warn{background:#d97706;color:#fff;}
+
+/* ── 접근제한 ── */
+.access-deny{min-height:70vh;display:flex;align-items:center;justify-content:center;}
+.access-deny-box{text-align:center;padding:48px;}
+.access-deny-box .ico{font-size:60px;margin-bottom:16px;}
+.access-deny-box h2{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.access-deny-box p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:24px;}
+
+/* ── 활동 로그 ── */
+.log-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #f0f2f8;}
+.log-item:last-child{border-bottom:none;}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.log-dot.green{background:var(--green);}
+.log-dot.blue{background:var(--blue);}
+.log-dot.orange{background:var(--orange);}
+.log-txt{font-size:12px;color:#333;line-height:1.6;}
+.log-time{font-size:11px;color:#aaa;white-space:nowrap;margin-left:auto;}
+
+/* ── 반응형 ── */
+@media(max-width:900px){
+  .layout{flex-direction:column;}
+  .sidebar{width:100%;position:static;}
+  .dash-grid{grid-template-columns:repeat(2,1fr);}
+  .form-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- 접근제한 오버레이 (비관리자) -->
+<div id="access-wrap"></div>
+
+<!-- GNB -->
+<div class="gnb">
+  <div class="gnb-inner">
+    <a class="gnb-logo" href="index.html">
+      <div class="ico">⚖</div>
+      <div class="txt">전자소송 실습<span>ADMIN PANEL</span></div>
+    </a>
+    <span class="gnb-badge">🔐 관리자</span>
+    <a class="gnb-back" href="index.html">← 메인으로 돌아가기</a>
+    <div class="gnb-user" id="gnb-user-area" style="display:none;">
+      <span>👤</span><span id="gnb-uname"></span>
+      <button class="btn-logout" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<!-- 메인 레이아웃 (로그인 후 표시) -->
+<div id="admin-content" style="display:none;">
+<div class="layout">
+
+  <!-- 사이드바 -->
+  <div class="sidebar">
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-hd">⚙ 관리 메뉴</div>
+      <div class="snav-item on" id="nav-dashboard" onclick="showPanel('dashboard')"><span class="ico">📊</span>대시보드</div>
+      <div class="snav-item" id="nav-accounts" onclick="showPanel('accounts')"><span class="ico">👥</span>계정 관리<span class="cnt" id="acc-cnt">0</span></div>
+      <div class="snav-item" id="nav-add" onclick="showPanel('add')"><span class="ico">➕</span>계정 추가</div>
+      <div class="snav-item" id="nav-logs" onclick="showPanel('logs')"><span class="ico">📋</span>활동 로그</div>
+      <div class="snav-item" id="nav-settings" onclick="showPanel('settings')"><span class="ico">⚙</span>시스템 설정</div>
+    </nav>
+  </div>
+
+  <!-- 메인 콘텐츠 -->
+  <div class="main">
+
+    <!-- ① 대시보드 -->
+    <div id="panel-dashboard">
+      <div class="dash-grid">
+        <div class="dash-card blue"><div class="dc-label">전체 계정</div><div class="dc-value" id="stat-total">0</div><div class="dc-sub">등록된 실습 계정</div><div class="dc-icon">👥</div></div>
+        <div class="dash-card green"><div class="dc-label">실습생 계정</div><div class="dc-value" id="stat-users">0</div><div class="dc-sub">일반 실습생</div><div class="dc-icon">🎓</div></div>
+        <div class="dash-card orange"><div class="dc-label">관리자 계정</div><div class="dc-value" id="stat-admins">0</div><div class="dc-sub">관리자 권한</div><div class="dc-icon">🔐</div></div>
+        <div class="dash-card red"><div class="dc-label">기본 계정</div><div class="dc-value" id="stat-default">10</div><div class="dc-sub">student01~10</div><div class="dc-icon">📋</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <!-- 최근 등록 계정 -->
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-hd-title">📝 최근 등록 계정</div><button class="btn btn-gray btn-sm" onclick="showPanel('accounts')">전체보기</button></div>
+          <div class="panel-body" id="recent-accounts" style="padding:0;"></div>
+        </div>
+        <!-- 활동 로그 미리보기 -->
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-hd-title">📋 최근 활동</div><button class="btn btn-gray btn-sm" onclick="showPanel('logs')">전체보기</button></div>
+          <div class="panel-body" id="recent-logs"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 계정 관리 -->
+    <div id="panel-accounts" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd">
+          <div class="panel-hd-title">👥 계정 목록</div>
+          <div class="panel-hd-actions">
+            <div class="search-bar">
+              <input type="text" class="search-inp" id="acc-search" placeholder="이름 또는 아이디 검색" oninput="renderAccTable()">
+              <select class="filter-sel" id="acc-filter" onchange="renderAccTable()">
+                <option value="">전체</option><option value="user">실습생</option><option value="admin">관리자</option>
+              </select>
+              <button class="btn btn-navy" onclick="showPanel('add')">➕ 계정 추가</button>
+            </div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:32px;"><input type="checkbox" id="chk-all" onchange="togAllChk(this)"></th>
+              <th>아이디</th><th>이름</th><th>소속</th><th>권한</th><th>상태</th><th>등록일</th><th style="width:130px;">관리</th>
+            </tr></thead>
+            <tbody id="acc-tbody"></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+          <button class="btn btn-red btn-sm" onclick="delSelected()">🗑 선택 삭제</button>
+          <button class="btn btn-gray btn-sm" onclick="resetSelected()">🔑 선택 비밀번호 초기화</button>
+          <span style="margin-left:auto;font-size:12px;color:var(--muted);">총 <strong id="acc-total-label">0</strong>명</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 계정 추가 -->
+    <div id="panel-add" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-hd-title">➕ 새 계정 추가</div></div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="fld">
+              <label>이름 <span class="req">*</span></label>
+              <input type="text" id="add-name" placeholder="홍길동">
+              <div class="ferr" id="add-name-err"></div>
+            </div>
+            <div class="fld">
+              <label>아이디 <span class="req">*</span> <span style="font-size:11px;color:#aaa;">(영소문자+숫자 4~12자)</span></label>
+              <div style="display:flex;gap:6px;">
+                <input type="text" id="add-id" placeholder="아이디 입력" style="flex:1;">
+                <button class="btn btn-outline" onclick="checkAddId()">중복확인</button>
+              </div>
+              <div class="ferr" id="add-id-err"></div>
+              <div style="font-size:11px;color:var(--green);margin-top:3px;display:none;" id="add-id-ok">✅ 사용 가능한 아이디입니다.</div>
+            </div>
+            <div class="fld">
+              <label>비밀번호 <span class="req">*</span></label>
+              <input type="password" id="add-pw" placeholder="6자 이상">
+              <div class="ferr" id="add-pw-err"></div>
+            </div>
+            <div class="fld">
+              <label>비밀번호 확인 <span class="req">*</span></label>
+              <input type="password" id="add-pw2" placeholder="비밀번호 재입력">
+              <div class="ferr" id="add-pw2-err"></div>
+            </div>
+            <div class="fld">
+              <label>소속 <span style="font-size:11px;color:#aaa;">(선택)</span></label>
+              <input type="text" id="add-org" placeholder="예) ○○법률사무소">
+            </div>
+            <div class="fld">
+              <label>권한</label>
+              <select id="add-role">
+                <option value="user">실습생 (일반)</option>
+                <option value="admin">관리자</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px;">
+            <button class="btn btn-navy" onclick="doAddAccount()">✅ 계정 추가</button>
+            <button class="btn btn-gray" onclick="resetAddForm()">↺ 초기화</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 일괄 추가 -->
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-hd-title">📦 실습생 일괄 추가</div></div>
+        <div class="panel-body">
+          <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:14px 16px;font-size:12px;color:#1e3a5f;line-height:1.8;margin-bottom:16px;">
+            💡 <strong>일괄 추가</strong>: 접두사 + 번호 범위로 한 번에 여러 계정을 생성합니다.<br>
+            예) 접두사 "practice", 번호 01~20 → practice01, practice02 ... practice20
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+            <div class="fld"><label>아이디 접두사</label><input type="text" class="fld input" id="bulk-prefix" placeholder="practice" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;width:140px;"></div>
+            <div class="fld"><label>시작 번호</label><input type="number" id="bulk-start" value="1" min="1" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;width:80px;font-family:inherit;outline:none;"></div>
+            <div class="fld"><label>끝 번호</label><input type="number" id="bulk-end" value="10" min="1" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;width:80px;font-family:inherit;outline:none;"></div>
+            <div class="fld"><label>기본 비밀번호</label><input type="text" id="bulk-pw" value="court1234" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;width:120px;font-family:inherit;outline:none;"></div>
+            <button class="btn btn-green" onclick="doBulkAdd()">📦 일괄 추가</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ 활동 로그 -->
+    <div id="panel-logs" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd">
+          <div class="panel-hd-title">📋 활동 로그</div>
+          <button class="btn btn-gray btn-sm" onclick="clearLogs()">🗑 로그 초기화</button>
+        </div>
+        <div class="panel-body" id="full-logs"></div>
+      </div>
+    </div>
+
+    <!-- ⑤ 시스템 설정 -->
+    <div id="panel-settings" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-hd-title">⚙ 시스템 설정</div></div>
+        <div class="panel-body">
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8f9fc;border-radius:6px;border:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;">기본 비밀번호 초기화</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">student01~10 계정 비밀번호를 court1234로 초기화합니다</div></div>
+              <button class="btn btn-orange" style="background:#d97706;color:#fff;" onclick="resetDefaultPw()">초기화</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8f9fc;border-radius:6px;border:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;">추가 계정 전체 삭제</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">기본 계정(student01~10, admin)을 제외한 추가 계정을 모두 삭제합니다</div></div>
+              <button class="btn btn-red" onclick="deleteAddedAccounts()">전체 삭제</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8f9fc;border-radius:6px;border:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;">활동 로그 초기화</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">저장된 모든 활동 로그를 삭제합니다</div></div>
+              <button class="btn btn-gray" onclick="clearLogs()">초기화</button>
+            </div>
+            <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:14px;font-size:12px;color:#1e3a5f;line-height:1.8;">
+              <strong>ℹ 계정 데이터 저장 방식</strong><br>
+              현재 계정 데이터는 브라우저 <code>sessionStorage</code>에 저장됩니다. 탭을 닫으면 추가 계정은 초기화됩니다.<br>
+              영구 저장이 필요하다면 서버 DB 연동이 필요합니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /.layout -->
+</div><!-- #admin-content -->
+
+<!-- 계정 수정 팝업 -->
+<div class="pop-overlay" id="pop-edit">
+  <div class="pop-box">
+    <div class="pop-hd">✏️ 계정 수정 <button class="pop-cl" onclick="closePop('pop-edit')">✕</button></div>
+    <div class="pop-bd">
+      <div class="form-grid">
+        <div class="fld"><label>아이디</label><input type="text" id="edit-id" readonly style="background:#f5f5f5;"></div>
+        <div class="fld"><label>이름 <span class="req">*</span></label><input type="text" id="edit-name"></div>
+        <div class="fld"><label>새 비밀번호 <span style="font-size:11px;color:#aaa;">(변경 시만 입력)</span></label><input type="password" id="edit-pw" placeholder="비워두면 변경 안 됨"></div>
+        <div class="fld"><label>소속</label><input type="text" id="edit-org"></div>
+        <div class="fld fld-full"><label>권한</label><select id="edit-role"><option value="user">실습생</option><option value="admin">관리자</option></select></div>
+      </div>
+    </div>
+    <div class="pop-ft"><button class="btn btn-gray" onclick="closePop('pop-edit')">취소</button><button class="btn btn-navy" onclick="doEditAccount()">저장</button></div>
+  </div>
+</div>
+
+<script>
+// ═══ 전역 ═══
+const DEFAULT_ACC={
+  student01:{pw:'court1234',name:'실습생 1호',org:'실습반',role:'user',created:'2026-01-01'},
+  student02:{pw:'court1234',name:'실습생 2호',org:'실습반',role:'user',created:'2026-01-01'},
+  student03:{pw:'court1234',name:'실습생 3호',org:'실습반',role:'user',created:'2026-01-01'},
+  student04:{pw:'court1234',name:'실습생 4호',org:'실습반',role:'user',created:'2026-01-01'},
+  student05:{pw:'court1234',name:'실습생 5호',org:'실습반',role:'user',created:'2026-01-01'},
+  student06:{pw:'court1234',name:'실습생 6호',org:'실습반',role:'user',created:'2026-01-01'},
+  student07:{pw:'court1234',name:'실습생 7호',org:'실습반',role:'user',created:'2026-01-01'},
+  student08:{pw:'court1234',name:'실습생 8호',org:'실습반',role:'user',created:'2026-01-01'},
+  student09:{pw:'court1234',name:'실습생 9호',org:'실습반',role:'user',created:'2026-01-01'},
+  student10:{pw:'court1234',name:'실습생 10호',org:'실습반',role:'user',created:'2026-01-01'},
+  admin:{pw:'admin1234',name:'관리자',org:'운영팀',role:'admin',created:'2026-01-01'},
+};
+let curUser=null,addIdChecked=false,editingId=null;
+let logs=[];
+
+function getAcc(){try{const s=sessionStorage.getItem('ec_acc');return s?{...DEFAULT_ACC,...JSON.parse(s)}:{...DEFAULT_ACC};}catch{return{...DEFAULT_ACC};}}
+function saveAcc(id,info){try{const s=sessionStorage.getItem('ec_acc');const a=s?JSON.parse(s):{};a[id]=info;sessionStorage.setItem('ec_acc',JSON.stringify(a));}catch{}}
+function delAcc(id){try{const s=sessionStorage.getItem('ec_acc');if(!s)return;const a=JSON.parse(s);delete a[id];sessionStorage.setItem('ec_acc',JSON.stringify(a));}catch{}}
+function getLogs(){try{const s=sessionStorage.getItem('ec_logs');return s?JSON.parse(s):[];}catch{return[];}}
+function addLog(type,msg){const l=getLogs();l.unshift({type,msg,time:new Date().toLocaleString('ko-KR')});if(l.length>50)l.pop();try{sessionStorage.setItem('ec_logs',JSON.stringify(l));}catch{}}
+
+// ═══ 인증 ═══
+function initAuth(){
+  try{const u=sessionStorage.getItem('ec_user');if(u){curUser=JSON.parse(u);}}catch{}
+  const wrap=document.getElementById('access-wrap');
+  if(!curUser||curUser.role!=='admin'){
+    wrap.innerHTML=`<div class="access-deny"><div class="access-deny-box"><div class="ico">🔐</div><h2>관리자 전용 페이지</h2><p>이 페이지는 관리자만 접근할 수 있습니다.<br>관리자 계정으로 로그인해주세요.</p><div style="font-size:13px;background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:12px 18px;display:inline-block;margin-bottom:20px;"><strong>관리자 계정</strong><br>아이디: admin&nbsp;&nbsp;비밀번호: admin1234</div><br><button class="btn btn-navy" onclick="location.href='index.html'" style="height:42px;padding:0 24px;font-size:14px;">← 메인으로 돌아가기</button></div></div>`;
+    return;
+  }
+  // 관리자 확인됨
+  document.getElementById('gnb-user-area').style.display='flex';
+  document.getElementById('gnb-uname').textContent=curUser.name;
+  document.getElementById('admin-content').style.display='block';
+  renderAll();
+}
+function doLogout(){
+  if(!confirm('로그아웃 하시겠습니까?'))return;
+  sessionStorage.removeItem('ec_user');location.href='index.html';
+}
+
+// ═══ 패널 전환 ═══
+function showPanel(name){
+  ['dashboard','accounts','add','logs','settings'].forEach(p=>{
+    document.getElementById('panel-'+p).style.display=p===name?'block':'none';
+    document.getElementById('nav-'+p).className='snav-item'+(p===name?' on':'');
+  });
+  if(name==='accounts')renderAccTable();
+  if(name==='logs')renderFullLogs();
+  if(name==='dashboard')renderDashboard();
+}
+
+// ═══ 대시보드 ═══
+function renderDashboard(){
+  const acc=getAcc();const ids=Object.keys(acc);
+  const total=ids.length;
+  const users=ids.filter(i=>acc[i].role!=='admin').length;
+  const admins=ids.filter(i=>acc[i].role==='admin').length;
+  document.getElementById('stat-total').textContent=total;
+  document.getElementById('stat-users').textContent=users;
+  document.getElementById('stat-admins').textContent=admins;
+  document.getElementById('acc-cnt').textContent=total;
+  // 최근 계정 (추가된 것 우선)
+  const recent=ids.filter(i=>!DEFAULT_ACC[i]).slice(0,5);
+  const recentAll=recent.length?recent:ids.slice(0,5);
+  const rb=document.getElementById('recent-accounts');
+  rb.innerHTML=recentAll.map(id=>`<div class="log-item" style="padding:10px 20px;"><div class="log-dot ${acc[id].role==='admin'?'orange':'green'}"></div><div class="log-txt"><strong>${acc[id].name}</strong> (${id})<br><span style="color:#aaa;">${acc[id].org||'소속없음'} · ${acc[id].created||'-'}</span></div><span class="badge ${acc[id].role==='admin'?'badge-admin':'badge-user'}">${acc[id].role==='admin'?'관리자':'실습생'}</span></div>`).join('');
+  // 최근 로그
+  const logsData=getLogs().slice(0,6);
+  const logColors={login:'green',signup:'blue',add:'blue',delete:'orange',edit:'orange',bulk:'green'};
+  document.getElementById('recent-logs').innerHTML=logsData.length?logsData.map(l=>`<div class="log-item"><div class="log-dot ${logColors[l.type]||'blue'}"></div><div class="log-txt">${l.msg}</div><span class="log-time">${l.time}</span></div>`).join(''):'<div style="text-align:center;color:#aaa;font-size:12px;padding:20px;">로그가 없습니다.</div>';
+}
+
+// ═══ 계정 테이블 ═══
+function renderAccTable(){
+  const acc=getAcc();const ids=Object.keys(acc);
+  const q=(document.getElementById('acc-search')||{}).value?.trim().toLowerCase()||'';
+  const f=(document.getElementById('acc-filter')||{}).value||'';
+  const filtered=ids.filter(id=>{
+    const a=acc[id];
+    if(f&&a.role!==f)return false;
+    if(q&&!id.toLowerCase().includes(q)&&!a.name.toLowerCase().includes(q))return false;
+    return true;
+  });
+  document.getElementById('acc-total-label').textContent=filtered.length;
+  document.getElementById('acc-cnt').textContent=ids.length;
+  const tb=document.getElementById('acc-tbody');
+  tb.innerHTML=filtered.map(id=>{
+    const a=acc[id];const isDefault=!!DEFAULT_ACC[id];
+    return`<tr>
+      <td><input type="checkbox" class="accchk" value="${id}"></td>
+      <td><code style="font-size:12px;background:#f0f2f8;padding:2px 6px;border-radius:3px;">${id}</code>${isDefault?'<span style="font-size:10px;color:#aaa;margin-left:6px;">기본</span>':''}</td>
+      <td><strong>${a.name}</strong></td>
+      <td style="color:#666;">${a.org||'–'}</td>
+      <td><span class="badge ${a.role==='admin'?'badge-admin':'badge-user'}">${a.role==='admin'?'관리자':'실습생'}</span></td>
+      <td><span class="badge badge-active">활성</span></td>
+      <td style="color:#888;">${a.created||'–'}</td>
+      <td><div style="display:flex;gap:4px;">
+        <button class="btn btn-outline btn-sm" onclick="openEdit('${id}')">수정</button>
+        <button class="btn btn-gray btn-sm" onclick="resetPw('${id}')">PW초기화</button>
+        ${!isDefault?`<button class="btn btn-red btn-sm" onclick="delAcc1('${id}')">삭제</button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══ 계정 추가 ═══
+let addIdOk=false;
+function checkAddId(){
+  const id=document.getElementById('add-id').value.trim();
+  const err=document.getElementById('add-id-err');const ok=document.getElementById('add-id-ok');
+  err.classList.remove('show');ok.style.display='none';addIdOk=false;
+  if(!id){err.textContent='아이디를 입력해주세요.';err.classList.add('show');return;}
+  if(!/^[a-z0-9]{4,12}$/.test(id)){err.textContent='영문 소문자+숫자 4~12자로 입력해주세요.';err.classList.add('show');return;}
+  if(getAcc()[id]){err.textContent='이미 사용 중인 아이디입니다.';err.classList.add('show');return;}
+  ok.style.display='block';addIdOk=true;
+}
+function doAddAccount(){
+  const name=document.getElementById('add-name').value.trim();
+  const id=document.getElementById('add-id').value.trim();
+  const pw=document.getElementById('add-pw').value;
+  const pw2=document.getElementById('add-pw2').value;
+  const org=document.getElementById('add-org').value.trim();
+  const role=document.getElementById('add-role').value;
+  let valid=true;
+  ['add-name-err','add-id-err','add-pw-err','add-pw2-err'].forEach(e=>document.getElementById(e).classList.remove('show'));
+  if(!name){document.getElementById('add-name-err').textContent='이름을 입력해주세요.';document.getElementById('add-name-err').classList.add('show');valid=false;}
+  if(!addIdOk){document.getElementById('add-id-err').textContent='아이디 중복확인을 해주세요.';document.getElementById('add-id-err').classList.add('show');valid=false;}
+  if(pw.length<6){document.getElementById('add-pw-err').textContent='비밀번호는 6자 이상이어야 합니다.';document.getElementById('add-pw-err').classList.add('show');valid=false;}
+  if(pw!==pw2){document.getElementById('add-pw2-err').textContent='비밀번호가 일치하지 않습니다.';document.getElementById('add-pw2-err').classList.add('show');valid=false;}
+  if(!valid)return;
+  const today=new Date().toISOString().split('T')[0];
+  saveAcc(id,{pw,name,org,role,created:today});addIdOk=false;
+  addLog('add',`계정 추가: ${name} (${id}) - ${role==='admin'?'관리자':'실습생'}`);
+  showToast('✅ "'+name+'" 계정이 추가되었습니다.','ok');
+  resetAddForm();renderAccTable();renderDashboard();document.getElementById('acc-cnt').textContent=Object.keys(getAcc()).length;
+}
+function resetAddForm(){
+  ['add-name','add-id','add-pw','add-pw2','add-org'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('add-role').value='user';
+  document.getElementById('add-id-ok').style.display='none';
+  ['add-name-err','add-id-err','add-pw-err','add-pw2-err'].forEach(e=>document.getElementById(e).classList.remove('show'));
+  addIdOk=false;
+}
+
+// 일괄 추가
+function doBulkAdd(){
+  const prefix=document.getElementById('bulk-prefix').value.trim();
+  const start=parseInt(document.getElementById('bulk-start').value)||1;
+  const end=parseInt(document.getElementById('bulk-end').value)||10;
+  const pw=document.getElementById('bulk-pw').value.trim()||'court1234';
+  if(!prefix){showToast('접두사를 입력해주세요.','err');return;}
+  if(end<start||end-start>49){showToast('번호 범위를 확인해주세요. (최대 50개)','warn');return;}
+  const today=new Date().toISOString().split('T')[0];
+  let added=0;
+  for(let i=start;i<=end;i++){
+    const id=prefix+String(i).padStart(2,'0');
+    if(getAcc()[id])continue;
+    saveAcc(id,{pw,name:prefix+String(i).padStart(2,'0'),org:'실습반',role:'user',created:today});
+    added++;
+  }
+  addLog('bulk',`일괄 추가: ${prefix}${String(start).padStart(2,'0')}~${prefix}${String(end).padStart(2,'0')} (${added}개)`);
+  showToast(`✅ ${added}개 계정이 추가되었습니다.`,'ok');
+  renderDashboard();renderAccTable();
+}
+
+// ═══ 계정 수정 ═══
+function openEdit(id){
+  const acc=getAcc()[id];if(!acc)return;
+  editingId=id;
+  document.getElementById('edit-id').value=id;
+  document.getElementById('edit-name').value=acc.name;
+  document.getElementById('edit-pw').value='';
+  document.getElementById('edit-org').value=acc.org||'';
+  document.getElementById('edit-role').value=acc.role||'user';
+  document.getElementById('pop-edit').classList.add('show');
+}
+function doEditAccount(){
+  const name=document.getElementById('edit-name').value.trim();
+  const pw=document.getElementById('edit-pw').value;
+  const org=document.getElementById('edit-org').value.trim();
+  const role=document.getElementById('edit-role').value;
+  if(!name){alert('이름을 입력해주세요.');return;}
+  const acc=getAcc()[editingId];
+  const updated={...acc,name,org,role};
+  if(pw&&pw.length>=6)updated.pw=pw;
+  else if(pw&&pw.length<6){alert('비밀번호는 6자 이상이어야 합니다.');return;}
+  saveAcc(editingId,updated);
+  addLog('edit',`계정 수정: ${name} (${editingId})`);
+  showToast('✅ 계정이 수정되었습니다.','ok');
+  closePop('pop-edit');renderAccTable();renderDashboard();
+}
+
+// ═══ 삭제 & 초기화 ═══
+function delAcc1(id){
+  if(DEFAULT_ACC[id]){showToast('기본 계정은 삭제할 수 없습니다.','warn');return;}
+  if(!confirm('"'+id+'" 계정을 삭제하시겠습니까?'))return;
+  delAcc(id);addLog('delete',`계정 삭제: ${id}`);
+  showToast('🗑 계정이 삭제되었습니다.','ok');renderAccTable();renderDashboard();
+}
+function delSelected(){
+  const chk=[...document.querySelectorAll('.accchk:checked')].map(c=>c.value);
+  if(!chk.length){showToast('삭제할 계정을 선택해주세요.','warn');return;}
+  const defaults=chk.filter(id=>DEFAULT_ACC[id]);
+  const toDelete=chk.filter(id=>!DEFAULT_ACC[id]);
+  if(defaults.length)showToast(`기본 계정 ${defaults.length}개는 삭제할 수 없습니다.`,'warn');
+  if(!toDelete.length)return;
+  if(!confirm(toDelete.length+'개 계정을 삭제하시겠습니까?'))return;
+  toDelete.forEach(id=>delAcc(id));
+  addLog('delete',`계정 일괄 삭제: ${toDelete.join(', ')}`);
+  showToast(`🗑 ${toDelete.length}개 계정이 삭제되었습니다.`,'ok');renderAccTable();renderDashboard();
+}
+function resetPw(id){
+  if(!confirm('"'+id+'" 비밀번호를 court1234로 초기화하시겠습니까?'))return;
+  const acc=getAcc()[id];if(!acc)return;
+  const updated={...acc,pw:'court1234'};saveAcc(id,updated);
+  addLog('edit',`비밀번호 초기화: ${id}`);
+  showToast('🔑 비밀번호가 court1234로 초기화되었습니다.','ok');
+}
+function resetSelected(){
+  const chk=[...document.querySelectorAll('.accchk:checked')].map(c=>c.value);
+  if(!chk.length){showToast('선택된 계정이 없습니다.','warn');return;}
+  if(!confirm(chk.length+'개 계정의 비밀번호를 court1234로 초기화하시겠습니까?'))return;
+  chk.forEach(id=>{const acc=getAcc()[id];if(acc)saveAcc(id,{...acc,pw:'court1234'});});
+  addLog('edit',`비밀번호 일괄 초기화: ${chk.join(', ')}`);
+  showToast(`🔑 ${chk.length}개 계정의 비밀번호가 초기화되었습니다.`,'ok');renderAccTable();
+}
+function resetDefaultPw(){
+  if(!confirm('기본 계정(student01~10)의 비밀번호를 모두 court1234로 초기화하시겠습니까?'))return;
+  for(let i=1;i<=10;i++){const id='student'+String(i).padStart(2,'0');const acc=getAcc()[id];if(acc)saveAcc(id,{...acc,pw:'court1234'});}
+  addLog('edit','기본 계정 비밀번호 전체 초기화');
+  showToast('🔑 기본 계정 비밀번호가 모두 초기화되었습니다.','ok');
+}
+function deleteAddedAccounts(){
+  if(!confirm('기본 계정 외 추가된 계정을 모두 삭제하시겠습니까?'))return;
+  try{const s=sessionStorage.getItem('ec_acc');if(s){const a=JSON.parse(s);Object.keys(a).filter(id=>!DEFAULT_ACC[id]).forEach(id=>delete a[id]);sessionStorage.setItem('ec_acc',JSON.stringify(a));}}catch{}
+  addLog('delete','추가 계정 전체 삭제');
+  showToast('🗑 추가 계정이 모두 삭제되었습니다.','ok');renderAccTable();renderDashboard();
+}
+
+// ═══ 로그 ═══
+function renderFullLogs(){
+  const logsData=getLogs();
+  const colors={login:'green',signup:'blue',add:'blue',delete:'orange',edit:'orange',bulk:'green'};
+  document.getElementById('full-logs').innerHTML=logsData.length?logsData.map(l=>`<div class="log-item"><div class="log-dot ${colors[l.type]||'blue'}"></div><div class="log-txt">${l.msg}</div><span class="log-time">${l.time}</span></div>`).join(''):'<div style="text-align:center;color:#aaa;font-size:12px;padding:30px;">활동 로그가 없습니다.</div>';
+}
+function clearLogs(){
+  if(!confirm('모든 로그를 삭제하시겠습니까?'))return;
+  sessionStorage.removeItem('ec_logs');
+  showToast('로그가 초기화되었습니다.','ok');
+  if(document.getElementById('panel-logs').style.display!=='none')renderFullLogs();
+  renderDashboard();
+}
+
+// ═══ 팝업 ═══
+function closePop(id){document.getElementById(id).classList.remove('show');}
+function togAllChk(m){document.querySelectorAll('.accchk').forEach(c=>c.checked=m.checked);}
+
+// ═══ 토스트 ═══
+function showToast(msg,type='ok'){const t=document.createElement('div');t.className='toast '+type;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
+
+// ═══ 전체 렌더 ═══
+function renderAll(){renderDashboard();renderAccTable();}
+
+// ═══ 초기화 ═══
+document.addEventListener('DOMContentLoaded',()=>{
+  initAuth();
+  document.querySelectorAll('.pop-overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('show');});});
+});
+</script>
+</body>
+</html>

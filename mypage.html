@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나의전자소송 — 전자소송포털</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR','맑은 고딕',sans-serif;font-size:13px;color:#222;background:#f2f4f7;}
+a{text-decoration:none;color:inherit;cursor:pointer;}
+
+/* ── 유틸 바 ── */
+.util-bar{background:#1a3a6b;height:34px;display:flex;align-items:center;justify-content:flex-end;padding:0 20px;gap:0;}
+.util-bar a{font-size:11px;color:rgba(255,255,255,.75);padding:0 10px;border-right:1px solid rgba(255,255,255,.2);}
+.util-bar a:last-child{border-right:none;}
+.util-bar a:hover{color:#fff;}
+.util-info{display:flex;align-items:center;gap:10px;margin-right:auto;}
+.util-info .badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:2px 10px;font-size:11px;color:#fff;}
+.util-info .timer{font-size:11px;color:rgba(255,255,255,.7);}
+.util-info .extend-btn{font-size:11px;color:#f0cc78;border:1px solid rgba(240,204,120,.5);border-radius:2px;padding:1px 8px;cursor:pointer;}
+
+/* ── GNB ── */
+.gnb{background:#fff;border-bottom:1px solid #dde0e8;position:sticky;top:0;z-index:300;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.gnb-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;height:58px;padding:0 16px;}
+.gnb-logo{display:flex;align-items:center;gap:8px;margin-right:32px;cursor:pointer;}
+.gnb-logo .emblem{width:38px;height:38px;background:#e8f0f8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid #006699;}
+.gnb-logo .txt .court{font-size:10px;color:#006699;font-weight:600;}
+.gnb-logo .txt .portal{font-size:16px;font-weight:700;color:#003366;}
+.gnb-nav{display:flex;height:58px;}
+.gnav-item{display:flex;align-items:center;padding:0 18px;font-size:13px;font-weight:600;color:#333;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;}
+.gnav-item:hover{color:#006699;}
+.gnav-item.on{color:#006699;border-bottom-color:#006699;}
+.gnb-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.gnb-right a{font-size:12px;color:#555;}
+.gnb-right a:hover{color:#006699;}
+
+/* ── 브레드크럼 ── */
+.breadcrumb{background:#fff;border-bottom:1px solid #e8eaee;padding:8px 0;}
+.bc-inner{max-width:1320px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:6px;font-size:12px;color:#888;}
+.bc-inner a{color:#888;cursor:pointer;}
+.bc-inner a:hover{color:#006699;}
+.bc-sep{color:#bbb;}
+.bc-current{color:#333;font-weight:600;}
+
+/* ── 레이아웃 ── */
+.layout{max-width:1320px;margin:0 auto;padding:20px 16px 60px;display:flex;gap:16px;align-items:flex-start;}
+
+/* ── 좌측 사이드바 ── */
+.sidebar{width:200px;min-width:200px;position:sticky;top:76px;}
+.sidebar-hd{background:#006699;color:#fff;padding:14px 16px;border-radius:4px 4px 0 0;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.sidebar-hd .arr{font-size:11px;opacity:.8;}
+.sidebar-nav{background:#fff;border:1px solid #dde0e8;border-top:none;border-radius:0 0 4px 4px;overflow:hidden;}
+.snav-group{}
+.snav-group-hd{padding:10px 16px;font-size:12px;font-weight:700;color:#222;background:#f5f7fa;border-bottom:1px solid #eee;border-top:1px solid #eee;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.snav-group-hd:first-child{border-top:none;}
+.snav-group-hd:hover{background:#eef2f8;color:#006699;}
+.snav-group-hd.on{color:#006699;background:#eef2f8;}
+.snav-group-hd .arr{font-size:10px;color:#999;transition:transform .2s;}
+.snav-group-hd.open .arr{transform:rotate(180deg);}
+.snav-items{display:none;background:#fff;}
+.snav-items.show{display:block;}
+.snav-item{padding:8px 16px 8px 24px;font-size:12px;color:#555;border-bottom:1px solid #f5f5f5;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.snav-item:last-child{border-bottom:none;}
+.snav-item:hover{background:#f5f7fa;color:#006699;}
+.snav-item.on{color:#006699;font-weight:700;background:#eef4ff;}
+.snav-item::before{content:'•';color:#006699;font-size:14px;}
+.sidebar-btn{display:block;width:100%;height:36px;background:#003366;color:#fff;border:none;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;border-radius:3px;}
+
+/* ── 메인 콘텐츠 ── */
+.main{flex:1;min-width:0;}
+.page-header{background:#fff;border:1px solid #dde0e8;border-radius:4px 4px 0 0;border-bottom:none;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.page-title{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;color:#003366;}
+.page-title .dot{width:12px;height:12px;border-radius:50%;background:#006699;}
+.page-actions{display:flex;gap:8px;}
+.page-act-btn{height:30px;padding:0 12px;border:1px solid #b0b8c8;background:#fff;border-radius:3px;font-size:12px;color:#444;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;}
+.page-act-btn:hover{background:#f5f7fa;color:#006699;}
+
+/* ── 검색 영역 ── */
+.search-area{background:#fff;border:1px solid #dde0e8;border-top:1px solid #e8eaee;padding:14px 20px;}
+.srow{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.srow:last-child{margin-bottom:0;}
+.slbl{font-size:12px;font-weight:600;color:#333;width:56px;flex-shrink:0;}
+.sinp{height:30px;padding:0 8px;border:1px solid #c0c8d0;border-radius:3px;font-size:12px;font-family:inherit;outline:none;}
+.sinp:focus{border-color:#006699;}
+.sselect{height:30px;padding:0 6px;border:1px solid #c0c8d0;border-radius:3px;font-size:12px;font-family:inherit;cursor:pointer;background:#fff;outline:none;}
+.sdate{display:flex;align-items:center;gap:6px;}
+.sdate-inp{height:30px;padding:0 8px;border:1px solid #c0c8d0;border-radius:3px;font-size:12px;font-family:inherit;width:110px;cursor:pointer;outline:none;}
+.sdate-inp:focus{border-color:#006699;}
+.sqbtn{height:26px;padding:0 10px;border:1px solid #c0c8d0;background:#fff;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;}
+.sqbtn:hover{background:#f0f4f8;}
+.sqbtn.on{background:#f0f4f8;border-color:#006699;color:#006699;}
+.radio-row{display:flex;align-items:center;gap:12px;}
+.ri{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;}
+.ri input{accent-color:#006699;cursor:pointer;}
+.ci{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px;}
+.ci input{accent-color:#006699;cursor:pointer;}
+.search-btn{height:34px;padding:0 28px;background:#006699;color:#fff;border:none;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.search-btn:hover{background:#005580;}
+.search-note{font-size:11px;color:#888;line-height:1.7;padding:10px 20px;border-top:1px solid #f0f2f5;background:#fafbfc;}
+
+/* ── 테이블 영역 ── */
+.table-area{background:#fff;border:1px solid #dde0e8;border-top:1px solid #e8eaee;margin-top:0;}
+.table-toolbar{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eee;}
+.total-count{font-size:12px;color:#555;}
+.table-tools{display:flex;gap:6px;}
+.tbl-btn{height:28px;padding:0 10px;border:1px solid #c0c8d0;background:#fff;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;}
+.tbl-btn:hover{background:#f5f7fa;color:#006699;}
+.tbl-btn.excel{color:#217346;border-color:#217346;}
+.data-tbl{width:100%;border-collapse:collapse;}
+.data-tbl th{background:#f5f7fa;padding:9px 10px;font-size:12px;font-weight:700;color:#333;text-align:center;border-bottom:1px solid #dde0e8;border-right:1px solid #eaecf4;white-space:nowrap;}
+.data-tbl th:last-child{border-right:none;}
+.data-tbl td{padding:9px 10px;font-size:12px;color:#333;border-bottom:1px solid #eaecf4;border-right:1px solid #eaecf4;text-align:center;vertical-align:middle;}
+.data-tbl td:last-child{border-right:none;}
+.data-tbl tr:hover td{background:#fafbff;}
+.data-tbl tr:last-child td{border-bottom:none;}
+.data-tbl .empty-row td{text-align:center;color:#888;padding:32px;font-size:13px;}
+.link-cell{color:#006699;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+.link-cell:hover{color:#003366;}
+.badge-new{display:inline-block;background:#c0392b;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;margin-left:4px;vertical-align:middle;}
+.badge-pay{display:inline-block;background:#27ae60;color:#fff;font-size:9px;padding:1px 5px;border-radius:2px;cursor:pointer;}
+.badge-view{display:inline-block;background:#2980b9;color:#fff;font-size:9px;padding:1px 5px;border-radius:2px;cursor:pointer;}
+.badge-submit{display:inline-block;background:#8e44ad;color:#fff;font-size:9px;padding:1px 5px;border-radius:2px;cursor:pointer;}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
+.status-dot.proceeding{background:#006699;}
+.status-dot.done{background:#27ae60;}
+.status-dot.pending{background:#e67e22;}
+
+/* ── 페이징 ── */
+.paging{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid #eee;}
+.paging-btns{display:flex;gap:4px;align-items:center;}
+.pg-btn{width:28px;height:28px;border:1px solid #ddd;background:#fff;border-radius:3px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.pg-btn:hover{background:#f0f4f8;border-color:#006699;}
+.pg-btn.on{background:#006699;color:#fff;border-color:#006699;}
+.pg-num{min-width:28px;height:28px;border:1px solid #ddd;background:#fff;border-radius:3px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0 6px;}
+.pg-num.on{background:#006699;color:#fff;border-color:#006699;}
+.pg-size{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;}
+.pg-size select{height:28px;border:1px solid #ddd;border-radius:3px;font-size:12px;padding:0 6px;}
+
+/* ── 참고하세요 박스 ── */
+.note-box{background:#fff;border:1px solid #dde0e8;border-top:1px solid #e8eaee;padding:20px 24px;margin-top:0;}
+.note-box-title{font-size:13px;font-weight:700;color:#333;margin-bottom:12px;}
+.note-item{margin-bottom:10px;}
+.note-item-title{font-size:12px;font-weight:700;color:#333;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.note-item-title::before{content:'•';color:#006699;}
+.note-item-body{font-size:11px;color:#555;line-height:1.8;padding-left:14px;}
+.note-item-body .red{color:#c0392b;font-weight:600;}
+.note-icon{float:left;margin-right:16px;margin-top:4px;font-size:36px;opacity:.5;}
+
+/* ── 사건현황 카드 ── */
+.status-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.status-card{background:#fff;border:1px solid #dde0e8;border-radius:4px;padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;}
+.status-card:hover{border-color:#006699;box-shadow:0 2px 10px rgba(0,102,153,.1);}
+.status-card.on{border-color:#006699;border-top:3px solid #006699;}
+.sc-num{font-size:28px;font-weight:700;color:#006699;margin-bottom:4px;}
+.sc-lbl{font-size:12px;color:#666;}
+.sc-sub{font-size:10px;color:#aaa;margin-top:2px;}
+
+/* ── 재판일정 ── */
+.schedule-item{padding:12px 16px;border-bottom:1px solid #f0f2f8;display:flex;align-items:flex-start;gap:14px;}
+.schedule-item:last-child{border-bottom:none;}
+.sched-date{min-width:64px;text-align:center;background:#006699;color:#fff;border-radius:4px;padding:8px 6px;}
+.sched-date .m{font-size:11px;opacity:.8;}
+.sched-date .d{font-size:20px;font-weight:700;line-height:1;}
+.sched-date .day{font-size:10px;opacity:.7;}
+.sched-content{}
+.sched-case{font-size:12px;color:#006699;font-weight:600;cursor:pointer;margin-bottom:3px;}
+.sched-info{font-size:12px;color:#444;line-height:1.6;}
+.sched-badge{display:inline-block;font-size:10px;padding:2px 6px;border-radius:2px;margin-left:6px;vertical-align:middle;}
+.sb-trial{background:#dbeafe;color:#1e40af;}
+.sb-decision{background:#d1fae5;color:#065f46;}
+.sb-mediation{background:#fce7f3;color:#9d174d;}
+
+/* ── 납부관리 ── */
+.pay-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.pay-card{background:#fff;border:1px solid #dde0e8;border-radius:4px;padding:16px;}
+.pay-card-title{font-size:12px;color:#888;margin-bottom:8px;}
+.pay-card-amount{font-size:22px;font-weight:700;color:#003366;}
+.pay-card-amount span{font-size:12px;color:#888;font-weight:400;margin-left:4px;}
+.pay-card-btn{margin-top:10px;display:block;width:100%;height:32px;background:#006699;color:#fff;border:none;border-radius:3px;font-size:12px;cursor:pointer;font-family:inherit;}
+
+/* ── 나의정보 ── */
+.info-section{background:#fff;border:1px solid #dde0e8;border-radius:4px;margin-bottom:12px;}
+.info-section-title{padding:12px 16px;border-bottom:1px solid #eee;font-size:13px;font-weight:700;color:#003366;display:flex;align-items:center;gap:8px;}
+.info-tbl{width:100%;}
+.info-tbl tr{border-bottom:1px solid #f0f2f5;}
+.info-tbl tr:last-child{border-bottom:none;}
+.info-tbl th{background:#f8f9fc;padding:10px 14px;font-size:12px;font-weight:600;color:#444;width:130px;border-right:1px solid #eee;}
+.info-tbl td{padding:10px 14px;font-size:12px;color:#333;}
+.info-edit-btn{height:26px;padding:0 10px;background:#fff;border:1px solid #006699;color:#006699;border-radius:3px;font-size:11px;cursor:pointer;font-family:inherit;margin-left:10px;}
+
+/* ── 팝업 ── */
+.pop-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;align-items:center;justify-content:center;}
+.pop-overlay.show{display:flex;}
+.pop-box{background:#fff;border-radius:4px;box-shadow:0 8px 32px rgba(0,0,0,.2);overflow:hidden;width:480px;max-width:95vw;}
+.pop-hd{background:#003366;color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700;}
+.pop-cl{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;}
+.pop-bd{padding:20px;}
+.pop-ft{padding:0 20px 16px;display:flex;justify-content:flex-end;gap:8px;}
+
+/* ── 접근제한 ── */
+.access-deny{min-height:60vh;display:flex;align-items:center;justify-content:center;}
+
+/* ── 토스트 ── */
+@keyframes tIn{0%{opacity:0;transform:translateX(-50%) translateY(-10px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0}}
+.toast-msg{position:fixed;top:72px;left:50%;transform:translateX(-50%);padding:9px 22px;border-radius:20px;font-size:13px;font-weight:700;z-index:2000;box-shadow:0 4px 14px rgba(0,0,0,.18);animation:tIn 2.8s forwards;pointer-events:none;background:#27ae60;color:#fff;}
+
+/* ── 플로팅 ── */
+.float-side{position:fixed;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;z-index:200;}
+.float-btn{writing-mode:vertical-lr;background:#fff;border:1px solid #dde0e8;border-right:none;padding:12px 6px;font-size:11px;color:#555;cursor:pointer;margin-bottom:4px;border-radius:4px 0 0 4px;}
+.float-btn:hover{background:#f0f4f8;color:#006699;}
+.chat-btn{position:fixed;bottom:24px;right:24px;width:48px;height:48px;background:#003366;border:none;border-radius:50%;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);z-index:200;display:flex;align-items:center;justify-content:center;}
+.top-btn{position:fixed;bottom:80px;right:20px;background:#fff;border:1px solid #dde0e8;border-radius:3px;padding:6px 10px;font-size:11px;color:#555;cursor:pointer;z-index:200;}
+.top-btn:hover{background:#f5f7fa;}
+
+/* ── 푸터 ── */
+.footer{background:#2c3e50;padding:20px;text-align:center;}
+.footer-links{display:flex;justify-content:center;gap:0;margin-bottom:10px;flex-wrap:wrap;}
+.footer-link{font-size:12px;color:rgba(255,255,255,.6);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;}
+.footer-link:last-child{border-right:none;}
+.footer-link:hover{color:#fff;}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.35);}
+.footer-tel{font-size:12px;color:rgba(255,255,255,.5);margin-top:6px;}
+</style>
+</head>
+<body>
+
+<!-- 유틸 바 -->
+<div class="util-bar">
+  <div class="util-info">
+    <span class="badge" id="util-role">변호사</span>
+    <span class="badge" id="util-org-badge">전병주 님</span>
+    <span class="timer">⏱ <span id="util-timer">29:53</span></span>
+    <span class="extend-btn" onclick="extendSession()">연장</span>
+  </div>
+  <a onclick="doLogout()">로그아웃</a>
+  <a>English</a>
+  <a>화면크기 + −</a>
+</div>
+
+<!-- GNB -->
+<div class="gnb">
+  <div class="gnb-inner">
+    <div class="gnb-logo" onclick="location.href='index.html'">
+      <div class="emblem">⚖</div>
+      <div class="txt"><div class="court">대한민국 법원</div><div class="portal">전자소송포털</div></div>
+    </div>
+    <nav class="gnb-nav">
+      <div class="gnav-item on">나의전자소송</div>
+      <div class="gnav-item" onclick="location.href='apply.html'">서류제출</div>
+      <div class="gnav-item">각종신청</div>
+      <div class="gnav-item">사건유형별 절차안내</div>
+      <div class="gnav-item">고객센터</div>
+    </nav>
+    <div class="gnb-right">
+      <a onclick="location.href='index.html'">🔍</a>
+      <a>☰</a>
+      <a onclick="location.href='index.html'" style="border-left:1px solid #eee;padding-left:12px;">🏠 HOME</a>
+    </div>
+  </div>
+</div>
+
+<!-- 브레드크럼 -->
+<div class="breadcrumb">
+  <div class="bc-inner">
+    <a onclick="location.href='index.html'">🏠</a><span class="bc-sep">›</span>
+    <a onclick="location.href='mypage.html'">나의전자소송</a><span class="bc-sep">›</span>
+    <span class="bc-current" id="bc-current">나의사건현황</span>
+  </div>
+</div>
+
+<!-- 접근제한 (비로그인) -->
+<div id="deny-area" style="display:none;">
+  <div class="access-deny" style="padding:40px;">
+    <div style="text-align:center;">
+      <div style="font-size:56px;margin-bottom:16px;">🔐</div>
+      <div style="font-size:20px;font-weight:700;color:#003366;margin-bottom:10px;">로그인이 필요합니다</div>
+      <div style="font-size:14px;color:#666;line-height:1.8;margin-bottom:24px;">나의전자소송 서비스를 이용하시려면<br>먼저 로그인해주세요.</div>
+      <div style="font-size:13px;background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:12px 20px;display:inline-block;margin-bottom:20px;text-align:left;line-height:1.9;">
+        <strong>기본 실습 계정</strong><br>아이디: student01~student10<br>비밀번호: court1234
+      </div><br>
+      <button onclick="location.href='index.html'" style="height:44px;padding:0 28px;background:#006699;color:#fff;border:none;border-radius:3px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">← 메인으로 돌아가기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 메인 레이아웃 -->
+<div id="main-layout" style="display:none;">
+<div class="layout">
+  <!-- 사이드바 -->
+  <div class="sidebar">
+    <div class="sidebar-hd" onclick="location.href='mypage.html'">나의전자소송 <span class="arr">▶</span></div>
+    <nav class="sidebar-nav" id="sidebar-nav">
+      <!-- 나의사건현황 -->
+      <div class="snav-group-hd" onclick="loadPage('status')" id="nav-status">나의사건현황</div>
+
+      <!-- 나의사건관리 -->
+      <div class="snav-group-hd" onclick="toggleGroup('g-case');loadPage('case-proceeding')" id="nav-g-case">나의사건관리 <span class="arr">▼</span></div>
+      <div class="snav-items show" id="g-case">
+        <div class="snav-item" onclick="loadPage('case-proceeding')" id="nav-case-proceeding">진행중사건</div>
+        <div class="snav-item" onclick="loadPage('case-interest')" id="nav-case-interest">관심사건</div>
+        <div class="snav-item" onclick="loadPage('case-confirmed')" id="nav-case-confirmed">확정된사건</div>
+        <div class="snav-item" onclick="loadPage('case-done')" id="nav-case-done">완료된사건</div>
+      </div>
+
+      <!-- 사건진행 -->
+      <div class="snav-group-hd" onclick="toggleGroup('g-progress')" id="nav-g-progress">사건진행 <span class="arr">▼</span></div>
+      <div class="snav-items" id="g-progress">
+        <div class="snav-item" onclick="loadPage('schedule')" id="nav-schedule">재판일정</div>
+        <div class="snav-item" onclick="loadPage('doc-check')" id="nav-doc-check">문서송부서확인</div>
+        <div class="snav-item" onclick="loadPage('notice')" id="nav-notice">보정/미보정내역(독촉)</div>
+        <div class="snav-item" onclick="loadPage('evidence')" id="nav-evidence">증거의견입력</div>
+      </div>
+
+      <!-- 국선전담사건 -->
+      <div class="snav-group-hd" onclick="loadPage('public-defender')" id="nav-public-defender">국선전담사건</div>
+
+      <!-- 나의문서함 -->
+      <div class="snav-group-hd" onclick="toggleGroup('g-docs')" id="nav-g-docs">나의문서함 <span class="arr">▼</span></div>
+      <div class="snav-items show" id="g-docs">
+        <div class="snav-item" onclick="loadPage('drafts')" id="nav-drafts">작성중서류</div>
+        <div class="snav-item" onclick="loadPage('submitted')" id="nav-submitted">제출서류</div>
+        <div class="snav-item" onclick="loadPage('unconfirmed')" id="nav-unconfirmed">미확인송달문서</div>
+        <div class="snav-item" onclick="loadPage('all-docs')" id="nav-all-docs">전체송달문서</div>
+        <div class="snav-item" onclick="loadPage('certificate')" id="nav-certificate">송달문서 정(등)본발급</div>
+      </div>
+
+      <!-- 납부/환급관리 -->
+      <div class="snav-group-hd" onclick="toggleGroup('g-pay')" id="nav-g-pay">납부/환급관리 <span class="arr">▼</span></div>
+      <div class="snav-items" id="g-pay">
+        <div class="snav-item" onclick="loadPage('pay-lawsuit')" id="nav-pay-lawsuit">소송비용납부</div>
+        <div class="snav-item" onclick="loadPage('pay-appeal')" id="nav-pay-appeal">상소비용예납</div>
+        <div class="snav-item" onclick="loadPage('pay-history')" id="nav-pay-history">전자납부내역</div>
+        <div class="snav-item" onclick="loadPage('pay-virtual')" id="nav-pay-virtual">가상계좌내역</div>
+        <div class="snav-item" onclick="loadPage('pay-delivery')" id="nav-pay-delivery">송달료 자동납부내역</div>
+      </div>
+
+      <!-- 기록 열람 -->
+      <div class="snav-group-hd" onclick="toggleGroup('g-record')" id="nav-g-record">기록 열람 <span class="arr">▼</span></div>
+      <div class="snav-items" id="g-record">
+        <div class="snav-item" onclick="loadPage('record-my')" id="nav-record-my">나의사건열람</div>
+        <div class="snav-item" onclick="loadPage('record-criminal')" id="nav-record-criminal">형사전자사본화사건열람</div>
+      </div>
+
+      <!-- 전자소송사건등록 -->
+      <div class="snav-group-hd" onclick="toggleGroup('g-register')" id="nav-g-register">전자소송사건등록 <span class="arr">▼</span></div>
+      <div class="snav-items" id="g-register">
+        <div class="snav-item" onclick="loadPage('register-civil')" id="nav-register-civil">전자소송사건등록</div>
+        <div class="snav-item" onclick="loadPage('register-criminal')" id="nav-register-criminal">형사전자사본화사건등록</div>
+      </div>
+
+      <!-- 맞춤형문서함 -->
+      <div class="snav-group-hd" onclick="toggleGroup('g-custom')" id="nav-g-custom">맞춤형문서함 <span class="arr">▼</span></div>
+      <div class="snav-items" id="g-custom">
+        <div class="snav-item" onclick="loadPage('custom-fact')" id="nav-custom-fact">사실조회기관회신</div>
+        <div class="snav-item" onclick="loadPage('custom-third')" id="nav-custom-third">제3채무자</div>
+        <div class="snav-item" onclick="loadPage('custom-api')" id="nav-custom-api">오픈API 제출내역</div>
+      </div>
+
+      <!-- 나의정보관리 -->
+      <div class="snav-group-hd" onclick="toggleGroup('g-myinfo')" id="nav-g-myinfo">나의정보관리 <span class="arr">▼</span></div>
+      <div class="snav-items" id="g-myinfo">
+        <div class="snav-item" onclick="loadPage('myinfo-user')" id="nav-myinfo-user">사용자정보변경</div>
+        <div class="snav-item" onclick="loadPage('myinfo-id')" id="nav-myinfo-id">사용자아이름변경</div>
+        <div class="snav-item" onclick="loadPage('myinfo-pw')" id="nav-myinfo-pw">비밀번호변경</div>
+        <div class="snav-item" onclick="loadPage('myinfo-court')" id="nav-myinfo-court">나의법원설정</div>
+        <div class="snav-item" onclick="loadPage('myinfo-withdraw')" id="nav-myinfo-withdraw">사용자탈퇴</div>
+      </div>
+    </nav>
+    <button class="sidebar-btn" onclick="location.href='apply.html'">📋 소장 작성하기</button>
+  </div>
+
+  <!-- 메인 콘텐츠 -->
+  <div class="main" id="main-content"></div>
+</div>
+</div>
+
+<!-- 푸터 -->
+<div class="footer">
+  <div class="footer-links">
+    <span class="footer-link">이용약관</span><span class="footer-link">개인정보처리방침</span>
+    <span class="footer-link">저작권보호정책</span><span class="footer-link">링크시유의사항</span>
+    <span class="footer-link">문제해결안내</span><span class="footer-link">고객의소리</span>
+    <span class="footer-link">원격지원서비스</span><span class="footer-link">사이트맵</span>
+  </div>
+  <div class="footer-tel">이용 및 장애 문의 02) 3480-1715 (평일 9시~18시)</div>
+  <div class="footer-copy" style="margin-top:6px;">COPYRIGHT © 대한민국 법원. ALL RIGHTS RESERVED.</div>
+</div>
+
+<!-- 플로팅 -->
+<div class="float-side">
+  <div class="float-btn">나의소송</div>
+  <div class="float-btn">바로가기</div>
+</div>
+<button class="chat-btn">💬</button>
+<div class="top-btn" onclick="window.scrollTo(0,0)">TOP ▲</div>
+
+<script>
+// ══════ 데이터 ══════
+const DEFAULT_ACC={
+  student01:{pw:'court1234',name:'실습생 1호',org:'실습반',role:'user'},
+  student02:{pw:'court1234',name:'실습생 2호',org:'실습반',role:'user'},
+  student03:{pw:'court1234',name:'실습생 3호',org:'실습반',role:'user'},
+  student04:{pw:'court1234',name:'실습생 4호',org:'실습반',role:'user'},
+  student05:{pw:'court1234',name:'실습생 5호',org:'실습반',role:'user'},
+  student06:{pw:'court1234',name:'실습생 6호',org:'실습반',role:'user'},
+  student07:{pw:'court1234',name:'실습생 7호',org:'실습반',role:'user'},
+  student08:{pw:'court1234',name:'실습생 8호',org:'실습반',role:'user'},
+  student09:{pw:'court1234',name:'실습생 9호',org:'실습반',role:'user'},
+  student10:{pw:'court1234',name:'실습생 10호',org:'실습반',role:'user'},
+  admin:{pw:'admin1234',name:'관리자',org:'운영팀',role:'admin'},
+};
+let curUser=null;
+
+// 실습용 샘플 사건 데이터
+const SAMPLE_CASES=[
+  {court:'수원지법',dept:'민사1단독',caseNo:'2025가단520738',type:'대여금',plaintiff:'홍길동',defendant:'주식회사 바른커리어',status:'진행중',filed:'2025.03.15',next:'2026.04.10',judge:'김○○'},
+  {court:'서울중앙지법',dept:'민사합의14부',caseNo:'2024가합123456',type:'손해배상(기)',plaintiff:'이○○',defendant:'삼성화재보험(주)',status:'진행중',filed:'2024.11.20',next:'2026.05.08',judge:'박○○'},
+  {court:'수원지법',dept:'민사2단독',caseNo:'2025가소98765',type:'매매대금',plaintiff:'김○○',defendant:'정○○',status:'확정',filed:'2025.01.10',next:'-',judge:'이○○'},
+  {court:'서울동부지법',dept:'민사단독',caseNo:'2024나33210',type:'임금',plaintiff:'최○○',defendant:'(주)테크솔루션',status:'진행중',filed:'2024.08.05',next:'2026.03.25',judge:'최○○'},
+];
+
+const SAMPLE_DOCS=[
+  {court:'수원지법',dept:'민사1단독',caseNo:'2025가단520738',doc:'답변서부본(26.02.11.자)',sent:'2026.02.13',received:'2026.02.21',status:'자동확인',related:''},
+  {court:'수원지법',dept:'민사1단독',caseNo:'2025가단520738',doc:'유영정직처리서연부본(26.02.11.자)',sent:'2026.02.13',received:'2026.02.21',status:'자동확인',related:''},
+  {court:'창원지법',dept:'22단독(재물)',caseNo:'2026가볼10218',doc:'보정명령등본',sent:'2026.02.09',received:'2026.02.09',status:'발급/조회',related:'제출'},
+  {court:'서울고법',dept:'제8-1행정부',caseNo:'2025누9293',doc:'답변서부본(26.02.03.자)',sent:'2026.02.03',received:'2026.02.03',status:'조회',related:''},
+];
+
+const SAMPLE_SCHEDULE=[
+  {date:'2026-03-25',day:'화',type:'변론',court:'서울동부지법',dept:'민사단독',caseNo:'2024나33210',judge:'최○○',time:'10:30',room:'제202호'},
+  {date:'2026-04-10',day:'목',type:'변론',court:'수원지법',dept:'민사1단독',caseNo:'2025가단520738',judge:'김○○',time:'14:00',room:'제304호'},
+  {date:'2026-05-08',day:'수',type:'조정',court:'서울중앙지법',dept:'민사합의14부',caseNo:'2024가합123456',judge:'박○○',time:'11:00',room:'제501호'},
+];
+
+// ══════ 인증 ══════
+function getAcc(){try{const s=sessionStorage.getItem('ec_acc');return s?{...DEFAULT_ACC,...JSON.parse(s)}:{...DEFAULT_ACC};}catch{return{...DEFAULT_ACC};}}
+
+function initAuth(){
+  try{const u=sessionStorage.getItem('ec_user');if(u){curUser=JSON.parse(u);}}catch{}
+  if(!curUser){
+    document.getElementById('deny-area').style.display='block';
+    return;
+  }
+  document.getElementById('main-layout').style.display='block';
+  document.getElementById('util-org-badge').textContent=curUser.name+' 님';
+  if(curUser.role==='admin')document.getElementById('util-role').textContent='관리자';
+  else document.getElementById('util-role').textContent='일반사용자';
+  loadPage('status');
+  startTimer();
+}
+
+function doLogout(){
+  sessionStorage.removeItem('ec_user');location.href='index.html';
+}
+
+// ══════ 타이머 ══════
+let timerSec=1793;
+function startTimer(){
+  setInterval(()=>{
+    timerSec--;if(timerSec<0)timerSec=0;
+    const m=Math.floor(timerSec/60),s=timerSec%60;
+    document.getElementById('util-timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  },1000);
+}
+function extendSession(){timerSec=1800;showToast('세션이 30분 연장되었습니다.');}
+
+// ══════ 사이드바 ══════
+function toggleGroup(id){
+  const el=document.getElementById(id);
+  const isShow=el.classList.contains('show');
+  el.classList.toggle('show');
+}
+function setActiveNav(pageId){
+  document.querySelectorAll('.snav-item,.snav-group-hd').forEach(el=>el.classList.remove('on'));
+  const navEl=document.getElementById('nav-'+pageId);
+  if(navEl)navEl.classList.add('on');
+}
+
+// ══════ 페이지 로드 ══════
+function loadPage(pageId){
+  setActiveNav(pageId);
+  const titles={
+    'status':'나의사건현황',
+    'case-proceeding':'진행중사건','case-interest':'관심사건','case-confirmed':'확정된사건','case-done':'완료된사건',
+    'schedule':'재판일정','doc-check':'문서송부서확인','notice':'보정/미보정내역(독촉)','evidence':'증거의견입력',
+    'public-defender':'국선전담사건',
+    'drafts':'작성중서류','submitted':'제출서류','unconfirmed':'미확인송달문서','all-docs':'전체송달문서','certificate':'송달문서 정(등)본발급',
+    'pay-lawsuit':'소송비용납부','pay-appeal':'상소비용예납','pay-history':'전자납부내역','pay-virtual':'가상계좌내역','pay-delivery':'송달료 자동납부내역',
+    'record-my':'나의사건열람','record-criminal':'형사전자사본화사건열람',
+    'register-civil':'전자소송사건등록','register-criminal':'형사전자사본화사건등록',
+    'custom-fact':'사실조회기관회신','custom-third':'제3채무자','custom-api':'오픈API 제출내역',
+    'myinfo-user':'사용자정보변경','myinfo-id':'사용자아이름변경','myinfo-pw':'비밀번호변경','myinfo-court':'나의법원설정','myinfo-withdraw':'사용자탈퇴',
+  };
+  document.getElementById('bc-current').textContent=titles[pageId]||pageId;
+  const content=document.getElementById('main-content');
+
+  if(pageId==='status')renderStatus(content);
+  else if(pageId==='case-proceeding')renderCaseList(content,'proceeding');
+  else if(pageId==='case-interest')renderCaseList(content,'interest');
+  else if(pageId==='case-confirmed')renderCaseList(content,'confirmed');
+  else if(pageId==='case-done')renderCaseList(content,'done');
+  else if(pageId==='schedule')renderSchedule(content);
+  else if(pageId==='unconfirmed')renderDocList(content,'unconfirmed');
+  else if(pageId==='all-docs')renderDocList(content,'all');
+  else if(pageId==='certificate')renderCertificate(content);
+  else if(pageId==='pay-lawsuit'||pageId==='pay-appeal'||pageId==='pay-history'||pageId==='pay-virtual'||pageId==='pay-delivery')renderPay(content,titles[pageId]);
+  else if(pageId==='myinfo-user'||pageId==='myinfo-pw')renderMyInfo(content,pageId);
+  else renderGeneric(content,titles[pageId]||pageId);
+}
+
+// ══════ 나의사건현황 ══════
+function renderStatus(el){
+  const proceeding=SAMPLE_CASES.filter(c=>c.status==='진행중').length;
+  const confirmed=SAMPLE_CASES.filter(c=>c.status==='확정').length;
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>나의사건현황</div>
+    <div class="page-actions"><button class="page-act-btn" onclick="alert('나의 메뉴 추가 (실습 모드)')">📌 나의 메뉴 추가</button><button class="page-act-btn" onclick="window.print()">🖨 출력</button></div>
+  </div>
+  <div style="padding:16px;background:#fff;border:1px solid #dde0e8;border-top:1px solid #e8eaee;">
+    <div class="status-cards">
+      <div class="status-card on" onclick="loadPage('case-proceeding')"><div class="sc-num">${proceeding}</div><div class="sc-lbl">진행중 사건</div><div class="sc-sub">현재 진행중인 사건</div></div>
+      <div class="status-card" onclick="loadPage('case-interest')"><div class="sc-num">0</div><div class="sc-lbl">관심사건</div><div class="sc-sub">즐겨찾기 사건</div></div>
+      <div class="status-card" onclick="loadPage('case-confirmed')"><div class="sc-num">${confirmed}</div><div class="sc-lbl">확정된 사건</div><div class="sc-sub">판결 확정 사건</div></div>
+      <div class="status-card" onclick="loadPage('case-done')"><div class="sc-num">0</div><div class="sc-lbl">완료된 사건</div><div class="sc-sub">종결된 사건</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:0;">
+      <div style="background:#f8f9fc;border:1px solid #e5e8ee;border-radius:4px;padding:16px;">
+        <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+          📅 다가오는 재판일정
+          <span style="font-size:11px;font-weight:400;color:#006699;cursor:pointer;" onclick="loadPage('schedule')">전체보기 ›</span>
+        </div>
+        ${SAMPLE_SCHEDULE.map(s=>`
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #eee;">
+          <div style="background:#006699;color:#fff;border-radius:3px;padding:4px 8px;text-align:center;min-width:44px;">
+            <div style="font-size:9px;opacity:.8;">${s.date.split('-')[1]}월</div>
+            <div style="font-size:16px;font-weight:700;">${s.date.split('-')[2]}</div>
+            <div style="font-size:9px;opacity:.7;">(${s.day})</div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#006699;cursor:pointer;font-weight:600;">${s.caseNo}</div>
+            <div style="font-size:11px;color:#555;">${s.court} ${s.dept} · ${s.type||s.type} · ${s.time} · ${s.room}</div>
+          </div>
+        </div>`).join('')}
+      </div>
+      <div style="background:#f8f9fc;border:1px solid #e5e8ee;border-radius:4px;padding:16px;">
+        <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+          📬 미확인 송달문서
+          <span style="font-size:11px;font-weight:400;color:#006699;cursor:pointer;" onclick="loadPage('unconfirmed')">전체보기 ›</span>
+        </div>
+        <div style="text-align:center;color:#888;font-size:12px;padding:24px 0;">미확인 송달문서가 없습니다.</div>
+        <div style="margin-top:12px;font-size:13px;font-weight:700;color:#003366;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+          📝 작성중 서류
+          <span style="font-size:11px;font-weight:400;color:#006699;cursor:pointer;" onclick="loadPage('drafts')">전체보기 ›</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;padding:16px;background:#fff;border:1px dashed #c0d8e8;border-radius:4px;cursor:pointer;" onclick="location.href='apply.html'">
+          <div style="text-align:center;"><div style="font-size:24px;margin-bottom:6px;">📋</div><div style="font-size:12px;color:#006699;font-weight:600;">새 소장 작성하기 +</div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════ 사건 목록 ══════
+function renderCaseList(el,type){
+  const typeNames={proceeding:'진행중사건',interest:'관심사건',confirmed:'확정된사건',done:'완료된사건'};
+  const statuses={proceeding:'진행중',interest:'진행중',confirmed:'확정',done:'완료'};
+  const cases=type==='interest'?[]:type==='done'?[]:SAMPLE_CASES.filter(c=>c.status===(statuses[type]||'진행중'));
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>${typeNames[type]}</div>
+    <div class="page-actions"><button class="page-act-btn" onclick="alert('나의 메뉴 추가')">📌 나의 메뉴 추가</button><button class="page-act-btn" onclick="window.print()">🖨 출력</button></div>
+  </div>
+  <div class="search-area">
+    <div class="srow">
+      <span class="slbl">법원</span>
+      <select class="sselect"><option>전체</option><option>수원지법</option><option>서울중앙지법</option><option>서울동부지법</option><option>창원지법</option></select>
+      <select class="sselect"><option>전체</option><option>민사</option><option>형사</option><option>행정</option></select>
+    </div>
+    <div class="srow">
+      <span class="slbl">사건번호</span>
+      <input type="text" class="sinp" style="width:180px;" placeholder="사건번호 입력">
+      <span style="font-size:12px;color:#555;margin-left:6px;">당사자명</span>
+      <input type="text" class="sinp" style="width:140px;" placeholder="당사자명 입력">
+    </div>
+    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 회</button></div>
+  </div>
+  <div class="table-area">
+    <div class="table-toolbar">
+      <span class="total-count">총 <strong>${cases.length}</strong>건</span>
+      <div class="table-tools"><button class="tbl-btn excel">📊 엑셀로 저장</button></div>
+    </div>
+    <table class="data-tbl">
+      <thead><tr>
+        <th><input type="checkbox"></th>
+        <th>법원</th><th>재판부</th><th>사건번호</th><th>사건유형</th>
+        <th>원고(신청인)</th><th>피고(피신청인)</th><th>접수일</th><th>다음기일</th><th>관련서류</th>
+      </tr></thead>
+      <tbody>
+      ${cases.length?cases.map(c=>`<tr>
+        <td><input type="checkbox"></td>
+        <td>${c.court}</td><td style="font-size:11px;">${c.dept}</td>
+        <td><a class="link-cell" onclick="showCaseDetail('${c.caseNo}')">${c.caseNo}</a></td>
+        <td>${c.type}</td>
+        <td>${c.plaintiff}</td><td style="font-size:11px;">${c.defendant}</td>
+        <td>${c.filed}</td>
+        <td>${c.next==='−'?'<span style="color:#aaa;">−</span>':c.next}</td>
+        <td><button class="tbl-btn" style="height:24px;font-size:11px;" onclick="location.href='apply.html'">서류제출</button></td>
+      </tr>`).join(''):`<tr class="empty-row"><td colspan="10">조회된 결과가 없습니다.</td></tr>`}
+      </tbody>
+    </table>
+    <div class="paging">
+      <div></div>
+      <div class="paging-btns">
+        <button class="pg-btn">«</button><button class="pg-btn">‹</button>
+        <button class="pg-num on">1</button>
+        <button class="pg-btn">›</button><button class="pg-btn">»</button>
+      </div>
+      <div class="pg-size">보기: <select><option>10개씩</option><option>20개씩</option><option>30개씩</option></select></div>
+    </div>
+  </div>`;
+}
+
+// ══════ 재판일정 ══════
+function renderSchedule(el){
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>재판일정</div>
+    <div class="page-actions"><button class="page-act-btn" onclick="alert('나의 메뉴 추가')">📌 나의 메뉴 추가</button><button class="page-act-btn" onclick="window.print()">🖨 출력</button></div>
+  </div>
+  <div class="search-area">
+    <div class="srow">
+      <span class="slbl">기간</span>
+      <div class="sdate">
+        <input type="date" class="sdate-inp" value="2026-03-01">
+        <span style="font-size:12px;">~</span>
+        <input type="date" class="sdate-inp" value="2026-06-30">
+        <button class="sqbtn">오늘</button><button class="sqbtn">1주</button><button class="sqbtn">1개월</button><button class="sqbtn">3개월</button>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 회</button></div>
+  </div>
+  <div class="table-area">
+    <div class="table-toolbar"><span class="total-count">총 <strong>${SAMPLE_SCHEDULE.length}</strong>건</span></div>
+    <table class="data-tbl">
+      <thead><tr><th>기일일시</th><th>기일종류</th><th>법원</th><th>재판부</th><th>사건번호</th><th>사건유형</th><th>법정</th><th>판사</th></tr></thead>
+      <tbody>
+      ${SAMPLE_SCHEDULE.map(s=>`<tr>
+        <td><strong>${s.date} (${s.day})</strong><br><span style="font-size:11px;color:#666;">${s.time}</span></td>
+        <td><span class="sched-badge ${s.type==='변론'?'sb-trial':s.type==='조정'?'sb-mediation':'sb-decision'}">${s.type}</span></td>
+        <td>${s.court}</td><td style="font-size:11px;">${s.dept}</td>
+        <td><a class="link-cell">${s.caseNo}</a></td>
+        <td>민사</td><td>${s.room}</td><td>${s.judge}</td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="paging"><div></div><div class="paging-btns"><button class="pg-btn">«</button><button class="pg-btn">‹</button><button class="pg-num on">1</button><button class="pg-btn">›</button><button class="pg-btn">»</button></div><div class="pg-size">보기: <select><option>10개씩</option></select></div></div>
+  </div>
+  ${noteBox([{title:'재판일정 안내',body:'조회된 재판일정은 법원 시스템과 동기화된 정보입니다. 실습 모드에서는 샘플 데이터가 표시됩니다.'}])}`;
+}
+
+// ══════ 문서 목록 ══════
+function renderDocList(el,type){
+  const title=type==='unconfirmed'?'미확인송달문서':'전체송달문서';
+  const docs=type==='unconfirmed'?[]:SAMPLE_DOCS;
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>${title}</div>
+    <div class="page-actions"><button class="page-act-btn">📌 나의 메뉴 추가</button><button class="page-act-btn" onclick="window.print()">🖨 출력</button></div>
+  </div>
+  <div class="search-area">
+    <div class="srow">
+      <span class="slbl">소유유형</span>
+      <select class="sselect" style="width:80px;"><option>전체</option><option>원고</option><option>피고</option></select>
+      <select class="sselect" style="width:80px;"><option>전체</option><option>민사</option><option>형사</option></select>
+      <span class="slbl" style="margin-left:10px;">법원</span>
+      <select class="sselect" style="width:120px;"><option>전체</option><option>수원지법</option><option>서울중앙지법</option></select>
+    </div>
+    ${type==='unconfirmed'?`<div class="srow"><label class="ci"><input type="checkbox" style="accent-color:#006699;"> 사건번호</label><select class="sselect"><option>2026</option><option>2025</option></select><select class="sselect"><option>가단</option><option>가합</option></select><input type="text" class="sinp" style="width:120px;" placeholder=""><label class="ci" style="margin-left:6px;"><input type="checkbox"> 사건구분 가나다순 정렬</label></div>`:`<div class="srow"><span class="slbl">발송일자</span><div class="radio-row"><label class="ri"><input type="radio" name="dmode" value="date" checked> 발송일자</label><label class="ri"><input type="radio" name="dmode" value="case"> 사건번호</label></div><div class="sdate"><input type="date" class="sdate-inp" value="2026-02-03"><span>~</span><input type="date" class="sdate-inp" value="2026-03-05"><button class="sqbtn">오늘</button><button class="sqbtn">3일</button><button class="sqbtn">1주일</button><button class="sqbtn">1개월</button></div></div>`}
+    <div class="srow"><label class="ci"><input type="checkbox"> 결과내재검색</label><input type="text" class="sinp" style="width:200px;" placeholder=""></div>
+    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 회</button></div>
+  </div>
+  <div class="search-note">※ '발급/조회' 버튼을 이용하여 발급하여야 '열람용'이라는 문구가 기재되지 않은 등본을 출력할 수 있고, 그렇지 않은 경우는 '열람용'이라는 문구가 포함되어 출력됩니다.</div>
+  <div class="table-area">
+    <div class="table-toolbar">
+      <div><select class="sselect" style="height:26px;"><option>전체</option></select></div>
+      <div class="table-tools"><button class="tbl-btn" onclick="alert('일괄확인 (실습 모드)')">일괄확인 ›</button><button class="tbl-btn excel">📊 엑셀로 저장</button></div>
+    </div>
+    <table class="data-tbl">
+      <thead><tr><th><input type="checkbox"></th><th>법원</th><th>재판부</th><th>사건번호</th><th>송달문서</th><th>발송일자</th><th>수신일자</th><th>문서발급</th><th>송달내역</th><th>관련서류</th></tr></thead>
+      <tbody>
+      ${docs.length?docs.map(d=>`<tr>
+        <td><input type="checkbox"></td>
+        <td>${d.court}</td><td style="font-size:11px;">${d.dept}</td>
+        <td><a class="link-cell">${d.caseNo}</a></td>
+        <td style="text-align:left;"><a class="link-cell" onclick="alert('문서 상세 보기 (실습 모드)')">ⓘ ${d.doc}</a>${d.doc.includes('답변서')?`<span class="badge-new">NEW</span>`:''}</td>
+        <td>${d.sent}</td><td>${d.received}</td>
+        <td>${d.status==='발급/조회'?`<span class="badge-pay" onclick="alert('발급 (실습 모드)')">발급/조회</span>`:''}</td>
+        <td><span class="badge-view" onclick="alert('송달내역 조회 (실습 모드)')">조회</span></td>
+        <td>${d.related?`<span class="badge-submit" onclick="location.href='apply.html'">제출</span>`:''}</td>
+      </tr>`).join(''):`<tr class="empty-row"><td colspan="10">조회된 결과가 없습니다.</td></tr>`}
+      </tbody>
+    </table>
+    <div class="paging">
+      <span style="font-size:12px;color:#555;">총 <strong>${docs.length}</strong>건</span>
+      <div class="paging-btns"><button class="pg-btn">«</button><button class="pg-btn">‹</button><button class="pg-num on">1</button><button class="pg-btn">›</button><button class="pg-btn">»</button></div>
+      <div class="pg-size">보기: <select><option>10개씩</option><option>20개씩</option></select></div>
+    </div>
+  </div>
+  ${noteBox([{title:'송달문서를 반드시 확인해주세요.',body:'송달문서에 대한 불복문서를 제출하고자 하는 경우 제출기간 도과에 따른 불이익이 발생하지 않도록 주의하시기 바랍니다.'},
+    {title:'송달문서를 확인해 주세요.',body:'제출기한이 있는 송달문서의 경우 기한 내에 해당 서류가 법원에 접수될 수 있도록 유의하시기 바랍니다.'}])}`;
+}
+
+// ══════ 송달문서 정(등)본발급 ══════
+function renderCertificate(el){
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>송달문서 정(등)본발급</div>
+    <div class="page-actions"><button class="page-act-btn">📌 나의 메뉴 추가</button><button class="page-act-btn" onclick="window.print()">🖨 출력</button></div>
+  </div>
+  <div style="padding:10px 20px;background:#fff;border:1px solid #dde0e8;border-top:none;font-size:12px;color:#444;line-height:1.8;">
+    판결(판결에 갈음하는 결정, 조서 포함) 정(등)본은 <a style="color:#c0392b;font-weight:600;cursor:pointer;">발급횟수를 1회로 제한</a>하고 있으니 발급 전 발급테스트를 하시기 바랍니다.
+    <div style="display:flex;gap:8px;margin-top:8px;"><button class="page-act-btn" onclick="alert('발급테스트 (실습 모드)')">발급테스트 ›</button><button class="page-act-btn" onclick="alert('발급가능 프린터 확인 (실습 모드)')">발급가능 프린터확인 ›</button></div>
+  </div>
+  <div class="search-area" style="border-top:1px solid #e0e3ea;">
+    <div class="srow"><span class="slbl">소유유형</span><select class="sselect" style="width:80px;"><option>전체</option></select><select class="sselect" style="width:80px;"><option>전체</option></select><span class="slbl" style="margin-left:8px;">법원</span><select class="sselect" style="width:120px;"><option>전체</option></select></div>
+    <div class="srow">
+      <div class="radio-row"><label class="ri"><input type="radio" name="cmode" checked> 수신일자</label><label class="ri"><input type="radio" name="cmode"> 사건번호</label></div>
+      <div class="sdate"><input type="date" class="sdate-inp" value="2026-02-27"><span>~</span><input type="date" class="sdate-inp" value="2026-03-05"><button class="sqbtn">오늘</button><button class="sqbtn">3일</button><button class="sqbtn">1주일</button></div>
+    </div>
+    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 회</button></div>
+  </div>
+  <div class="table-area">
+    <div class="table-toolbar"><span class="total-count">총 <strong>0</strong>건</span></div>
+    <table class="data-tbl">
+      <thead><tr><th>법원</th><th>사건번호</th><th>발급문서</th><th>수신일자</th><th>발급</th><th>발급이력</th></tr></thead>
+      <tbody><tr class="empty-row"><td colspan="6">조회된 결과가 없습니다.</td></tr></tbody>
+    </table>
+    <div class="paging"><span style="font-size:12px;color:#555;">총 <strong>0</strong>건</span><div class="paging-btns"><button class="pg-btn">«</button><button class="pg-btn">‹</button><button class="pg-num on">1</button><button class="pg-btn">›</button><button class="pg-btn">»</button></div><div class="pg-size">보기: <select><option>10개씩</option></select></div></div>
+  </div>
+  ${noteBox([
+    {title:'발급',body:'\'발급\' 버튼을 이용하여 발급하여야 \'열람용\'이라는 문구가 기재되지 않은 등본을 출력할 수 있고, 그렇지 않은 경우는 \'열람용\'이라는 문구가 포함되어 출력됩니다.\n<span class="red">판결(판결에 갈음하는 결정, 조서 포함) 정(등)본은 발급횟수를 1회로 제한하고</span> 그 외의 정(등)본 문서는 제한 없이 발급 가능합니다.\n발급문서는 문서위조변조방지 기술이 적용된 것으로 원본과 동일하므로 그 발급 문서를 법원이나 필요로 하는 관청에 제출할 수 있습니다.'},
+    {title:'발급테스트',body:'발급하시기 전에 먼저 발급테스트를 눌러 문서위조변조방지 기술이 적용된 QR 코드가 표시된 테스트페이지가 출력되는지를 확인하시기 바랍니다.'},
+    {title:'발급가능 프린트',body:'프린터 발급가능 프린터 확인버튼을 선택하여 발급 가능한 프린터가 연결되어 있는지 확인하시기 바랍니다.\n프린터는 기본값이 <span class="red">600dpi 이상</span>으로 설정되어야 정상적인 발급서비스를 받으실 수 있습니다.'},
+    {title:'재발급요청',body:'전자소송시스템의 장애 등 사용자에게 책임이 없는 사유로 인하여 발급이 정상적으로 완료되지 아니한 경우에는 그 사유를 소명하여 재발급을 신청할 수 있습니다.'},
+  ])}`;
+}
+
+// ══════ 납부관리 ══════
+function renderPay(el,title){
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>${title}</div>
+    <div class="page-actions"><button class="page-act-btn">📌 나의 메뉴 추가</button><button class="page-act-btn" onclick="window.print()">🖨 출력</button></div>
+  </div>
+  <div style="padding:16px;background:#fff;border:1px solid #dde0e8;border-top:none;">
+    <div class="pay-cards">
+      <div class="pay-card"><div class="pay-card-title">납부예정 금액</div><div class="pay-card-amount">0<span>원</span></div><button class="pay-card-btn" onclick="alert('납부 (실습 모드)')">납부하기</button></div>
+      <div class="pay-card"><div class="pay-card-title">납부완료 금액</div><div class="pay-card-amount">0<span>원</span></div></div>
+      <div class="pay-card"><div class="pay-card-title">환급예정 금액</div><div class="pay-card-amount">0<span>원</span></div><button class="pay-card-btn" style="background:#27ae60;" onclick="alert('환급신청 (실습 모드)')">환급신청</button></div>
+    </div>
+  </div>
+  <div class="search-area" style="border-top:1px solid #e0e3ea;">
+    <div class="srow"><span class="slbl">납부기간</span><div class="sdate"><input type="date" class="sdate-inp" value="2026-02-01"><span>~</span><input type="date" class="sdate-inp" value="2026-03-05"><button class="sqbtn">오늘</button><button class="sqbtn">1개월</button></div></div>
+    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 회</button></div>
+  </div>
+  <div class="table-area">
+    <div class="table-toolbar"><span class="total-count">총 <strong>0</strong>건</span></div>
+    <table class="data-tbl"><thead><tr><th>법원</th><th>사건번호</th><th>납부항목</th><th>납부금액</th><th>납부일자</th><th>납부방법</th><th>상태</th></tr></thead>
+    <tbody><tr class="empty-row"><td colspan="7">조회된 결과가 없습니다.</td></tr></tbody></table>
+    <div class="paging"><span style="font-size:12px;">총 <strong>0</strong>건</span><div class="paging-btns"><button class="pg-num on">1</button></div></div>
+  </div>`;
+}
+
+// ══════ 나의정보 ══════
+function renderMyInfo(el,type){
+  const u=curUser||{name:'',org:'',id:''};
+  if(type==='myinfo-pw'){
+    el.innerHTML=`
+    <div class="page-header"><div class="page-title"><div class="dot"></div>비밀번호변경</div></div>
+    <div style="padding:20px;background:#fff;border:1px solid #dde0e8;border-top:none;">
+      <div class="info-section">
+        <div class="info-section-title">🔑 비밀번호 변경</div>
+        <div style="padding:20px;">
+          <div style="margin-bottom:12px;"><label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px;">현재 비밀번호</label><input type="password" style="width:280px;height:36px;border:1px solid #c8cdd6;border-radius:3px;padding:0 12px;font-size:13px;font-family:inherit;outline:none;" placeholder="현재 비밀번호"></div>
+          <div style="margin-bottom:12px;"><label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px;">새 비밀번호</label><input type="password" id="new-pw" style="width:280px;height:36px;border:1px solid #c8cdd6;border-radius:3px;padding:0 12px;font-size:13px;font-family:inherit;outline:none;" placeholder="새 비밀번호 (6자 이상)"></div>
+          <div style="margin-bottom:16px;"><label style="display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px;">새 비밀번호 확인</label><input type="password" id="new-pw2" style="width:280px;height:36px;border:1px solid #c8cdd6;border-radius:3px;padding:0 12px;font-size:13px;font-family:inherit;outline:none;" placeholder="새 비밀번호 재입력"></div>
+          <button class="search-btn" onclick="changePw()">변경하기</button>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    el.innerHTML=`
+    <div class="page-header"><div class="page-title"><div class="dot"></div>사용자정보변경</div><div class="page-actions"><button class="page-act-btn">📌 나의 메뉴 추가</button></div></div>
+    <div style="padding:20px;background:#fff;border:1px solid #dde0e8;border-top:none;">
+      <div class="info-section">
+        <div class="info-section-title">👤 기본 정보</div>
+        <table class="info-tbl">
+          <tr><th>아이디</th><td>${u.id} <span style="font-size:11px;color:#888;">(변경 불가)</span></td></tr>
+          <tr><th>이름</th><td>${u.name} <button class="info-edit-btn" onclick="alert('이름 변경 (실습 모드)')">변경</button></td></tr>
+          <tr><th>소속</th><td>${u.org||'미입력'} <button class="info-edit-btn" onclick="alert('소속 변경 (실습 모드)')">변경</button></td></tr>
+          <tr><th>권한</th><td>${u.role==='admin'?'관리자':'일반사용자'}</td></tr>
+        </table>
+      </div>
+      <div class="info-section" style="margin-top:12px;">
+        <div class="info-section-title">🔑 보안 설정</div>
+        <table class="info-tbl">
+          <tr><th>비밀번호</th><td>●●●●●●●● <button class="info-edit-btn" onclick="loadPage('myinfo-pw')">변경</button></td></tr>
+          <tr><th>마지막 로그인</th><td>${new Date().toLocaleString('ko-KR')}</td></tr>
+        </table>
+      </div>
+    </div>`;
+  }
+}
+
+// ══════ 일반 페이지 ══════
+function renderGeneric(el,title){
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>${title}</div>
+    <div class="page-actions"><button class="page-act-btn">📌 나의 메뉴 추가</button><button class="page-act-btn" onclick="window.print()">🖨 출력</button></div>
+  </div>
+  <div class="search-area" style="display:flex;flex-direction:column;gap:8px;">
+    <div class="srow"><span class="slbl">소유유형</span><select class="sselect" style="width:80px;"><option>전체</option></select><select class="sselect" style="width:80px;"><option>전체</option></select></div>
+    <div style="text-align:center;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 회</button></div>
+  </div>
+  <div class="table-area">
+    <div class="table-toolbar"><span class="total-count">총 <strong>0</strong>건</span></div>
+    <table class="data-tbl"><thead><tr><th>법원</th><th>사건번호</th><th>내용</th><th>일자</th><th>관리</th></tr></thead>
+    <tbody><tr class="empty-row"><td colspan="5">조회된 결과가 없습니다.</td></tr></tbody></table>
+  </div>
+  ${noteBox([{title:'안내',body:'${title} 기능은 실습 모드에서 샘플 데이터가 표시되지 않습니다.'}])}`;
+}
+
+// ══════ 참고하세요 박스 ══════
+function noteBox(items){
+  return `<div class="note-box"><div class="note-box-title">참고하세요</div>${items.map(i=>`
+  <div class="note-item">
+    <div class="note-item-title">${i.title}</div>
+    <div class="note-item-body">${i.body}</div>
+  </div>`).join('')}</div>`;
+}
+
+// ══════ 사건 상세 팝업 ══════
+function showCaseDetail(caseNo){
+  const c=SAMPLE_CASES.find(x=>x.caseNo===caseNo);
+  if(!c){showToast('사건 정보를 찾을 수 없습니다.','err');return;}
+  alert(`[사건 상세]\n\n법원: ${c.court}\n재판부: ${c.dept}\n사건번호: ${c.caseNo}\n사건유형: ${c.type}\n원고: ${c.plaintiff}\n피고: ${c.defendant}\n접수일: ${c.filed}\n다음기일: ${c.next}\n담당판사: ${c.judge}`);
+}
+
+// ══════ 비밀번호 변경 ══════
+function changePw(){
+  const pw=document.getElementById('new-pw')?.value;
+  const pw2=document.getElementById('new-pw2')?.value;
+  if(!pw||pw.length<6){alert('새 비밀번호를 6자 이상 입력해주세요.');return;}
+  if(pw!==pw2){alert('비밀번호가 일치하지 않습니다.');return;}
+  const acc=JSON.parse(sessionStorage.getItem('ec_acc')||'{}');
+  acc[curUser.id]=acc[curUser.id]||{};
+  acc[curUser.id].pw=pw;
+  sessionStorage.setItem('ec_acc',JSON.stringify(acc));
+  showToast('비밀번호가 변경되었습니다.');
+  loadPage('myinfo-user');
+}
+
+// ══════ 토스트 ══════
+function showToast(msg){const t=document.createElement('div');t.className='toast-msg';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
+
+document.addEventListener('DOMContentLoaded',()=>initAuth());
+</script>
+</body>
+</html>
