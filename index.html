@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대한민국 법원 전자소송포털</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR','맑은 고딕',sans-serif;font-size:13px;color:#222;background:#fff;}
+a{text-decoration:none;color:inherit;cursor:pointer;}
+
+/* ── 최상단 유틸 바 ── */
+.util-bar{background:#f5f6f8;border-bottom:1px solid #e0e3ea;height:36px;display:flex;align-items:center;justify-content:flex-end;padding:0 24px;gap:0;}
+.util-bar .greet{background:#e8ecf5;border:1px solid #c8cdd6;border-radius:12px;padding:3px 14px;font-size:11px;color:#444;margin-right:14px;}
+.util-bar a{font-size:12px;color:#444;padding:0 12px;border-right:1px solid #d0d3da;}
+.util-bar a:last-child{border-right:none;}
+.util-bar a:hover{color:#006699;}
+.util-bar .font-ctrl{display:flex;align-items:center;gap:4px;padding-left:12px;font-size:12px;color:#444;}
+.util-bar .font-ctrl button{background:none;border:1px solid #aaa;width:20px;height:20px;border-radius:2px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+
+/* ── GNB ── */
+.gnb{background:#fff;border-bottom:1px solid #dde0e8;position:sticky;top:0;z-index:500;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.gnb-inner{max-width:1320px;margin:0 auto;display:flex;align-items:stretch;height:64px;padding:0 16px;}
+.gnb-logo{display:flex;align-items:center;gap:10px;margin-right:32px;flex-shrink:0;}
+.gnb-logo-img{display:flex;align-items:center;gap:8px;}
+.logo-emblem{width:44px;height:44px;position:relative;}
+.logo-emblem svg{width:44px;height:44px;}
+.logo-text{display:flex;flex-direction:column;}
+.logo-text .court{font-size:11px;color:#006699;font-weight:600;letter-spacing:.02em;}
+.logo-text .portal{font-size:17px;font-weight:700;color:#003366;letter-spacing:-.02em;}
+.gnb-nav{display:flex;align-items:stretch;flex:1;}
+.gnb-item{position:relative;display:flex;align-items:center;padding:0 20px;font-size:14px;font-weight:600;color:#222;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s;white-space:nowrap;}
+.gnb-item:hover,.gnb-item.active{color:#006699;border-bottom-color:#006699;}
+.gnb-item.active{color:#006699;}
+.gnb-right{display:flex;align-items:center;gap:12px;margin-left:auto;}
+.gnb-search-btn{background:none;border:none;cursor:pointer;padding:4px;color:#444;font-size:20px;}
+.gnb-search-btn:hover{color:#006699;}
+.gnb-hamburger{background:none;border:none;cursor:pointer;padding:4px;color:#444;font-size:20px;}
+.gnb-hamburger:hover{color:#006699;}
+.gnb-home{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 12px;font-size:11px;color:#666;gap:2px;border-left:1px solid #eee;cursor:pointer;}
+.gnb-home:hover{color:#006699;}
+.gnb-home-icon{font-size:18px;}
+
+/* ── 메가 드롭다운 ── */
+.mega-drop{display:none;position:fixed;top:101px;left:0;right:0;background:#fff;border-top:3px solid #006699;border-bottom:1px solid #dde0e8;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:499;}
+.gnb-item:hover .mega-drop,.mega-drop:hover{display:flex;}
+.mega-inner{max-width:1320px;margin:0 auto;padding:24px 16px;display:flex;gap:0;}
+.mega-banner{width:220px;min-width:220px;background:#f0f4f8;border-radius:6px;padding:20px;margin-right:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;}
+.mega-banner img{width:80px;opacity:.8;}
+.mega-banner-emoji{font-size:56px;opacity:.7;margin-bottom:8px;}
+.mega-cols{display:flex;gap:32px;flex:1;}
+.mega-col{}
+.mega-col-title{font-size:13px;font-weight:700;color:#003366;background:#e8f0f8;padding:7px 12px;border-radius:3px;margin-bottom:8px;cursor:pointer;display:block;}
+.mega-col-title:hover{background:#d0dff0;}
+.mega-col ul{list-style:none;padding:0;}
+.mega-col ul li{padding:4px 12px;}
+.mega-col ul li a{font-size:12px;color:#444;display:flex;align-items:center;gap:4px;}
+.mega-col ul li a::before{content:'·';color:#006699;font-weight:700;}
+.mega-col ul li a:hover{color:#006699;text-decoration:underline;}
+
+/* ── 메인 콘텐츠 ── */
+.main-wrap{max-width:1320px;margin:0 auto;padding:28px 16px;}
+
+/* ── 검색 섹션 ── */
+.search-section{margin-bottom:28px;}
+.search-box{display:flex;align-items:center;max-width:640px;border:2px solid #006699;border-radius:6px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,102,153,.1);}
+.search-box input{flex:1;height:50px;border:none;padding:0 18px;font-size:15px;font-family:inherit;outline:none;color:#222;}
+.search-box input::placeholder{color:#aaa;}
+.search-box button{width:58px;height:50px;background:#006699;border:none;cursor:pointer;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.search-box button:hover{background:#005580;}
+.search-tags{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.stag{background:#fff;border:1px solid #b0bec5;border-radius:16px;padding:5px 14px;font-size:12px;color:#555;cursor:pointer;transition:all .15s;}
+.stag:hover{border-color:#006699;color:#006699;background:#f0f7ff;}
+
+/* ── 2컬럼 레이아웃 ── */
+.content-row{display:flex;gap:20px;align-items:flex-start;}
+.content-left{flex:1;min-width:0;}
+.content-right{width:300px;min-width:300px;}
+
+/* ── 슬라이드 배너 ── */
+.banner-area{background:linear-gradient(135deg,#f8fafc,#edf3f8);border:1px solid #dde4ec;border-radius:8px;padding:24px 24px 20px;margin-bottom:16px;position:relative;min-height:160px;display:flex;align-items:flex-start;justify-content:space-between;overflow:hidden;}
+.banner-content .badge{display:inline-block;background:#006699;color:#fff;font-size:11px;padding:3px 10px;border-radius:2px;margin-bottom:10px;font-weight:600;}
+.banner-content h3{font-size:18px;font-weight:700;color:#003366;margin-bottom:8px;line-height:1.4;}
+.banner-content p{font-size:12px;color:#555;line-height:1.7;max-width:360px;}
+.banner-btn{display:inline-block;margin-top:14px;background:#006699;color:#fff;padding:7px 18px;border-radius:3px;font-size:12px;font-weight:600;cursor:pointer;}
+.banner-btn:hover{background:#005580;}
+.banner-img{font-size:80px;opacity:.25;position:absolute;right:20px;bottom:-10px;line-height:1;}
+.banner-ctrl{display:flex;align-items:center;gap:6px;margin-top:14px;}
+.banner-ctrl span{font-size:11px;color:#888;}
+.banner-ctrl button{background:none;border:none;cursor:pointer;font-size:14px;color:#888;}
+.banner-ctrl button:hover{color:#333;}
+
+/* ── 서비스 카드 그리드 ── */
+.service-grid{background:linear-gradient(135deg,#1a5fa8,#1e7fbf);border-radius:8px;padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:16px;}
+.svc-item{display:flex;flex-direction:column;align-items:center;padding:20px 12px;cursor:pointer;transition:background .15s;border-radius:6px;}
+.svc-item:hover{background:rgba(255,255,255,.15);}
+.svc-icon{width:52px;height:52px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:10px;}
+.svc-label{font-size:13px;font-weight:600;color:#fff;text-align:center;}
+
+/* ── 서류 탭 섹션 ── */
+.doc-section{background:#fff;border:1px solid #dde4ec;border-radius:8px;overflow:hidden;}
+.doc-section-left{width:180px;min-width:180px;background:#f5f7fa;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;border-right:1px solid #dde4ec;}
+.doc-section-left .folder-icon{font-size:48px;margin-bottom:10px;opacity:.7;}
+.doc-section-left .label{font-size:15px;font-weight:700;color:#003366;}
+.doc-right{flex:1;padding:0;}
+.doc-tabs{display:flex;border-bottom:1px solid #dde4ec;background:#fff;}
+.doc-tab{padding:10px 16px;font-size:12px;font-weight:500;color:#555;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;}
+.doc-tab:hover{color:#006699;}
+.doc-tab.on{color:#fff;background:#006699;font-weight:700;border-bottom-color:#006699;}
+.doc-body{padding:14px 20px;}
+.doc-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.doc-header-row h4{font-size:13px;font-weight:700;color:#333;}
+.doc-header-row .doc-note{font-size:11px;color:#006699;background:#f0f7ff;border:1px solid #c0dff5;padding:3px 10px;border-radius:10px;}
+.doc-header-row .doc-btns{display:flex;gap:6px;}
+.doc-header-row .doc-btns a{font-size:11px;color:#fff;background:#006699;padding:4px 12px;border-radius:12px;font-weight:600;}
+.doc-header-row .doc-btns a.outline{background:#fff;color:#006699;border:1px solid #006699;}
+.doc-list{display:grid;grid-template-columns:repeat(4,1fr);gap:4px 0;}
+.doc-list-item{font-size:12px;color:#333;padding:5px 0;display:flex;align-items:center;gap:4px;cursor:pointer;}
+.doc-list-item:hover{color:#006699;}
+.doc-list-item::before{content:'·';color:#006699;font-weight:700;font-size:14px;}
+.doc-list-item .doc-ico{width:16px;height:16px;background:#1a73e8;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#fff;font-weight:700;flex-shrink:0;}
+
+/* ── 우측 패널 ── */
+.right-panel{display:flex;flex-direction:column;gap:14px;}
+.login-panel{background:#fff;border:1px solid #dde4ec;border-radius:8px;overflow:hidden;}
+.login-panel-hd{padding:0;}
+.login-btn-main{display:block;width:100%;height:48px;background:#006699;border:none;color:#fff;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;letter-spacing:.02em;}
+.login-btn-main:hover{background:#005580;}
+.login-panel-links{display:flex;border-top:1px solid #dde4ec;}
+.login-panel-links a{flex:1;text-align:center;padding:10px;font-size:12px;color:#555;border-right:1px solid #dde4ec;cursor:pointer;transition:background .15s;}
+.login-panel-links a:last-child{border-right:none;}
+.login-panel-links a:hover{background:#f5f7fa;color:#006699;}
+.user-panel{display:none;background:#fff;border:1px solid #dde4ec;border-radius:8px;padding:16px;}
+.user-panel-name{font-size:14px;font-weight:700;color:#003366;margin-bottom:4px;}
+.user-panel-org{font-size:12px;color:#888;margin-bottom:12px;}
+.user-panel-btns{display:flex;gap:8px;}
+.user-panel-btns button{flex:1;height:32px;font-size:12px;font-family:inherit;border-radius:3px;cursor:pointer;font-weight:600;}
+.upb-mypage{background:#006699;color:#fff;border:none;}
+.upb-logout{background:#fff;color:#666;border:1px solid #ccc;}
+
+/* 사건검색 패널 */
+.case-panel{background:#fff;border:1px solid #dde4ec;border-radius:8px;overflow:hidden;}
+.case-panel-tabs{display:flex;border-bottom:1px solid #dde4ec;}
+.cptab{flex:1;height:40px;background:#f5f7fa;border:none;font-size:12px;font-weight:600;color:#555;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .15s;}
+.cptab.on{background:#fff;color:#006699;border-bottom-color:#006699;}
+.case-panel-body{padding:14px;}
+.cpf{margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.cpf label{font-size:11px;color:#333;font-weight:600;width:52px;flex-shrink:0;}
+.cpf label .req{color:#c0392b;}
+.cpf select,.cpf input{height:32px;border:1px solid #c0c8d0;border-radius:3px;font-size:12px;font-family:inherit;padding:0 8px;outline:none;}
+.cpf select:focus,.cpf input:focus{border-color:#006699;}
+.cpf .sel-sm{width:80px;}
+.cpf .sel-md{width:60px;}
+.cpf .inp-num{width:120px;}
+.case-search-btn{width:100%;height:36px;background:#003366;color:#fff;border:none;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px;transition:background .15s;}
+.case-search-btn:hover{background:#002244;}
+.case-note{font-size:10px;color:#888;margin-top:8px;line-height:1.6;}
+.case-soong{display:flex;align-items:center;justify-content:flex-end;margin-top:6px;}
+.case-soong a{font-size:11px;color:#006699;display:flex;align-items:center;gap:3px;cursor:pointer;}
+
+/* ── 공지사항 바 ── */
+.notice-bar{background:#2c3e50;border-top:1px solid #1a252f;}
+.notice-bar-inner{max-width:1320px;margin:0 auto;padding:0 16px;display:flex;align-items:center;height:46px;gap:14px;}
+.notice-icon{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.7);font-size:12px;white-space:nowrap;}
+.notice-text{font-size:12px;color:rgba(255,255,255,.85);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer;}
+.notice-text:hover{color:#fff;}
+.notice-date{font-size:11px;color:rgba(255,255,255,.45);white-space:nowrap;}
+.notice-ctrl{display:flex;gap:2px;margin-left:8px;}
+.notice-ctrl button{background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);width:22px;height:22px;border-radius:2px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;}
+.notice-ctrl button:hover{background:rgba(255,255,255,.15);}
+
+/* ── 플로팅 버튼 ── */
+.float-right{position:fixed;right:0;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;z-index:300;}
+.float-btn{background:#fff;border:1px solid #dde4ec;border-right:none;width:40px;padding:10px 6px;text-align:center;cursor:pointer;font-size:10px;color:#555;line-height:1.4;border-radius:4px 0 0 4px;margin-bottom:4px;transition:all .15s;}
+.float-btn:hover{background:#f0f7ff;color:#006699;}
+.float-btn .ico{font-size:14px;display:block;margin-bottom:2px;}
+
+/* ── 채팅 버튼 ── */
+.chat-btn{position:fixed;bottom:24px;right:24px;width:52px;height:52px;background:#003366;border:none;border-radius:50%;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:300;display:flex;align-items:center;justify-content:center;}
+.chat-btn:hover{background:#006699;}
+
+/* ── 로그인 모달 ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;width:420px;max-width:95vw;border-radius:4px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.2);animation:mIn .2s ease;}
+@keyframes mIn{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-hd{background:#003366;color:#fff;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;}
+.modal-hd h2{font-size:16px;font-weight:700;}
+.modal-cl{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;padding:0;}
+.modal-body{padding:24px 20px 16px;}
+.modal-tabs{display:flex;border-bottom:2px solid #e5e8ee;margin-bottom:18px;}
+.mtab{flex:1;text-align:center;padding:9px;font-size:13px;font-weight:600;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;}
+.mtab.on{color:#006699;border-bottom-color:#006699;}
+.mf{margin-bottom:12px;}
+.mf label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px;}
+.mf input{width:100%;height:40px;border:1px solid #c8cdd6;border-radius:3px;padding:0 12px;font-size:13px;font-family:inherit;outline:none;transition:border .15s;}
+.mf input:focus{border-color:#006699;}
+.mf input.err{border-color:#c0392b;background:#fff9f9;}
+.merr{font-size:11px;color:#c0392b;margin-top:3px;display:none;}
+.merr.show{display:block;}
+.mok{font-size:11px;color:#27ae60;margin-top:3px;display:none;}
+.mok.show{display:block;}
+.mlopts{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.mlopts label{display:flex;align-items:center;gap:5px;font-size:12px;color:#555;cursor:pointer;}
+.mlopts a{font-size:12px;color:#006699;cursor:pointer;}
+.mbtn{width:100%;height:44px;background:#006699;color:#fff;border:none;border-radius:3px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;margin-bottom:14px;}
+.mbtn:hover{background:#005580;}
+.mdivider{display:flex;align-items:center;gap:10px;color:#ccc;font-size:11px;margin:14px 0;}
+.mdivider::before,.mdivider::after{content:'';flex:1;height:1px;background:#eee;}
+.minfo{background:#f0f7ff;border:1px solid #b3d9f0;border-radius:3px;padding:10px 12px;font-size:11px;color:#1a4a6b;line-height:1.8;}
+.mfooter{background:#f5f7fa;border-top:1px solid #eee;padding:12px 20px;display:flex;justify-content:center;}
+.mflink{font-size:12px;color:#777;cursor:pointer;padding:0 12px;border-right:1px solid #ddd;}
+.mflink:last-child{border-right:none;}
+.mflink:hover{color:#006699;}
+.su-row{display:flex;gap:7px;}
+.su-row .mf{flex:1;}
+
+/* ── 토스트 ── */
+@keyframes toastIn{0%{opacity:0;transform:translateX(-50%) translateY(-12px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0}}
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%);background:#27ae60;color:#fff;padding:9px 22px;border-radius:20px;font-size:13px;font-weight:700;z-index:9999;box-shadow:0 4px 14px rgba(0,0,0,.18);animation:toastIn 2.8s forwards;pointer-events:none;}
+.toast.err{background:#c0392b;}
+
+/* ── 반응형 ── */
+@media(max-width:1024px){.content-right{width:260px;min-width:260px;} .gnb-item{padding:0 14px;font-size:13px;}}
+@media(max-width:768px){.content-row{flex-direction:column;} .content-right{width:100%;} .doc-section{flex-direction:column;} .gnb-nav{display:none;}}
+</style>
+</head>
+<body>
+<!-- ══ 모의 실습 안내 바 ══ -->
+<div style="background:linear-gradient(90deg,#1a3a6b,#2952a3);color:#fff;text-align:center;padding:7px 20px;font-size:12px;font-weight:600;letter-spacing:.03em;position:relative;z-index:100;line-height:1.5;border-bottom:2px solid #c8a84b;">
+  ⚠️ 본 페이지는 <strong>전자소송 실습 모의 페이지</strong>입니다. 실제 법원 접수 시스템이 아니며, 작성된 내용은 법적 효력이 없습니다.
+  <span style="margin-left:16px;font-size:11px;opacity:.85;">🎓 실습 전용 · 실제 소장 제출 불가</span>
+</div>
+
+<!-- ── 유틸 바 ── -->
+<div class="util-bar">
+  <span class="greet" id="util-greet">환영합니다</span>
+  <a onclick="showModal('login')" id="util-login">로그인</a>
+  <a id="util-logout" style="display:none;" onclick="doLogout()">로그아웃</a>
+  <a>English</a>
+  <div class="font-ctrl">
+    화면크기
+    <button onclick="changeFontSize(1)">+</button>
+    <button onclick="changeFontSize(-1)">−</button>
+  </div>
+</div>
+
+<!-- ── GNB ── -->
+<div class="gnb">
+  <div class="gnb-inner">
+    <div class="gnb-logo">
+      <div class="gnb-logo-img">
+        <div class="logo-emblem">
+          <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="22" cy="22" r="20" fill="#e8f0f8" stroke="#006699" stroke-width="1.5"/>
+            <text x="22" y="28" text-anchor="middle" font-size="18" fill="#003366">⚖</text>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="court">대한민국 법원</span>
+          <span class="portal">전자소송포털</span>
+        </div>
+      </div>
+    </div>
+    <nav class="gnb-nav">
+      <!-- 나의전자소송 -->
+      <div class="gnb-item" id="gnav0" onclick="if(curUser){location.href='mypage.html';}else{showModal('login');}">나의전자소송
+        <div class="mega-drop">
+          <div class="mega-inner">
+            <div class="mega-banner"><div class="mega-banner-emoji">👤</div><div style="font-size:12px;font-weight:700;color:#003366;text-align:center;">나의 전자소송<br>서비스 이용</div></div>
+            <div class="mega-cols">
+              <div class="mega-col"><span class="mega-col-title">나의사건현황</span><span class="mega-col-title" style="margin-top:6px;">나의사건관리</span><ul><li><a>진행중사건</a></li><li><a>관심사건</a></li><li><a>확정된사건</a></li><li><a>완료된사건</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">사건진행</span><ul><li><a>재판일정</a></li><li><a>대조형 쟁점요약</a></li><li><a>사건별게시판</a></li><li><a>문서송부서확인</a></li><li><a>서증인부(문서송부)</a></li><li><a>보정/미보정내역(독촉)</a></li><li><a>엑셀 다운로드(독촉)</a></li><li><a>증거의견입력</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">나의문서함</span><ul><li><a>작성중서류</a></li><li><a>제출서류</a></li><li><a>미확인송달문서</a></li><li><a>전체송달문서</a></li><li><a>송달문서 정(등)본발급</a></li></ul><span class="mega-col-title" style="margin-top:10px;">납부/환급관리</span><ul><li><a>소송비용납부</a></li><li><a>상소비용예납</a></li><li><a>전자납부내역</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">전자소송사건등록</span><ul><li><a>전자소송사건등록</a></li><li><a>형사전자사본화사건등록</a></li></ul><span class="mega-col-title" style="margin-top:10px;">맞춤형문서함</span><ul><li><a>파산관재인 사건 관리</a></li><li><a>제출문서 반려의견</a></li><li><a>채권정보조회</a></li></ul><span class="mega-col-title" style="margin-top:10px;">나의정보관리</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 서류제출 -->
+      <div class="gnb-item" id="gnav1">서류제출
+        <div class="mega-drop">
+          <div class="mega-inner">
+            <div class="mega-banner"><div class="mega-banner-emoji">📄</div><div style="font-size:12px;font-weight:700;color:#003366;text-align:center;">서류 작성 및<br>제출 서비스</div></div>
+            <div class="mega-cols">
+              <div class="mega-col"><span class="mega-col-title">서류검색</span><span class="mega-col-title" style="margin-top:6px;">민사서류</span><ul><li><a href="apply.html" onclick="return checkLogin(event,'apply.html')">민사본안</a></li><li><a>민사신청</a></li><li><a>지급명령(독촉)신청</a></li><li><a>전체서류</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">형사서류</span><ul><li><a>형사공판</a></li><li><a>형사신청</a></li><li><a>형사약식</a></li><li><a>영장/즉결</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">가사서류</span><ul><li><a>가사소송·비송</a></li><li><a>가사조정</a></li><li><a>가사신청</a></li><li><a>과태료/감치</a></li><li><a>가족관계등록비송</a></li><li><a>전체서류</a></li></ul><span class="mega-col-title" style="margin-top:8px;">보호서류</span><ul><li><a>소년보호</a></li><li><a>가정아동성보호</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">행정서류</span><span class="mega-col-title" style="margin-top:6px;">특허서류</span><span class="mega-col-title" style="margin-top:6px;">회생파산서류</span><ul><li><a>개인회생</a></li><li><a>개인파산</a></li><li><a>법인회생(간이회생포함)</a></li><li><a>법인파산</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">민사집행서류</span><ul><li><a>부동산 등 집행</a></li><li><a>채권압류 등</a></li><li><a>채권배당</a></li></ul><span class="mega-col-title" style="margin-top:8px;">비송,과태료 서류</span><span class="mega-col-title" style="margin-top:6px;">회신서등 제출</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 각종신청 -->
+      <div class="gnb-item" id="gnav2">각종신청
+        <div class="mega-drop">
+          <div class="mega-inner">
+            <div class="mega-banner"><div class="mega-banner-emoji">📋</div><div style="font-size:12px;font-weight:700;color:#003366;text-align:center;">각종 신청<br>서비스</div></div>
+            <div class="mega-cols">
+              <div class="mega-col"><span class="mega-col-title">판결문전자송달신청</span><ul><li><a>판결문전자송달신청</a></li><li><a>판결문전자송달신청내역</a></li></ul><span class="mega-col-title" style="margin-top:10px;">알림서비스신청</span></div>
+              <div class="mega-col"><span class="mega-col-title">송달료 자동납부신청</span><span class="mega-col-title" style="margin-top:6px;">제증명발급신청</span><ul><li><a>제증명발급신청</a></li><li><a>제증명발급내역</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">그림자배심 참가신청</span><ul><li><a>국민참여재판 일정</a></li><li><a>그림자배심 참가신청</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">기록 열람 신청</span><ul><li><a>열람제한문서 열람신청</a></li><li><a>열람제한문서열람</a></li><li><a>원심사건기록 열람신청</a></li><li><a>원심사건기록열람</a></li></ul></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 사건유형별 -->
+      <div class="gnb-item" id="gnav3">사건유형별 절차안내
+        <div class="mega-drop">
+          <div class="mega-inner">
+            <div class="mega-banner"><div class="mega-banner-emoji">📚</div><div style="font-size:12px;font-weight:700;color:#003366;text-align:center;">사건유형별<br>절차안내</div></div>
+            <div class="mega-cols">
+              <div class="mega-col"><span class="mega-col-title">공통안내</span><ul><li><a>전자소송안내</a></li><li><a>영상재판안내</a></li><li><a>재판지원안내</a></li><li><a>관할법원안내</a></li><li><a>법률용어안내</a></li><li><a>납부환급안내</a></li><li><a>알림서비스안내</a></li><li><a>양식 및 작성안내</a></li><li><a>법원상담사례</a></li></ul><span class="mega-col-title" style="margin-top:8px;">민사</span><ul><li><a>민사소송의 개요</a></li><li><a>민사소송의 진행</a></li><li><a>민사소송의 종결</a></li><li><a>일반소송 외 절차</a></li><li><a>민사신청</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">가사</span><ul><li><a>가사소송(조정)</a></li><li><a>가사비송</a></li><li><a>가사신청</a></li><li><a>협의이혼</a></li></ul><span class="mega-col-title" style="margin-top:8px;">행정</span><ul><li><a>행정소송의 개요</a></li><li><a>행정소송의 진행</a></li></ul><span class="mega-col-title" style="margin-top:8px;">특허</span><ul><li><a>특허소송의 개념</a></li><li><a>특허소송의 진행</a></li></ul><span class="mega-col-title" style="margin-top:8px;">개인파산/회생</span><ul><li><a>개인파산 및 면책</a></li><li><a>개인회생</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">강제집행</span><ul><li><a>강제집행의 개요</a></li><li><a>부동산 강제집행</a></li><li><a>채권에대한 강제집행</a></li><li><a>동산에대한 강제집행</a></li><li><a>기타집행절차</a></li><li><a>강제집행정지</a></li></ul><span class="mega-col-title" style="margin-top:8px;">형사</span><ul><li><a>형사소송</a></li><li><a>국민참여재판</a></li><li><a>인신보호제도</a></li></ul><span class="mega-col-title" style="margin-top:8px;">가정보호</span><ul><li><a>가정보호재판의 개요</a></li><li><a>보호처분 결정</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">소년보호</span><ul><li><a>소년보호재판의 개요</a></li><li><a>소년보호재판의 진행</a></li><li><a>보호처분</a></li><li><a>통고제도</a></li></ul><span class="mega-col-title" style="margin-top:8px;">가족관계등록비송</span><ul><li><a>개명</a></li><li><a>가족관계등록창설</a></li><li><a>국적취득자의 성본 창설</a></li><li><a>가족관계등록부 정정</a></li></ul><span class="mega-col-title" style="margin-top:8px;">가족관계등록</span><span class="mega-col-title" style="margin-top:6px;">공탁</span><span class="mega-col-title" style="margin-top:6px;">나홀로소송</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 고객센터 -->
+      <div class="gnb-item" id="gnav4">고객센터
+        <div class="mega-drop">
+          <div class="mega-inner">
+            <div class="mega-banner"><div class="mega-banner-emoji">🏛</div><div style="font-size:12px;font-weight:700;color:#003366;text-align:center;">고객 지원<br>서비스</div></div>
+            <div class="mega-cols">
+              <div class="mega-col"><span class="mega-col-title">공지사항</span><span class="mega-col-title" style="margin-top:6px;">자주하는질문</span><span class="mega-col-title" style="margin-top:6px;">문제해결안내</span></div>
+              <div class="mega-col"><span class="mega-col-title">인증/보안<br>(프로그램설치)</span><span class="mega-col-title" style="margin-top:6px;">사이트이용안내</span><ul><li><a>이용약관</a></li><li><a>개인정보처리방침</a></li><li><a>저작권보호정책</a></li><li><a>이용안내</a></li></ul></div>
+              <div class="mega-col"><span class="mega-col-title">고객의소리</span><span class="mega-col-title" style="margin-top:6px;">링크시유의사항</span><span class="mega-col-title" style="margin-top:6px;">재판조력자게시판</span><span class="mega-col-title" style="margin-top:6px;">사이트맵</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div class="gnb-right">
+      <button class="gnb-search-btn">🔍</button>
+      <button class="gnb-hamburger">☰</button>
+      <div class="gnb-home" onclick="location.href='index.html'">
+        <span class="gnb-home-icon">🏠</span>
+        <span>HOME</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 메인 ── -->
+<div class="main-wrap">
+  <!-- 검색 -->
+  <div class="search-section">
+    <div class="search-box">
+      <input type="text" placeholder="검색어를 입력해 주세요" id="main-search">
+      <button>🔍</button>
+    </div>
+    <div class="search-tags">
+      <span class="stag">#나의사건</span>
+      <span class="stag">#답변서</span>
+      <span class="stag">#민사</span>
+      <span class="stag">#소송</span>
+      <span class="stag">#전자납부</span>
+    </div>
+  </div>
+
+  <div class="content-row">
+    <!-- 왼쪽 -->
+    <div class="content-left">
+      <!-- 배너 -->
+      <div class="banner-area">
+        <div class="banner-content">
+          <span class="badge">개정 민사소송법</span>
+          <h3>개인정보보호조치<br><strong style="color:#003366;">제/도/시/행 안내</strong></h3>
+          <p>개정 민사소송법에 따라 2025. 7. 12.부터 소송 관계인의 생명 또는 신체에 위해의 우려가 있다는 소명이 있는 소송에 한하여 법원의 결정으로 개인정보 보호조치가 가능합니다.</p>
+          <a class="banner-btn">바로가기</a>
+          <div class="banner-ctrl">
+            <span>1 / 7</span>
+            <button>←</button>
+            <button>⏸</button>
+            <button>→</button>
+          </div>
+        </div>
+        <div class="banner-img">🛡</div>
+      </div>
+
+      <!-- 서비스 카드 -->
+      <div class="service-grid">
+        <div class="svc-item" onclick="goService('mypage')"><div class="svc-icon">📁</div><div class="svc-label">나의사건관리</div></div>
+        <div class="svc-item" onclick="goService('drafts')"><div class="svc-icon">📝</div><div class="svc-label">작성중서류</div></div>
+        <div class="svc-item" onclick="goService('unconfirmed')"><div class="svc-icon">📬</div><div class="svc-label">미확인송달문서</div></div>
+        <div class="svc-item" onclick="goService('cert')"><div class="svc-icon">📜</div><div class="svc-label">제증명발급</div></div>
+        <div class="svc-item" onclick="goService('pay')"><div class="svc-icon">💰</div><div class="svc-label">소송비용납부</div></div>
+        <div class="svc-item" onclick="goService('alert')"><div class="svc-icon">🔔</div><div class="svc-label">알림서비스</div></div>
+      </div>
+
+      <!-- 서류 탭 -->
+      <div class="doc-section" style="display:flex;">
+        <div class="doc-section-left">
+          <div class="folder-icon">📂</div>
+          <div class="label">서류제출</div>
+        </div>
+        <div class="doc-right" style="flex:1;">
+          <div class="doc-tabs">
+            <div class="doc-tab on" onclick="switchDocTab(0,this)">민사 서류</div>
+            <div class="doc-tab" onclick="switchDocTab(1,this)">형사 서류</div>
+            <div class="doc-tab" onclick="switchDocTab(2,this)">가사 서류</div>
+            <div class="doc-tab" onclick="switchDocTab(3,this)">보호 서류</div>
+            <div class="doc-tab" onclick="switchDocTab(4,this)">행정 서류</div>
+            <div class="doc-tab" onclick="switchDocTab(5,this)">특허 서류</div>
+            <div class="doc-tab" onclick="switchDocTab(6,this)">회생·파산 서류</div>
+            <div class="doc-tab" onclick="switchDocTab(7,this)">민사집행 서류</div>
+            <div class="doc-tab" onclick="switchDocTab(8,this)">비송·과태료 서류</div>
+          </div>
+          <div class="doc-body">
+            <div class="doc-header-row">
+              <h4>자주찾는 서류</h4>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="doc-note" id="doc-login-note">로그인 후 서류작성이 가능합니다.</span>
+                <div class="doc-btns">
+                  <a onclick="alert('준비 중입니다.')">전체서류 ›</a>
+                  <a class="outline" onclick="alert('준비 중입니다.')">서류검색 ›</a>
+                </div>
+              </div>
+            </div>
+            <div class="doc-list" id="doc-list">
+              <div class="doc-list-item" onclick="goLogin()">소장 <span class="doc-ico">E</span></div>
+              <div class="doc-list-item" onclick="goLogin()">답변서(청구취지/원인) <span class="doc-ico">E</span></div>
+              <div class="doc-list-item" onclick="goLogin()">준비서면</div>
+              <div class="doc-list-item" onclick="goLogin()">서증 <span class="doc-ico">E</span></div>
+              <div class="doc-list-item" onclick="goLogin()">증인신청서 <span class="doc-ico">E</span></div>
+              <div class="doc-list-item" onclick="goLogin()">청구취지 및 청구원인 변경…</div>
+              <div class="doc-list-item" onclick="goLogin()">소취하서 <span class="doc-ico">E</span></div>
+              <div class="doc-list-item" onclick="goLogin()">소송대리허가신청 및 소송위… <span class="doc-ico">E</span></div>
+              <div class="doc-list-item" onclick="goLogin()">보정서</div>
+              <div class="doc-list-item" onclick="goLogin()">주소보정서(특별송달,공시송…</div>
+              <div class="doc-list-item" onclick="goLogin()">기일변경신청서 <span class="doc-ico">E</span></div>
+              <div class="doc-list-item" onclick="goLogin()">항소장 <span class="doc-ico">E</span></div>
+              <div class="doc-list-item" onclick="goLogin()">항고장 <span class="doc-ico">E</span></div>
+              <div class="doc-list-item" onclick="goLogin()">소송위임장</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 오른쪽 -->
+    <div class="content-right">
+      <!-- 로그인 패널 -->
+      <div class="login-panel" id="login-panel">
+        <div class="login-panel-hd">
+          <button class="login-btn-main" onclick="showModal('login')">로그인</button>
+        </div>
+        <div class="login-panel-links">
+          <a onclick="showModal('login')">아이디/비밀번호찾기</a>
+        </div>
+      </div>
+      <!-- 유저 패널 (로그인 후) -->
+      <div class="user-panel" id="user-panel">
+        <div class="user-panel-name" id="up-name"></div>
+        <div class="user-panel-org" id="up-org"></div>
+        <div style="display:flex;gap:0;border-top:1px solid #eee;border-bottom:1px solid #eee;margin:10px 0;">
+          <div style="flex:1;text-align:center;padding:8px 0;cursor:pointer;" onclick="location.href='mypage.html'">
+            <div style="font-size:18px;font-weight:700;color:#006699;">3</div>
+            <div style="font-size:10px;color:#888;">진행중사건</div>
+          </div>
+          <div style="width:1px;background:#eee;"></div>
+          <div style="flex:1;text-align:center;padding:8px 0;cursor:pointer;" onclick="location.href='mypage.html'">
+            <div style="font-size:18px;font-weight:700;color:#c0392b;">0</div>
+            <div style="font-size:10px;color:#888;">미확인문서</div>
+          </div>
+          <div style="width:1px;background:#eee;"></div>
+          <div style="flex:1;text-align:center;padding:8px 0;cursor:pointer;" onclick="location.href='mypage.html'">
+            <div style="font-size:18px;font-weight:700;color:#27ae60;">3</div>
+            <div style="font-size:10px;color:#888;">재판일정</div>
+          </div>
+        </div>
+        <div class="user-panel-btns">
+          <button class="upb-mypage" onclick="location.href='mypage.html'">나의전자소송</button>
+          <button class="upb-logout" onclick="doLogout()">로그아웃</button>
+        </div>
+        <div id="up-admin-link" style="display:none;margin-top:8px;text-align:center;">
+          <a onclick="location.href='admin.html'" style="font-size:12px;color:#c0392b;font-weight:700;cursor:pointer;">🔐 관리자 페이지 →</a>
+        </div>
+      </div>
+
+      <!-- 사건검색 패널 -->
+      <div class="case-panel">
+        <div class="case-panel-tabs">
+          <button class="cptab on" id="cptab0" onclick="switchCpTab(0)">사건검색</button>
+          <button class="cptab" id="cptab1" onclick="switchCpTab(1)">발급문서조회</button>
+        </div>
+        <div class="case-panel-body">
+          <div class="cpf">
+            <label>법원선택 <span class="req">*</span></label>
+            <select class="sel-sm" style="width:130px;"><option>대법원</option><option>서울중앙지법</option><option>서울동부지법</option><option>서울남부지법</option><option>수원지방법원</option></select>
+            <span style="font-size:10px;color:#888;cursor:pointer;margin-left:4px;">ⓘ 입력방법안내</span>
+          </div>
+          <div class="cpf" style="margin-bottom:6px;">
+            <label style="width:auto;font-size:11px;color:#555;">□ 사건구분입력모드</label>
+          </div>
+          <div class="cpf">
+            <label>사건번호 <span class="req">*</span></label>
+            <select class="sel-sm sel-md"><option>2026</option><option>2025</option><option>2024</option></select>
+            <select class="sel-sm sel-md" style="width:54px;"><option>다</option><option>가합</option><option>가단</option><option>나</option></select>
+            <input type="text" class="inp-num" placeholder="">
+          </div>
+          <div class="cpf">
+            <label>당사자명 <span class="req">*</span></label>
+            <input type="text" style="flex:1;height:32px;border:1px solid #c0c8d0;border-radius:3px;font-size:12px;padding:0 8px;outline:none;font-family:inherit;" placeholder="당사자명 필수입력">
+          </div>
+          <div class="case-soong"><a>ⓘ 소송안내마당</a></div>
+          <button class="case-search-btn">조 회</button>
+          <div class="case-note">※ 사건번호 없이 당사자명만으로 조회가 가능합니다.<br>※ 조회결과는 최근 3개월 이내 진행중인 사건만 표시됩니다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 공지사항 바 ── -->
+<div class="notice-bar">
+  <div class="notice-bar-inner">
+    <div class="notice-icon">🔔 공지사항</div>
+    <div class="notice-text" id="notice-text">대전·대구·광주회생법원 개원 작업으로 인한 시스템 중단 안내</div>
+    <div class="notice-date" id="notice-date">2026.02.20</div>
+    <div class="notice-ctrl">
+      <button onclick="prevNotice()">↑</button>
+      <button>⏸</button>
+      <button onclick="nextNotice()">↓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 플로팅 버튼 ── -->
+<div class="float-right">
+  <div class="float-btn" onclick="goLogin()"><span class="ico">🖥</span>나홀로소송</div>
+  <div class="float-btn" onclick="alert('소송안내마당')"><span class="ico">ℹ</span>소송안내마당</div>
+  <div class="float-btn" style="background:#f0f4f8;color:#006699;" onclick="alert('바로가기')"><span class="ico">▶</span>바로가기</div>
+</div>
+
+<!-- ── 채팅 버튼 ── -->
+<button class="chat-btn" title="채팅 상담">💬</button>
+
+<!-- ── 로그인 모달 ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-hd">
+      <h2>⚖ 전자소송 실습 시스템</h2>
+      <button class="modal-cl" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- 로그인 폼만 -->
+      <div id="mf-login">
+        <div style="background:#f0f7ff;border:1px solid #b3d9f0;border-radius:4px;padding:12px 14px;margin-bottom:18px;font-size:12px;color:#1a4a6b;line-height:1.8;">
+          📋 담당 선생님께 부여받은 <strong>아이디</strong>와 <strong>비밀번호</strong>로 로그인하세요.
+        </div>
+        <div class="mf"><label>아이디</label><input type="text" id="mi-id" placeholder="아이디 입력" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="mf">
+          <label>비밀번호</label>
+          <input type="password" id="mi-pw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()">
+          <div class="merr" id="mi-err"></div>
+        </div>
+        <div class="mlopts">
+          <label><input type="checkbox" id="mi-save" style="accent-color:#006699;"> 아이디 저장</label>
+          <a onclick="findPw()">비밀번호 찾기</a>
+        </div>
+        <button class="mbtn" onclick="doLogin()">로그인</button>
+      </div>
+    </div>
+    <div class="mfooter">
+      <span class="mflink">이용약관</span><span class="mflink">개인정보처리방침</span><span class="mflink">고객센터</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── 계정 ──
+const DEFAULT_ACC={
+  student01:{pw:'court1234',name:'실습생 1호',org:'실습반',role:'user'},
+  student02:{pw:'court1234',name:'실습생 2호',org:'실습반',role:'user'},
+  student03:{pw:'court1234',name:'실습생 3호',org:'실습반',role:'user'},
+  student04:{pw:'court1234',name:'실습생 4호',org:'실습반',role:'user'},
+  student05:{pw:'court1234',name:'실습생 5호',org:'실습반',role:'user'},
+  student06:{pw:'court1234',name:'실습생 6호',org:'실습반',role:'user'},
+  student07:{pw:'court1234',name:'실습생 7호',org:'실습반',role:'user'},
+  student08:{pw:'court1234',name:'실습생 8호',org:'실습반',role:'user'},
+  student09:{pw:'court1234',name:'실습생 9호',org:'실습반',role:'user'},
+  student10:{pw:'court1234',name:'실습생 10호',org:'실습반',role:'user'},
+  admin:{pw:'admin1234',name:'관리자',org:'운영팀',role:'admin'},
+};
+let curUser=null,idOk=false;
+function getAcc(){try{const s=sessionStorage.getItem('ec_acc');return s?{...DEFAULT_ACC,...JSON.parse(s)}:{...DEFAULT_ACC};}catch{return{...DEFAULT_ACC};}}
+function saveAccSess(id,info){try{const s=sessionStorage.getItem('ec_acc');const a=s?JSON.parse(s):{};a[id]=info;sessionStorage.setItem('ec_acc',JSON.stringify(a));}catch{}}
+
+function initAuth(){
+  try{const u=sessionStorage.getItem('ec_user');if(u){curUser=JSON.parse(u);applyLogin(curUser);return;}}catch{}
+  try{const si=localStorage.getItem('ec_sid');if(si){document.getElementById('mi-id').value=si;document.getElementById('mi-save').checked=true;}}catch{}
+}
+function applyLogin(u){
+  document.getElementById('util-login').style.display='none';
+  document.getElementById('util-logout').style.display='';
+  document.getElementById('util-greet').textContent=u.name+'님 환영합니다';
+  document.getElementById('login-panel').style.display='none';
+  document.getElementById('user-panel').style.display='block';
+  document.getElementById('up-name').textContent='👤 '+u.name;
+  document.getElementById('up-org').textContent=u.org||(u.role==='admin'?'관리자':'실습생');
+  document.getElementById('doc-login-note').style.display='none';
+  // 관리자 링크
+  if(u.role==='admin'){
+    document.getElementById('up-admin-link').style.display='block';
+    // GNB에도 관리자 메뉴 표시
+    const nav=document.querySelector('.gnb-nav');
+    if(nav&&!document.getElementById('nav-admin-item')){
+      const el=document.createElement('div');
+      el.id='nav-admin-item';
+      el.className='gnb-item';
+      el.style.color='#c0392b';
+      el.textContent='관리자';
+      el.onclick=()=>location.href='admin.html';
+      nav.appendChild(el);
+    }
+  }
+}
+function goService(type){
+  if(!curUser){showModal();return;}
+  const map={mypage:'mypage.html',drafts:'mypage.html',unconfirmed:'mypage.html',cert:'mypage.html',pay:'mypage.html',alert:'mypage.html'};
+  location.href=map[type]||'mypage.html';
+}
+function goLogin(){if(curUser){location.href='apply.html';}else{showModal();}}
+function checkLogin(e,url){if(!curUser){e.preventDefault();showModal();return false;}return true;}
+
+function showModal(){
+  document.getElementById('modal-overlay').classList.add('show');
+  setTimeout(()=>document.getElementById('mi-id')?.focus(),100);
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show');}
+function doLogin(){
+  const id=document.getElementById('mi-id').value.trim();
+  const pw=document.getElementById('mi-pw').value;
+  const err=document.getElementById('mi-err');
+  err.classList.remove('show');
+  document.getElementById('mi-id').classList.remove('err');
+  document.getElementById('mi-pw').classList.remove('err');
+  if(!id||!pw){err.textContent='아이디와 비밀번호를 입력해주세요.';err.classList.add('show');return;}
+  const acc=getAcc()[id];
+  if(!acc||acc.pw!==pw){
+    err.textContent='아이디 또는 비밀번호가 올바르지 않습니다.';
+    err.classList.add('show');
+    document.getElementById('mi-id').classList.add('err');
+    document.getElementById('mi-pw').classList.add('err');
+    return;
+  }
+  try{if(document.getElementById('mi-save').checked)localStorage.setItem('ec_sid',id);else localStorage.removeItem('ec_sid');}catch{}
+  const user={id,name:acc.name,org:acc.org||'',role:acc.role||'user'};
+  sessionStorage.setItem('ec_user',JSON.stringify(user));
+  curUser=user;
+  applyLogin(user);
+  closeModal();
+  showToast('✅ '+user.name+'님, 환영합니다!');
+}
+function doLogout(){
+  sessionStorage.removeItem('ec_user');
+  curUser=null;
+  document.getElementById('util-login').style.display='';
+  document.getElementById('util-logout').style.display='none';
+  document.getElementById('util-greet').textContent='환영합니다';
+  document.getElementById('login-panel').style.display='block';
+  document.getElementById('user-panel').style.display='none';
+  document.getElementById('doc-login-note').style.display='';
+  const adminItem=document.getElementById('nav-admin-item');
+  if(adminItem)adminItem.remove();
+  showToast('로그아웃 되었습니다.');
+}
+function findPw(){
+  const id=document.getElementById('mi-id').value.trim();
+  if(!id){alert('아이디를 먼저 입력해주세요.');return;}
+  if(!getAcc()[id]){alert('등록되지 않은 아이디입니다.\n담당 선생님께 문의해주세요.');return;}
+  alert('[비밀번호 찾기]\n담당 선생님께 비밀번호를 문의해주세요.');
+}
+
+// ── 서류탭 ──
+const DOC_DATA=[
+  ['소장','답변서(청구취지/원인)','준비서면','서증','증인신청서','청구취지 및 청구원인 변경…','소취하서','소송대리허가신청 및 소송위…','보정서','주소보정서(특별송달,공시송…','기일변경신청서','항소장','항고장','소송위임장'],
+  ['형사공판서','형사신청서','형사약식','영장/즉결'],
+  ['가사소송·비송','가사조정','가사신청','과태료/감치','협의이혼','가족관계등록비송'],
+  ['소년보호','가정아동성보호','보호처분'],
+  ['행정소송','행정신청'],
+  ['특허본안','특허신청'],
+  ['개인회생','개인파산','법인회생','법인파산','일반회생'],
+  ['부동산 집행','채권압류','채권배당','재산명시'],
+  ['비송신청','과태료','재판비용'],
+];
+function switchDocTab(idx,el){
+  document.querySelectorAll('.doc-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  const dl=document.getElementById('doc-list');
+  dl.innerHTML=DOC_DATA[idx].map(n=>`<div class="doc-list-item" onclick="goLogin()">${n}</div>`).join('');
+}
+
+// ── 사건검색탭 ──
+function switchCpTab(idx){document.getElementById('cptab0').className='cptab'+(idx===0?' on':'');document.getElementById('cptab1').className='cptab'+(idx===1?' on':'');}
+
+// ── 공지사항 롤링 ──
+const NOTICES=[
+  {t:'대전·대구·광주회생법원 개원 작업으로 인한 시스템 중단 안내',d:'2026.02.20'},
+  {t:'항소(항고)이유서 제출 제도 시행 안내',d:'2025.01.14'},
+  {t:'소송촉진법상 법정이율 안내',d:'2025.01.14'},
+  {t:'전자소송 시스템 이용에 관한 공고',d:'2025.01.14'},
+  {t:'명하는 판결에 적용되는 법정이율은 연12%로 변경되었습니다.',d:'2025.01.14'},
+];
+let nIdx=0;
+function updateNotice(){document.getElementById('notice-text').textContent=NOTICES[nIdx].t;document.getElementById('notice-date').textContent=NOTICES[nIdx].d;}
+function nextNotice(){nIdx=(nIdx+1)%NOTICES.length;updateNotice();}
+function prevNotice(){nIdx=(nIdx-1+NOTICES.length)%NOTICES.length;updateNotice();}
+setInterval(nextNotice,4000);
+
+// ── 폰트크기 ──
+let fs=13;
+function changeFontSize(d){fs=Math.max(11,Math.min(17,fs+d));document.body.style.fontSize=fs+'px';}
+
+// ── 토스트 ──
+function showToast(msg,t=''){const el=document.createElement('div');el.className='toast '+(t||'');el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),3000);}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  initAuth();
+  document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
+});
+</script>
+
+<!-- 푸터 -->
+<footer style="background:#2c3e50;border-top:3px solid #b8922a;margin-top:0;">
+  <div style="display:flex;justify-content:center;gap:0;padding:16px 0 10px;flex-wrap:wrap;">
+    <span style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;">이용약관</span>
+    <span style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;">개인정보처리방침</span>
+    <span style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;">저작권보호정책</span>
+    <span style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;">문제해결안내</span>
+    <span style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;">고객의소리</span>
+    <span style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;cursor:pointer;" onclick="location.href='admin.html'">관리자</span>
+  </div>
+  <div style="text-align:center;font-size:12px;color:rgba(255,255,255,.45);margin-bottom:8px;">이용 및 장애 문의 02) 3480-1715 (평일 9시~18시)</div>
+  <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.3);padding-bottom:16px;">COPYRIGHT © 대한민국 법원. ALL RIGHTS RESERVED.</div>
+</footer>
+</body>
+</html>
