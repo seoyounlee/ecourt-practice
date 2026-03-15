@@ -143,7 +143,7 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
 .notice li::before{content:'•';position:absolute;left:0;color:#888;}
 
 /* ── 점수 배지 ── */
-.score-badge{position:fixed;top:0;right:20px;background:#003366;color:#fff;padding:4px 14px;border-radius:0 0 8px 8px;font-size:11px;font-weight:700;z-index:400;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.score-badge{display:none;} /* 시험 모드: 학생에게 점수 미표시 — 제출 후 AI 피드백에서만 확인 가능 */
 
 /* ── 섹션 박스 ── */
 .sec{background:#fff;border:1px solid #d0d8e4;margin-bottom:8px;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
@@ -337,7 +337,7 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:460px;margin-top:14px;">
         <div style="background:#fff;border:1px solid #dde0e6;border-radius:3px;padding:10px;text-align:center;"><div style="font-size:18px;margin-bottom:3px;">📋</div><div style="font-size:11px;font-weight:700;color:var(--navy);">소장 작성 실습</div><div style="font-size:10px;color:#888;">실제 UI 환경</div></div>
-        <div style="background:#fff;border:1px solid #dde0e6;border-radius:3px;padding:10px;text-align:center;"><div style="font-size:18px;margin-bottom:3px;">📊</div><div style="font-size:11px;font-weight:700;color:var(--navy);">실습 점수</div><div style="font-size:10px;color:#888;">항목별 채점</div></div>
+        <div style="background:#fff;border:1px solid #dde0e6;border-radius:3px;padding:10px;text-align:center;"><div style="font-size:18px;margin-bottom:3px;">🤖</div><div style="font-size:11px;font-weight:700;color:var(--navy);">AI 피드백</div><div style="font-size:10px;color:#888;">제출 후 확인</div></div>
         <div style="background:#fff;border:1px solid #dde0e6;border-radius:3px;padding:10px;text-align:center;"><div style="font-size:18px;margin-bottom:3px;">📥</div><div style="font-size:11px;font-weight:700;color:var(--navy);">PDF 저장</div><div style="font-size:10px;color:#888;">소장 다운로드</div></div>
       </div>
     </div>
@@ -551,7 +551,7 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
       <tr><th>대리인구분<span class="req">*</span></th><td>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
           <select class="inp w180" id="ag-type"><option>변호사</option><option>법무사</option><option>소송대리인(본인)</option><option>법정대리인</option><option>임의대리인</option></select>
-          <button class="btn btn-outline" style="font-size:12px;" onclick="alert('실습 모드에서는 지원되지 않습니다.')">내정보가져오기</button>
+          <button class="btn btn-outline" style="font-size:12px;background:#006699;color:#fff;border-color:#006699;" onclick="loadMyLawyerInfo()">👤 내 정보 불러오기</button>
           <label class="ci"><input type="checkbox" id="ag-nonmem" onchange="togNonMem()"><label style="font-size:12px;">비화원</label></label>
         </div>
         <div style="font-size:11px;color:#555;background:#fafbfc;border:1px solid #e5e8ee;border-radius:3px;padding:8px 10px;line-height:1.8;">※ 전자소송에서 소액사건을 제외한 사건에 대하여는 개인이 대리인의 자위로 소장 등을 제출할 수 없습니다. 소액사건에서 개인이 대리인의 자위로 소장 등을 제출하는 경우에는 신분관계를 증명할 수 있는 서류(<span style="color:var(--red);font-weight:600;">가족관계증명서 등 당사자의 배우자·직계혈족·형제자매를 증명할 수 있는 서류</span>) 및 소송위임장을 첨부서류로 제출하여 주시기 바랍니다.</div>
@@ -806,14 +806,470 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
         <div style="display:flex;gap:8px;">
           <button class="btn-lg btn-lg-red" onclick="deleteAll()">🗑 작성문서 및 파일 삭제</button>
           <button class="btn-lg btn-lg-blue" onclick="downloadPDF()">📥 PDF 다운로드</button>
-          <button class="btn-lg btn-lg-navy" onclick="confirmDone()">✅ 확인완료</button>
+          <button class="btn-lg btn-lg-navy" onclick="confirmDone()">✅ 확인완료 → 다음으로 가기</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+  4단계: 소송비용납부
+══════════════════════════════════════════ -->
+<div id="pay-area" style="display:none;">
+<div class="pw">
+  <div class="pg-ttl-row">
+    <div class="pg-ttl"><div class="pg-dot"></div><span class="pg-ttl-txt">민사서류 - 소장</span></div>
+  </div>
+
+  <!-- 납부 연습 예시 카드 -->
+  <div style="background:#fff;border:1px solid #d0d8e4;border-radius:6px;margin-bottom:14px;overflow:hidden;">
+    <div style="background:#003366;color:#fff;padding:10px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;">
+      📚 납부 연습 예시 — 클릭하면 자동 입력됩니다
+      <span style="font-size:11px;font-weight:400;opacity:.7;margin-left:4px;">(실습 모드 전용)</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid #d0d8e4;">
+
+      <!-- 예시 1: 소액 사건 -->
+      <div onclick="loadPayExample(1)" style="padding:14px 16px;border-right:1px solid #e0e6ee;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background='#fff'">
+        <div style="font-size:11px;color:#006699;font-weight:700;margin-bottom:6px;">📌 예시 1 — 소액 대여금</div>
+        <div style="font-size:12px;color:#333;line-height:1.9;">
+          소가: <strong>500만원</strong><br>
+          인지액: <strong>25,000원</strong><br>
+          송달료: <strong>62,400원</strong><br>
+          <span style="color:#c0392b;font-weight:700;">총 납부: 87,400원</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:#888;">계좌이체 · 국민은행 · 가상계좌</div>
+      </div>
+
+      <!-- 예시 2: 중액 손해배상 -->
+      <div onclick="loadPayExample(2)" style="padding:14px 16px;border-right:1px solid #e0e6ee;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background='#fff'">
+        <div style="font-size:11px;color:#006699;font-weight:700;margin-bottom:6px;">📌 예시 2 — 손해배상</div>
+        <div style="font-size:12px;color:#333;line-height:1.9;">
+          소가: <strong>3,000만원</strong><br>
+          인지액: <strong>126,000원</strong><br>
+          송달료: <strong>82,500원</strong><br>
+          <span style="color:#c0392b;font-weight:700;">총 납부: 208,500원</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:#888;">신용카드 · 신한은행 · 문자통지</div>
+      </div>
+
+      <!-- 예시 3: 고액 매매대금 -->
+      <div onclick="loadPayExample(3)" style="padding:14px 16px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#f0f7ff'" onmouseout="this.style.background='#fff'">
+        <div style="font-size:11px;color:#006699;font-weight:700;margin-bottom:6px;">📌 예시 3 — 매매대금 청구</div>
+        <div style="font-size:12px;color:#333;line-height:1.9;">
+          소가: <strong>1억원</strong><br>
+          인지액: <strong>409,500원</strong><br>
+          송달료: <strong>82,500원</strong><br>
+          <span style="color:#c0392b;font-weight:700;">총 납부: 492,000원</span>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:#888;">가상계좌 · 우리은행 · 카카오통지</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 안내 문구 -->
+  <div class="notice" style="margin-bottom:12px;">
+    <ul>
+      <li>소송비용을 납부하지 않으면 보정절차의 진행으로 소송이 지연될 수 있으며, 경우에 따라 소장 등 신청이 각하될 수 있습니다.</li>
+      <li>계좌이체·신용카드 납부 시 전자결제수수료(소송비용 x 2.41%, 최저수수료 200원)가 부과됩니다.</li>
+      <li>공대폰소액결제 납부 시 전자결제수수료(소송비용 x 6.98%, 최저수수료 200원)가 부과됩니다.</li>
+      <li style="color:#006699;font-weight:600;">가상계좌 납부는 전자결제수수료가 별도로 부과되지 않습니다.</li>
+    </ul>
+  </div>
+
+  <!-- 인지액 납부 섹션 -->
+  <div class="sec">
+    <div class="sec-hd" onclick="togSec('pay-s1')"><div class="sec-hd-l"><div class="sec-dot"></div><span class="sec-ttl">인지액 납부</span></div><div class="sec-tog" id="pay-s1t">∧</div></div>
+    <div id="pay-s1b"><table class="ftbl">
+      <tr><th>인지액</th><td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="pay-stamp-amount" style="font-size:15px;font-weight:700;color:#003366;">0원</span>
+          <span style="font-size:12px;color:#888;">(자동계산)</span>
+        </div>
+      </td></tr>
+      <tr><th>납부방식<span class="req">*</span></th><td>
+        <div class="rg">
+          <label class="ri"><input type="radio" name="pay-method" value="card" checked onchange="updatePayMethod()"> <label>계좌이체/신용카드</label></label>
+          <label class="ri"><input type="radio" name="pay-method" value="virtual" onchange="updatePayMethod()"> <label>가상계좌(무통장입금)</label></label>
+          <label class="ri"><input type="radio" name="pay-method" value="free" onchange="updatePayMethod()"> <label>무료</label></label>
+        </div>
+      </td></tr>
+      <tr><th>환금계좌<span class="req">*</span></th><td>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <select class="inp w140" id="pay-bank"><option value="">은행선택</option><option>국민은행</option><option>신한은행</option><option>하나은행</option><option>우리은행</option><option>농협은행</option><option>기업은행</option><option>카카오뱅크</option></select>
+          <input type="text" class="inp w180" id="pay-acct" placeholder="계좌번호">
+          <input type="text" class="inp w100" id="pay-holder" placeholder="예금주">
+          <button class="btn btn-navy" onclick="checkPayAccount()">계좌확인</button>
+        </div>
+      </td></tr>
+      <tr><th>환금통지방식<span class="req">*</span></th><td>
+        <div class="rg">
+          <label class="ri"><input type="radio" name="pay-notify" value="sms" checked> <label>문자메시지</label></label>
+          <label class="ri"><input type="radio" name="pay-notify" value="kakao"> <label>모바일 메신저(카카오톡)</label></label>
+          <label class="ri"><input type="radio" name="pay-notify" value="post"> <label>우편</label></label>
+        </div>
+      </td></tr>
+    </table></div>
+  </div>
+
+  <!-- 송달료 납부 섹션 -->
+  <div class="sec" style="margin-top:8px;">
+    <div class="sec-hd" onclick="togSec('pay-s2')"><div class="sec-hd-l"><div class="sec-dot"></div><span class="sec-ttl">송달료 납부</span></div><div class="sec-tog" id="pay-s2t">∧</div></div>
+    <div id="pay-s2b"><table class="ftbl">
+      <tr><th colspan="2" style="background:#f0f4f8;">
+        <label class="ci"><input type="checkbox" id="pay-auto-delivery" style="accent-color:var(--navy);width:14px;height:14px;" checked> <strong>송달료 자동납부를 신청합니다.</strong></label>
+        <div style="font-size:11px;color:#888;margin-top:4px;padding-left:22px;">송달료 자동납부는 등록한 계좌에서 송달료가 사건에 자동으로 이체되는 제도입니다.</div>
+      </th></tr>
+      <tr><th>송달료</th><td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span id="pay-delivery-amount" style="font-size:15px;font-weight:700;color:#003366;">0원</span>
+          <span style="font-size:12px;color:#888;">(자동계산)</span>
+        </div>
+      </td></tr>
+      <tr><th>납부당사자<span class="req">*</span></th><td>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" class="inp w200" id="pay-party-name" placeholder="납부당사자 성명" readonly>
+          <button class="btn btn-navy" onclick="openPop('pop-pay-party')">납부당사자 선택</button>
+        </div>
+      </td></tr>
+      <tr><th>납부인<span class="req">*</span></th><td>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" class="inp w200" id="pay-payer-name" placeholder="납부인 성명" readonly>
+          <button class="btn btn-navy" onclick="openPop('pop-pay-payer')">납부인 선택</button>
+        </div>
+      </td></tr>
+      <tr id="pay-delivery-acct-row"><th>송달료 자동납부 계좌<span class="req">*</span></th><td>
+        <table style="border-collapse:collapse;width:100%;font-size:12px;">
+          <tr>
+            <td style="padding:4px 8px 4px 0;width:80px;color:#555;">성명</td>
+            <td><span id="pay-auto-name" style="font-weight:600;">–</span></td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 4px 0;color:#555;">주민(사업자) 등록번호</td>
+            <td><span id="pay-auto-rrn">–</span></td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 4px 0;color:#555;">휴대전화번호</td>
+            <td><div style="display:flex;gap:4px;align-items:center;">
+              <select class="inp w80"><option>010</option><option>011</option></select>
+              <input type="text" class="inp w110" id="pay-tel1" placeholder="0000">
+              <input type="text" class="inp w110" id="pay-tel2" placeholder="0000">
+            </div></td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 4px 0;color:#555;">계좌번호</td>
+            <td><div style="display:flex;gap:6px;align-items:center;">
+              <select class="inp w140"><option>은행선택</option><option>국민은행</option><option>신한은행</option><option>하나은행</option><option>우리은행</option><option>농협은행</option></select>
+              <input type="text" class="inp w200" id="pay-delivery-acct" placeholder="계좌번호">
+              <button class="btn btn-navy" onclick="alert('계좌를 확인합니다.\n\n실습 모드에서는 자동 확인 처리됩니다.')">계좌확인</button>
+            </div></td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 4px 0;color:#555;">환급계좌</td>
+            <td><div style="display:flex;gap:6px;align-items:center;">
+              <select class="inp w140"><option>은행선택</option><option>국민은행</option><option>신한은행</option><option>하나은행</option><option>우리은행</option></select>
+              <input type="text" class="inp w180" placeholder="계좌번호">
+              <input type="text" class="inp w80" placeholder="예금주">
+              <button class="btn btn-navy" onclick="alert('계좌확인 (실습 모드)')">계좌확인</button>
+            </div></td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px 4px 0;color:#555;">계좌환금 불가시 환금통지방식</td>
+            <td><div class="rg">
+              <label class="ri"><input type="radio" name="del-notify" value="sms" checked> <label>문자메시지</label></label>
+              <label class="ri"><input type="radio" name="del-notify" value="kakao"> <label>모바일 메신저(카카오톡)</label></label>
+              <label class="ri"><input type="radio" name="del-notify" value="post"> <label>우편</label></label>
+            </div></td>
+          </tr>
+        </table>
+      </td></tr>
+    </table></div>
+  </div>
+
+  <!-- 소송비용납부 약관동의 -->
+  <div class="sec" style="margin-top:8px;">
+    <div class="sec-hd" onclick="togSec('pay-s3')"><div class="sec-hd-l"><div class="sec-dot"></div><span class="sec-ttl">소송비용납부 약관동의</span></div><div class="sec-tog" id="pay-s3t">∧</div></div>
+    <div id="pay-s3b"><table class="ftbl">
+      <tr><th>전자지급결제대행서비스이용약관</th><td>
+        <div class="rg">
+          <label class="ri"><input type="radio" name="pay-terms" value="agree" checked> <label>약관동의</label></label>
+          <label class="ri"><input type="radio" name="pay-terms" value="disagree"> <label>동의하지 않음</label></label>
+          <a style="font-size:12px;color:#006699;cursor:pointer;margin-left:8px;">[약관보기]</a>
+        </div>
+      </td></tr>
+      <tr><th>개인정보 수집 및 이용약관</th><td>
+        <div class="rg">
+          <label class="ri"><input type="radio" name="pay-privacy1" value="agree" checked> <label>동의</label></label>
+          <label class="ri"><input type="radio" name="pay-privacy1" value="disagree"> <label>동의하지 않음</label></label>
+        </div>
+      </td></tr>
+      <tr><th>개인정보 제3자 제공 및 위탁</th><td>
+        <div class="rg">
+          <label class="ri"><input type="radio" name="pay-privacy2" value="agree" checked> <label>동의</label></label>
+          <label class="ri"><input type="radio" name="pay-privacy2" value="disagree"> <label>동의하지 않음</label></label>
+        </div>
+      </td></tr>
+    </table></div>
+  </div>
+
+  <!-- 결제정보 및 수수료 -->
+  <div class="sec" style="margin-top:8px;">
+    <div class="sec-hd" onclick="togSec('pay-s4')"><div class="sec-hd-l"><div class="sec-dot"></div><span class="sec-ttl">결제정보 및 수수료</span></div><div class="sec-tog" id="pay-s4t">∧</div></div>
+    <div id="pay-s4b"><table class="ftbl">
+      <tr><th>납부방식<span class="req">*</span></th><td>
+        <select class="inp w200" id="pay-final-method">
+          <option>계좌이체(뱅크페이)</option>
+          <option>신용카드</option>
+          <option>가상계좌(무통장입금)</option>
+        </select>
+      </td></tr>
+      <tr><th>전자결제수수료</th><td>
+        <span id="pay-fee-text" style="font-size:13px;">계좌이체·신용카드: 소송비용 × 2.41% (최저 200원)</span>
+      </td></tr>
+      <tr><th>카드선택</th><td>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select class="inp w200" id="pay-card"><option>카드선택</option><option>국민카드</option><option>신한카드</option><option>하나카드</option><option>우리카드</option><option>삼성카드</option><option>현대카드</option></select>
+          <span style="font-size:11px;color:#c0392b;">※ 법인카드는 사용 불가</span>
+        </div>
+      </td></tr>
+    </table></div>
+  </div>
+
+  <!-- 납부금액 합계 바 -->
+  <div style="background:#f0f4f8;border:1px solid #d0d8e8;border-radius:4px;padding:14px 20px;margin:12px 0;display:flex;align-items:center;gap:8px;font-size:13px;flex-wrap:wrap;">
+    <span>인지액</span><strong id="pay-bar-stamp" style="color:#003366;">0원</strong>
+    <span style="color:#888;">+</span>
+    <span>송달료</span><strong id="pay-bar-delivery" style="color:#003366;">0원</strong>
+    <span style="color:#888;">+</span>
+    <span>법원보관금</span><strong>0원</strong>
+    <span style="color:#888;">=</span>
+    <span style="margin-left:auto;font-size:14px;">총 납부금액:</span>
+    <strong id="pay-bar-total" style="font-size:18px;color:#c0392b;">0원</strong>
+  </div>
+
+  <!-- 버튼 -->
+  <div style="display:flex;justify-content:space-between;margin-top:4px;">
+    <button class="btn-lg btn-lg-gray" onclick="goPayBack()">← 이전으로 가기</button>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-lg btn-lg-gray" onclick="goPayNext()">다음으로 가기</button>
+      <button class="btn-lg btn-lg-navy" onclick="doPayment()" style="min-width:120px;">소송비용납부</button>
+    </div>
+  </div>
+
+  <!-- 참고사항 -->
+  <div class="notice" style="margin-top:16px;">
+    <ul>
+      <li><strong style="color:#c0392b;">소송비용을 납부하더라도 작성중인 서류의 제출을 완료하지 않으면 당일 23시 이후에 자동으로 납부가 취소</strong>되므로 유의하시기 바랍니다.</li>
+      <li>타인의 주민등록번호를 도용하여 납부한 경우 처벌을 받을 수 있으니 유의하시기 바랍니다.</li>
+      <li>소송사건의 경우 대리사무자가 전금계좌납부로 표시됩니다.</li>
+      <li>전국공통 서비스 안내: 대한민국 법원 전자소송서비스 중 소송비용의 전자결제 기능은 다음 시간에만 가능합니다.</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+  5단계: 전자제출
+══════════════════════════════════════════ -->
+<div id="submit-area" style="display:none;">
+<div class="pw">
+  <div class="pg-ttl-row">
+    <div class="pg-ttl"><div class="pg-dot"></div><span class="pg-ttl-txt">민사서류 - 소장</span></div>
+  </div>
+
+  <div style="font-size:16px;font-weight:700;color:#003366;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+    <div style="width:4px;height:18px;background:#006699;border-radius:2px;"></div>
+    문서제출
+  </div>
+
+  <!-- 사건기본정보 -->
+  <div class="sec" style="margin-bottom:12px;">
+    <div class="sec-hd" style="cursor:default;"><div class="sec-hd-l"><div class="sec-dot"></div><span class="sec-ttl">사건기본정보</span></div></div>
+    <div><table class="ftbl">
+      <tr>
+        <th style="width:120px;">법원</th><td id="sub-court">–</td>
+        <th style="width:80px;">사건명</th><td id="sub-casename">–</td>
+      </tr>
+      <tr>
+        <th>소가</th><td id="sub-soga">–</td>
+        <th>인지액</th><td id="sub-stamp">–</td>
+      </tr>
+      <tr>
+        <th>송달료</th><td id="sub-delivery">–</td>
+        <th></th><td></td>
+      </tr>
+      <tr>
+        <th>원고</th><td id="sub-plaintiff">–</td>
+        <th>피고</th><td id="sub-defendant">–</td>
+      </tr>
+      <tr>
+        <th>원고 대리인</th><td id="sub-agent" colspan="3">–</td>
+      </tr>
+    </table></div>
+  </div>
+
+  <div style="background:#fff8e6;border:1px solid #fde68a;border-radius:3px;padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:12px;">
+    ※ 관할권이 없는 법원에 소장이 제출된 경우에는 사건이 이송되어 소송이 지연될 수 있으므로 주의하시기 바랍니다.
+  </div>
+
+  <!-- 제출서류 목록 -->
+  <div style="font-size:14px;font-weight:700;color:#003366;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+    <div style="width:4px;height:16px;background:#006699;border-radius:2px;"></div>
+    제출서류
+  </div>
+  <table class="ftbl" style="border:1px solid #d0d8e4;margin-bottom:4px;">
+    <thead>
+      <tr style="background:#f0f4f8;">
+        <th style="text-align:center;width:50px;">번호</th>
+        <th style="text-align:center;width:100px;">구분</th>
+        <th style="text-align:center;width:120px;">서류명</th>
+        <th style="text-align:center;">파일명</th>
+        <th style="text-align:center;width:80px;">파일크기</th>
+      </tr>
+    </thead>
+    <tbody id="sub-file-list"></tbody>
+  </table>
+  <div style="font-size:12px;color:#555;margin-bottom:4px;" id="sub-file-count">총 0건</div>
+
+  <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+    <div style="background:#f8f9fc;border:1px solid #d0d8e4;border-radius:3px;padding:8px 16px;font-size:12px;color:#555;line-height:1.8;">
+      접수증명신청서를 생성하려면 전자서명 요청 전에 생성하시기 바랍니다.<br>
+      전자서명 요청 후엔 접수증명신청서를 생성할 수 없습니다.
+    </div>
+    <button class="btn btn-gray" style="margin-left:10px;" onclick="alert('접수증명신청서 생성 (실습 모드)')">접수증명신청서 생성</button>
+  </div>
+
+  <!-- 안내 -->
+  <div class="notice" style="margin-bottom:12px;">
+    <ul>
+      <li>민사 서류(소장)가 접수된 경우, 인지 환급사유가 발생 시 납부한 인지액 중 일정액 환급하오니 유의하시기 바랍니다.</li>
+      <li>귀하께서 사건분류를 위한 질문지를 성실하게 기재하여 주시면, 귀하의 사건이 더 신속하고 효율적으로 진행될 수 있습니다.</li>
+    </ul>
+  </div>
+
+  <!-- 사건분류 질문지 체크 -->
+  <div style="margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+    <label class="ci"><input type="checkbox" id="sub-survey-chk" checked style="accent-color:var(--navy);width:14px;height:14px;">
+    <span style="font-size:13px;">사건분류 질문지를 작성합니다.</span></label>
+  </div>
+
+  <!-- 버튼 -->
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <button class="btn-lg btn-lg-gray" onclick="goSubmitBack()">← 이전으로가기</button>
+    <div style="display:flex;gap:8px;">
+      <button class="btn-lg btn-lg-gray" onclick="openPop('pop-survey')">사건분류질문지</button>
+      <button class="btn-lg btn-lg-navy" onclick="doFinalSubmit()" style="min-width:120px;font-size:15px;">문서제출</button>
+    </div>
+  </div>
+</div>
+</div>
+
 <!-- ══ 팝업들 ══ -->
+
+<!-- 납부당사자 선택 팝업 -->
+<div class="pop" id="pop-pay-party"><div class="pop-box" style="width:520px;">
+  <div class="pop-hd">납부당사자 <button class="pop-cl" onclick="closePop('pop-pay-party')">✕</button></div>
+  <div class="pop-bd">
+    <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:10px;">◦ 사건정보</div>
+    <table class="ftbl" style="margin-bottom:14px;">
+      <tr><th style="width:100px;">법원</th><td id="pay-pop-court">–</td></tr>
+      <tr><th>사건(문서)번호</th><td id="pay-pop-casenum">실습용 임시번호</td></tr>
+    </table>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+      <label style="font-size:12px;font-weight:600;width:90px;">납부당사자명</label>
+      <input type="text" class="inp" style="width:180px;" id="pay-party-search-inp" placeholder="당사자명 입력">
+      <button class="btn btn-navy" onclick="searchPayParty()">🔍 조회</button>
+    </div>
+    <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:8px;">• 납부당사자 정보</div>
+    <table class="ftbl" style="border:1px solid #d0d8e4;">
+      <thead><tr style="background:#f0f4f8;"><th style="width:50px;text-align:center;">선택</th><th>구분</th><th>이름</th><th>주소</th></tr></thead>
+      <tbody id="pay-party-list"></tbody>
+    </table>
+    <div style="margin-top:10px;"><label class="ci"><input type="checkbox" id="pay-party-all" checked style="accent-color:var(--navy);"> <span style="font-size:12px;">인지액, 송달료, 법원보관금 납부당사자 동일</span></label></div>
+  </div>
+  <div class="pop-ft"><button class="btn btn-gray" onclick="closePop('pop-pay-party')">취소</button><button class="btn btn-navy" onclick="confirmPayParty()">확인</button></div>
+</div></div>
+
+<!-- 납부인 선택 팝업 -->
+<div class="pop" id="pop-pay-payer"><div class="pop-box" style="width:520px;">
+  <div class="pop-hd">납부인 <button class="pop-cl" onclick="closePop('pop-pay-payer')">✕</button></div>
+  <div class="pop-bd">
+    <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:10px;">◦ 사건정보</div>
+    <table class="ftbl" style="margin-bottom:14px;">
+      <tr><th style="width:100px;">법원</th><td id="pay-payer-pop-court">–</td></tr>
+      <tr><th>사건(문서)번호</th><td>실습용 임시번호</td></tr>
+    </table>
+    <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:8px;">• 납부인 정보</div>
+    <table class="ftbl" style="border:1px solid #d0d8e4;">
+      <thead><tr style="background:#f0f4f8;"><th style="width:50px;text-align:center;">선택</th><th>구분</th><th>이름</th><th>실명번호</th><th>주소</th></tr></thead>
+      <tbody id="pay-payer-list"></tbody>
+    </table>
+    <div style="margin-top:10px;"><label class="ci"><input type="checkbox" id="pay-payer-all" checked style="accent-color:var(--navy);"> <span style="font-size:12px;">인지액, 송달료, 법원보관금 납부당사자 동일</span></label></div>
+  </div>
+  <div class="pop-ft"><button class="btn btn-gray" onclick="closePop('pop-pay-payer')">취소</button><button class="btn btn-navy" onclick="confirmPayPayer()">확인</button></div>
+</div></div>
+
+<!-- 납부확인 팝업 -->
+<div class="pop" id="pop-pay-confirm"><div class="pop-box" style="width:400px;">
+  <div class="pop-hd dark">확인 <button class="pop-cl" onclick="closePop('pop-pay-confirm')">✕</button></div>
+  <div class="pop-bd" style="text-align:center;padding:28px 20px;">
+    <p style="font-size:14px;line-height:1.9;color:#333;">인지대를 납부한 후에는 과오납금 반환 또는<br>인지액환금 규정에 따라 처리됩니다.<br>그래도 납부를 하시겠습니까?</p>
+  </div>
+  <div class="pop-ft" style="justify-content:center;gap:16px;">
+    <button class="btn btn-gray" style="width:80px;height:36px;" onclick="closePop('pop-pay-confirm')">아니요</button>
+    <button class="btn btn-navy" style="width:80px;height:36px;" onclick="proceedPayment()">예</button>
+  </div>
+</div></div>
+
+<!-- 사건분류 설문지 팝업 -->
+<div class="pop" id="pop-survey"><div class="pop-box" style="width:680px;max-height:85vh;overflow-y:auto;">
+  <div class="pop-hd">사건분류를 위한 설문지 <button class="pop-cl" onclick="closePop('pop-survey')">✕</button></div>
+  <div class="pop-bd">
+    <div style="background:#e8f4f8;border:1px solid #b3d4e8;border-radius:4px;padding:12px 16px;font-size:12px;color:#1a4a6b;line-height:1.8;margin-bottom:16px;">
+      귀하께서 아래 질문사항에 대하여 성실하게 답변할 경우 다른 사건에 비하여 더 신속하고 효율적으로 진행될 수 있습니다. 답변은 해당란에 체크 표시를 하거나 상세히 기재하는 방법으로 하여주시기 바랍니다.
+    </div>
+    <div style="background:#f5f7fa;border-radius:4px;padding:12px 16px;margin-bottom:8px;font-size:12px;font-weight:700;color:#003366;text-align:center;">&lt;사건의 효율적 분류를 위한 질문사항&gt;</div>
+    <table class="ftbl" style="border:1px solid #d0d8e4;">
+      <tr><th style="width:320px;">1. 현재 피고와 연락이 되는가요?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv1" value="y"> <label>그렇다</label></label><label class="ri"><input type="radio" name="sv1" value="n"> <label>아니다</label></label><label class="ri"><input type="radio" name="sv1" value="u"> <label>모른다</label></label></div></td></tr>
+      <tr><th>2. 소장에 기재한 주소로 우편물을 보내면 피고가 받아 볼 수 있나요?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv2" value="y"> <label>그렇다</label></label><label class="ri"><input type="radio" name="sv2" value="n"> <label>아니다</label></label><label class="ri"><input type="radio" name="sv2" value="u"> <label>모른다</label></label></div></td></tr>
+      <tr><th>3-1. 피고는 원고의 청구를 인정하고 있나요?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv3" value="y"> <label>그렇다</label></label><label class="ri"><input type="radio" name="sv3" value="n"> <label>아니다</label></label><label class="ri"><input type="radio" name="sv3" value="p"> <label>일부인정</label></label></div></td></tr>
+      <tr><th>3-2. (인정하지 않는 부분이 있다면) 원고가 피고가 인정하지 않는 부분에 관한 증거가 있다면 해당란에 표기하여 주십시오.</th><td>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <label class="ci"><input type="checkbox" style="accent-color:var(--navy);"> <label style="font-size:12px;">계약서 등 문서</label></label>
+          <label class="ci"><input type="checkbox" style="accent-color:var(--navy);"> <label style="font-size:12px;">형사사건 등 관련사건 결과</label></label>
+          <label class="ci"><input type="checkbox" style="accent-color:var(--navy);"> <label style="font-size:12px;">목격자 등 증인</label></label>
+          <label class="ci"><input type="checkbox" style="accent-color:var(--navy);"> <label style="font-size:12px;">검증·감정 또는 사실 조회</label></label>
+        </div>
+      </td></tr>
+      <tr><th>4-1. 증인을 신청할 계획이 있습니까?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv4" value="y"> <label>그렇다</label></label><label class="ri"><input type="radio" name="sv4" value="n"> <label>아니다</label></label><label class="ri"><input type="radio" name="sv4" value="u"> <label>모른다</label></label></div></td></tr>
+      <tr><th>4-2. (계획이 있다면) 어떠한 사실을 입증하기 위한 증인인가요?</th><td><textarea class="inp" style="width:100%;height:60px;" placeholder="입력"></textarea></td></tr>
+      <tr><th>5-1. 원고와 피고는 이 사건 이전에 관계 있던 사이인가요?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv5" value="y"> <label>예</label></label><label class="ri"><input type="radio" name="sv5" value="n"> <label>아니오</label></label></div></td></tr>
+      <tr><th>5-2. (관계 있던 사이라면) 어떤 사이인가요?</th><td><input type="text" class="inp" style="width:100%;" placeholder="입력"></td></tr>
+      <tr><th>6-1. 소를 제기하기 전에 피고와 분쟁의 원만한 해결을 위하여 합의한 적이 있나요?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv6" value="y"> <label>그렇다</label></label><label class="ri"><input type="radio" name="sv6" value="n"> <label>아니다</label></label><label class="ri"><input type="radio" name="sv6" value="p"> <label>일부인정</label></label></div></td></tr>
+      <tr><th>6-2. (합의가 실패하였다면) 그 이유는 무엇인가요?</th><td><textarea class="inp" style="width:100%;height:60px;" placeholder="입력"></textarea></td></tr>
+      <tr><th>6-3. 지금 피고와 화해·조정할 의사가 있는가요?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv7" value="y"> <label>그렇다</label></label><label class="ri"><input type="radio" name="sv7" value="n"> <label>아니다</label></label><label class="ri"><input type="radio" name="sv7" value="u"> <label>모른다</label></label></div></td></tr>
+      <tr><th>6-4. (화해·조정 의사가 있다면) 그 화해·조정안은 무엇인가요?</th><td><textarea class="inp" style="width:100%;height:60px;" placeholder="입력"></textarea></td></tr>
+      <tr><th>7-1. 소를 제기하기 전에 다른 일로 피고와 소송 기타 분쟁이 있었던 적이 있나요?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv8" value="y"> <label>그렇다</label></label><label class="ri"><input type="radio" name="sv8" value="n"> <label>아니다</label></label><label class="ri"><input type="radio" name="sv8" value="u"> <label>모른다</label></label></div></td></tr>
+      <tr><th>7-2. (분쟁이 있었다면) 그 내용은 어떤가요?</th><td><textarea class="inp" style="width:100%;height:60px;" placeholder="입력"></textarea></td></tr>
+    </table>
+
+    <div style="background:#f5f7fa;border-radius:4px;padding:10px 16px;margin-top:10px;font-size:12px;font-weight:700;color:#003366;text-align:center;">&lt;변호사를 선임하지 않은 경우&gt;</div>
+    <table class="ftbl" style="border:1px solid #d0d8e4;">
+      <tr><th>변호사, 법무사 등 법률전문가와 상의한 적이 있는가요?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv9" value="y"> <label>그렇다</label></label><label class="ri"><input type="radio" name="sv9" value="n"> <label>아니다</label></label><label class="ri"><input type="radio" name="sv9" value="u"> <label>모른다</label></label></div></td></tr>
+      <tr><th>향후 소송대리인을 선임할 예정인가요?</th><td><div class="rg"><label class="ri"><input type="radio" name="sv10" value="y"> <label>그렇다</label></label><label class="ri"><input type="radio" name="sv10" value="n"> <label>아니다</label></label><label class="ri"><input type="radio" name="sv10" value="u"> <label>모른다</label></label></div></td></tr>
+    </table>
+
+    <div style="background:#f5f7fa;border-radius:4px;padding:10px 16px;margin-top:10px;font-size:12px;font-weight:700;color:#003366;text-align:center;">&lt;그 밖의 절차진행에 의견&gt;</div>
+    <table class="ftbl" style="border:1px solid #d0d8e4;">
+      <tr><th>재판절차의 진행과 관련하여 특별히 재판부에 알리거나 요청하고 싶은 사항을 자유롭게 기재하여 주십시오.</th><td><textarea class="inp" style="width:100%;height:80px;" placeholder="입력"></textarea></td></tr>
+    </table>
+  </div>
+  <div class="pop-ft">
+    <button class="btn btn-gray" onclick="closePop('pop-survey')">작성취소</button>
+    <button class="btn btn-navy" onclick="closePop('pop-survey');showToast('설문지가 저장되었습니다.')">작성완료</button>
+  </div>
+</div></div>
 <!-- 사건명검색 -->
 <div class="pop" id="pop-casesearch"><div class="pop-box" style="width:400px;">
   <div class="pop-hd">사건명 검색 <button class="pop-cl" onclick="closePop('pop-casesearch')">✕</button></div>
@@ -924,24 +1380,30 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
 // ═══════════════════════════════════════════════════════
 // 인증 시스템
 // ═══════════════════════════════════════════════════════
-const DEFAULT_ACC = {
-  student01:{pw:'court1234',name:'실습생 1호',org:'실습반'},
-  student02:{pw:'court1234',name:'실습생 2호',org:'실습반'},
-  student03:{pw:'court1234',name:'실습생 3호',org:'실습반'},
-  student04:{pw:'court1234',name:'실습생 4호',org:'실습반'},
-  student05:{pw:'court1234',name:'실습생 5호',org:'실습반'},
-  student06:{pw:'court1234',name:'실습생 6호',org:'실습반'},
-  student07:{pw:'court1234',name:'실습생 7호',org:'실습반'},
-  student08:{pw:'court1234',name:'실습생 8호',org:'실습반'},
-  student09:{pw:'court1234',name:'실습생 9호',org:'실습반'},
-  student10:{pw:'court1234',name:'실습생 10호',org:'실습반'},
-  admin:{pw:'admin1234',name:'관리자',org:'운영팀'},
+const DEFAULT_ACC={
+  student01:{pw:'court1234',name:'김바른',org:'바른법률사무소',role:'user',barNum:'서울20113',addr:'서울 서초구 서초대로 107 (서초동)',tel:'010-2111-3077',email:'student01@barun.law'},
+  student02:{pw:'court1234',name:'이바른',org:'한결법률사무소',role:'user',barNum:'서울20226',addr:'서울 서초구 서초대로 114 (서초동)',tel:'010-2222-3154',email:'student02@barun.law'},
+  student03:{pw:'court1234',name:'박바른',org:'정직법률사무소',role:'user',barNum:'서울20339',addr:'서울 서초구 서초대로 121 (서초동)',tel:'010-2333-3231',email:'student03@barun.law'},
+  student04:{pw:'court1234',name:'최바른',org:'신뢰법률사무소',role:'user',barNum:'서울20452',addr:'서울 서초구 서초대로 128 (서초동)',tel:'010-2444-3308',email:'student04@barun.law'},
+  student05:{pw:'court1234',name:'정바른',org:'공정법률사무소',role:'user',barNum:'서울20565',addr:'서울 서초구 서초대로 135 (서초동)',tel:'010-2555-3385',email:'student05@barun.law'},
+  student06:{pw:'court1234',name:'강바른',org:'진실법률사무소',role:'user',barNum:'서울20678',addr:'서울 서초구 서초대로 142 (서초동)',tel:'010-2666-3462',email:'student06@barun.law'},
+  student07:{pw:'court1234',name:'조바른',org:'바른법률사무소',role:'user',barNum:'서울20791',addr:'서울 서초구 서초대로 149 (서초동)',tel:'010-2777-3539',email:'student07@barun.law'},
+  student08:{pw:'court1234',name:'윤바른',org:'한결법률사무소',role:'user',barNum:'서울20904',addr:'서울 서초구 서초대로 156 (서초동)',tel:'010-2888-3616',email:'student08@barun.law'},
+  student09:{pw:'court1234',name:'장바른',org:'정직법률사무소',role:'user',barNum:'서울21017',addr:'서울 서초구 서초대로 163 (서초동)',tel:'010-2999-3693',email:'student09@barun.law'},
+  student10:{pw:'court1234',name:'임바른',org:'신뢰법률사무소',role:'user',barNum:'서울21130',addr:'서울 서초구 서초대로 170 (서초동)',tel:'010-3110-3770',email:'student10@barun.law'},
+  admin:{pw:'admin1234',name:'관리자',org:'운영팀',role:'admin',barNum:'',addr:'',tel:'',email:'admin@ecourt.kr'},
 };
 let curUser=null;
 let idChecked=false;
 
-function getAccounts(){try{const s=sessionStorage.getItem('ec_acc');return s?{...DEFAULT_ACC,...JSON.parse(s)}:{...DEFAULT_ACC};}catch{return{...DEFAULT_ACC};}}
-function saveAcc(id,info){try{const s=sessionStorage.getItem('ec_acc');const a=s?JSON.parse(s):{};a[id]=info;sessionStorage.setItem('ec_acc',JSON.stringify(a));}catch{}}
+function getAccounts(){
+  try{
+    const ls=localStorage.getItem('ec_acc');
+    const stored=ls?JSON.parse(ls):{};
+    return {...DEFAULT_ACC,...stored};
+  }catch{return{...DEFAULT_ACC};}
+}
+function saveAcc(id,info){try{const s=localStorage.getItem('ec_acc');const a=s?JSON.parse(s):{};a[id]=info;localStorage.setItem('ec_acc',JSON.stringify(a));}catch{}}
 
 function initAuth(){
   try{const u=sessionStorage.getItem('ec_user');if(u){curUser=JSON.parse(u);onLoginOk(curUser,false);return;}}catch{}
@@ -959,7 +1421,7 @@ function doLogin(){
   const acc=getAccounts()[id];
   if(!acc||acc.pw!==pw){err.textContent='아이디 또는 비밀번호가 올바르지 않습니다.';err.classList.add('show');document.getElementById('li-id').classList.add('err-inp');document.getElementById('li-pw').classList.add('err-inp');return;}
   try{if(document.getElementById('li-save').checked)localStorage.setItem('ec_sid',id);else localStorage.removeItem('ec_sid');}catch{}
-  const user={id,name:acc.name,org:acc.org||''};
+  const user={id,name:acc.name,org:acc.org||'',role:acc.role||'user',barNum:acc.barNum||'',addr:acc.addr||'',tel:acc.tel||'',email:acc.email||''};
   sessionStorage.setItem('ec_user',JSON.stringify(user));
   onLoginOk(user,true);
 }
@@ -1359,13 +1821,251 @@ function confirmDone(){
   if(!document.getElementById('prev-cfm-chk').checked){alert('모든 문서의 내용에 이상이 없음을 확인하는 체크박스를 선택해주세요.');return;}
   const score=parseInt(document.getElementById('score-num').textContent)||0;
   document.getElementById('final-score').textContent=score;
-  openPop('pop-done');
-  // AI 피드백 요청 + 실습기록 저장
-  requestAIFeedback(score);
+
+  // 단계바 업데이트: 4단계 활성
+  updateStep(4);
+
+  // 금액 계산
+  const sogaRaw=parseInt((document.getElementById('soga').value||'0').replace(/,/g,''))||0;
+  const stamp=calcStamp(sogaRaw);
+  const delivery=calcDelivery();
+  document.getElementById('pay-stamp-amount').textContent=stamp.toLocaleString()+'원';
+  document.getElementById('pay-delivery-amount').textContent=delivery.toLocaleString()+'원';
+  document.getElementById('pay-bar-stamp').textContent=stamp.toLocaleString()+'원';
+  document.getElementById('pay-bar-delivery').textContent=delivery.toLocaleString()+'원';
+  document.getElementById('pay-bar-total').textContent=(stamp+delivery).toLocaleString()+'원';
+
+  // 납부당사자 목록 세팅
+  buildPayPartyList();
+
+  // 법원 정보 팝업에 세팅
+  const court=document.getElementById('court').value||'–';
+  ['pay-pop-court','pay-payer-pop-court'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=court;});
+
+  // 화면 전환
+  document.getElementById('prev-area').style.display='none';
+  document.getElementById('pay-area').style.display='block';
+  window.scrollTo(0,0);
+  showToast('4단계: 소송비용납부로 이동합니다.');
 }
 
-// ─── AI 피드백 요청 ─────────────────────────────────────
-async function requestAIFeedback(score){
+// ─── 내 정보 불러오기 (로그인 변호사 정보 → 대리인 폼 자동 입력) ───
+function loadMyLawyerInfo(){
+  if(!curUser){showToast('로그인이 필요합니다.','err');return;}
+
+  // localStorage에서 최신 계정 정보 가져오기
+  const acc = getAccounts()[curUser.id];
+  if(!acc){showToast('계정 정보를 불러올 수 없습니다.','err');return;}
+
+  const name    = acc.name  || curUser.name || '';
+  const org     = acc.org   || curUser.org  || '';
+  const addr    = acc.addr  || '';
+  const zip     = acc.zip   || '';
+  const tel     = acc.tel   || '';
+  const email   = acc.email || '';
+  const barNum  = acc.barNum|| '';
+
+  // ① 대리인명
+  const agName = document.getElementById('ag-name');
+  if(agName) agName.value = name;
+
+  // ② 주소
+  const agAddr1 = document.getElementById('ag-addr1');
+  const agZip   = document.getElementById('ag-zip');
+  if(agAddr1 && addr) agAddr1.value = addr;
+  if(agZip   && zip ) agZip.value   = zip;
+
+  // ③ 휴대전화 (010-XXXX-XXXX 분리)
+  if(tel){
+    const parts = tel.replace(/[^0-9]/g,'-').split('-').filter(Boolean);
+    const m1 = document.getElementById('ag-tel-m1');
+    const m2 = document.getElementById('ag-tel-m2');
+    const m3 = document.getElementById('ag-tel-m3');
+    if(m1 && parts[0]){ m1.value = parts[0]; }
+    if(m2 && parts[1]){ m2.value = parts[1]; }
+    if(m3 && parts[2]){ m3.value = parts[2]; }
+  }
+
+  // ④ 이메일 분리 (id@domain)
+  if(email){
+    const [eid, edm] = email.split('@');
+    const agEid = document.getElementById('ag-email-id');
+    const agEdm = document.getElementById('ag-email-dm');
+    if(agEid) agEid.value = eid || '';
+    if(agEdm) agEdm.value = edm || '';
+  }
+
+  // ⑤ 변호사 등록번호 표시 (참고용 토스트)
+  const barMsg = barNum ? ` (등록번호: ${barNum})` : '';
+  showToast(`✅ ${name} 변호사${barMsg} 정보가 입력되었습니다.`);
+
+  // ⑥ 사무소명 힌트 표시
+  if(org){
+    const agBldg = document.getElementById('ag-bldg');
+    if(agBldg && !agBldg.value) agBldg.value = org;
+  }
+}
+// ─── 납부 연습 예시 자동 입력 ───
+function loadPayExample(n){
+  const examples={
+    1:{method:'virtual',bank:'국민은행',acct:'123456-78-901234',holder:'김바른',notify:'sms',finalMethod:'가상계좌(무통장입금)',stamp:25000,delivery:62400,fee:'가상계좌 납부는 전자결제수수료가 부과되지 않습니다.',tel1:'2111',tel2:'3077',delivAcct:'123456-78-000001',label:'소액 대여금 (소가 500만원)'},
+    2:{method:'card',bank:'신한은행',acct:'110-234-567890',holder:'이바른',notify:'sms',finalMethod:'신용카드',stamp:126000,delivery:82500,fee:'계좌이체·신용카드: 소송비용 × 2.41% (최저 200원)',tel1:'2222',tel2:'3154',delivAcct:'110-234-000002',label:'손해배상 (소가 3,000만원)'},
+    3:{method:'virtual',bank:'우리은행',acct:'1002-345-678901',holder:'박바른',notify:'kakao',finalMethod:'가상계좌(무통장입금)',stamp:409500,delivery:82500,fee:'가상계좌 납부는 전자결제수수료가 부과되지 않습니다.',tel1:'2333',tel2:'3231',delivAcct:'1002-345-000003',label:'매매대금 청구 (소가 1억원)'}
+  };
+  const ex=examples[n]; if(!ex)return;
+
+  const setEl=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val;};
+  const setRad=(name,val)=>{const el=document.querySelector(`input[name="${name}"][value="${val}"]`);if(el)el.checked=true;};
+  const setSel=(id,text)=>{const el=document.getElementById(id);if(!el)return;for(let i=0;i<el.options.length;i++){if(el.options[i].text===text||el.options[i].value===text){el.selectedIndex=i;break;}}};
+
+  setRad('pay-method', ex.method);
+  setSel('pay-bank', ex.bank);
+  setEl('pay-acct', ex.acct);
+  setEl('pay-holder', ex.holder);
+  setRad('pay-notify', ex.notify);
+  setSel('pay-final-method', ex.finalMethod);
+  setEl('pay-delivery-acct', ex.delivAcct);
+  setEl('pay-tel1', ex.tel1);
+  setEl('pay-tel2', ex.tel2);
+
+  const feeEl=document.getElementById('pay-fee-text');
+  if(feeEl)feeEl.textContent=ex.fee;
+
+  document.getElementById('pay-bar-stamp').textContent=ex.stamp.toLocaleString()+'원';
+  document.getElementById('pay-bar-delivery').textContent=ex.delivery.toLocaleString()+'원';
+  document.getElementById('pay-stamp-amount').textContent=ex.stamp.toLocaleString()+'원';
+  document.getElementById('pay-delivery-amount').textContent=ex.delivery.toLocaleString()+'원';
+  document.getElementById('pay-bar-total').textContent=(ex.stamp+ex.delivery).toLocaleString()+'원';
+  showToast(`✅ [${ex.label}] 예시가 입력되었습니다.`);
+}
+
+// ─── 인지액 계산 ───
+function calcStamp(soga){
+  if(soga<=1000000)return Math.ceil(soga*0.005/10)*10;
+  if(soga<=10000000)return Math.ceil(soga*0.0045/10)*10;
+  if(soga<=100000000)return Math.ceil(soga*0.004/10)*10;
+  if(soga<=1000000000)return Math.ceil(soga*0.0035/10)*10;
+  return Math.ceil(soga*0.003/10)*10;
+}
+// ─── 송달료 계산 ───
+function calcDelivery(){
+  const cnt=parties.length||2;
+  return cnt*3*5200+cnt*2*5200;
+}
+// ─── 납부당사자 목록 세팅 ───
+function buildPayPartyList(){
+  const won=parties.filter(p=>p.role==='원고');
+  const ag=agents[0];
+  const payPeople=[...won];
+  if(ag)payPeople.push({name:ag.name,role:'원고대리인',addr:ag.addr||'–',rrn:ag.rrn||''});
+  const tbody=document.getElementById('pay-party-list');
+  const tbody2=document.getElementById('pay-payer-list');
+  if(tbody)tbody.innerHTML=payPeople.map((p,i)=>`<tr><td style="text-align:center;"><input type="radio" name="sel-party" value="${i}" ${i===0?'checked':''}></td><td>${p.role==='원고'?'원고':'원고대리인'}</td><td>${p.name||'–'}</td><td>${p.addr||'–'}</td></tr>`).join('');
+  if(tbody2)tbody2.innerHTML=payPeople.map((p,i)=>`<tr><td style="text-align:center;"><input type="radio" name="sel-payer" value="${i}" ${i===0?'checked':''}></td><td>${p.role==='원고'?'원고':'원고대리인'}</td><td>${p.name||'–'}</td><td>${(p.rrn||'').replace(/(\d{6})-(\d+)/,'$1-*******')||'–'}</td><td>${p.addr||'–'}</td></tr>`).join('');
+  if(payPeople[0]){
+    document.getElementById('pay-party-name').value=payPeople[0].name||'';
+    document.getElementById('pay-payer-name').value=payPeople[0].name||'';
+    document.getElementById('pay-auto-name').textContent=payPeople[0].name||'–';
+    document.getElementById('pay-auto-rrn').textContent='입력 필요';
+  }
+}
+function searchPayParty(){showToast('조회되었습니다.');}
+function confirmPayParty(){
+  const sel=document.querySelector('input[name="sel-party"]:checked');
+  const payPeople=[...parties.filter(p=>p.role==='원고'),...(agents[0]?[{name:agents[0].name}]:[])];
+  const chosen=payPeople[parseInt(sel?.value||0)];
+  if(chosen){document.getElementById('pay-party-name').value=chosen.name||'';document.getElementById('pay-auto-name').textContent=chosen.name||'–';}
+  closePop('pop-pay-party');
+}
+function confirmPayPayer(){
+  const sel=document.querySelector('input[name="sel-payer"]:checked');
+  const payPeople=[...parties.filter(p=>p.role==='원고'),...(agents[0]?[{name:agents[0].name}]:[])];
+  const chosen=payPeople[parseInt(sel?.value||0)];
+  if(chosen)document.getElementById('pay-payer-name').value=chosen.name||'';
+  closePop('pop-pay-payer');
+}
+function checkPayAccount(){
+  const bank=document.getElementById('pay-bank').value;
+  const acct=document.getElementById('pay-acct').value.trim();
+  const holder=document.getElementById('pay-holder').value.trim();
+  if(!bank||!acct||!holder){alert('은행, 계좌번호, 예금주를 모두 입력해주세요.');return;}
+  showToast('✅ 계좌 확인이 완료되었습니다.');
+}
+function updatePayMethod(){}
+function goPayBack(){
+  document.getElementById('pay-area').style.display='none';
+  document.getElementById('prev-area').style.display='block';
+  updateStep(3);window.scrollTo(0,0);
+}
+function goPayNext(){goToSubmit();}
+function doPayment(){
+  const party=document.getElementById('pay-party-name').value.trim();
+  if(!party){alert('납부당사자를 선택해주세요.');return;}
+  const terms=document.querySelector('input[name="pay-terms"]:checked')?.value;
+  if(terms!=='agree'){alert('전자지급결제대행서비스이용약관에 동의해주세요.');return;}
+  openPop('pop-pay-confirm');
+}
+function proceedPayment(){
+  closePop('pop-pay-confirm');
+  showToast('✅ 소송비용 납부가 완료되었습니다. (실습 모드)');
+  setTimeout(()=>goToSubmit(),1200);
+}
+function goToSubmit(){
+  updateStep(5);
+  const court=document.getElementById('court').value||'–';
+  const caseType=(document.getElementById('case-cat').value||'')+(document.getElementById('case-name').value||'소장');
+  const sogaNum=parseInt((document.getElementById('soga').value||'0').replace(/,/g,''))||0;
+  const stamp=calcStamp(sogaNum);
+  const delivery=calcDelivery();
+  const won=parties.filter(p=>p.role==='원고');
+  const def=parties.filter(p=>p.role==='피고');
+  const ag=agents[0];
+  document.getElementById('sub-court').textContent=court;
+  document.getElementById('sub-casename').textContent=caseType;
+  document.getElementById('sub-soga').textContent=sogaNum.toLocaleString()+'원';
+  document.getElementById('sub-stamp').textContent=stamp.toLocaleString()+'원';
+  try{document.getElementById('sub-delivery').textContent=delivery.toLocaleString()+'원';}catch{}
+  document.getElementById('sub-plaintiff').textContent=won.map(p=>p.name).join(', ')||'–';
+  document.getElementById('sub-defendant').textContent=def.map(p=>p.name).join(', ')||'–';
+  document.getElementById('sub-agent').textContent=ag?(ag.type+' '+ag.name):'–';
+  const tbody=document.getElementById('sub-file-list');
+  const files=[{구분:'소송문서',서류명:'소장',파일명:'소장.pdf',크기:'자동생성'}];
+  evList.forEach(ev=>files.push({구분:'증거서류',서류명:`[${ev.buho}${ev.num}] ${ev.name}`,파일명:ev.fileName,크기:ev.fileSize||'–'}));
+  if(tbody)tbody.innerHTML=files.map((f,i)=>`<tr><td style="text-align:center;">${i+1}</td><td>${f.구분}</td><td>${f.서류명}</td><td><a style="color:#006699;text-decoration:underline;cursor:pointer;" onclick="alert('파일 미리보기 (실습 모드)')">${f.파일명}</a></td><td style="text-align:right;">${f.크기}</td></tr>`).join('');
+  const cnt=document.getElementById('sub-file-count');
+  if(cnt)cnt.textContent=`총 ${files.length}건`;
+  document.getElementById('pay-area').style.display='none';
+  document.getElementById('submit-area').style.display='block';
+  window.scrollTo(0,0);
+}
+function goSubmitBack(){
+  document.getElementById('submit-area').style.display='none';
+  document.getElementById('pay-area').style.display='block';
+  updateStep(4);window.scrollTo(0,0);
+}
+function doFinalSubmit(){
+  if(!confirm('소장을 법원에 제출하시겠습니까?\n\n제출 후에는 수정이 어렵습니다.'))return;
+  const score=parseInt(document.getElementById('score-num').textContent)||0;
+  document.getElementById('final-score').textContent=score;
+
+  // ① 팝업 먼저 열기
+  openPop('pop-done');
+
+  // ② AI 피드백 요청 전에 임시 기록 즉시 저장 (피드백 없이)
+  saveRecord(score, '분석 중...');
+
+  // ③ AI 피드백 요청 → 완료되면 기록 업데이트
+  requestAIFeedbackAndUpdate(score);
+}
+
+async function requestAIFeedbackAndUpdate(score){
+  const feedback = await getFeedback(score);
+  displayFeedback(feedback, score);
+  // 기존 기록에서 가장 최근 항목 피드백 업데이트
+  updateLatestRecord(score, feedback);
+}
+
+async function getFeedback(score){
   const won=parties.filter(p=>p.role==='원고');
   const def=parties.filter(p=>p.role==='피고');
   const ag=agents[0];
@@ -1407,17 +2107,50 @@ async function requestAIFeedback(score){
       })
     });
     const data = await res.json();
-    const feedback = data.content?.[0]?.text || '피드백을 불러올 수 없습니다.';
-    displayFeedback(feedback, score);
-    saveRecord(score, feedback);
+    return data.content?.[0]?.text || generateLocalFeedback(score);
   } catch(e) {
-    // API 실패 시 로컬 피드백
-    const fallback = generateLocalFeedback(score);
-    displayFeedback(fallback, score);
-    saveRecord(score, fallback);
+    return generateLocalFeedback(score);
   }
 }
 
+function updateLatestRecord(score, feedback){
+  if(!curUser) return;
+  try {
+    const key = 'ec_records_' + curUser.id;
+    const records = JSON.parse(localStorage.getItem(key)||'[]');
+    if(records.length > 0 && records[0].score === score){
+      records[0].feedback = feedback;
+      localStorage.setItem(key, JSON.stringify(records));
+    }
+    const all = JSON.parse(localStorage.getItem('ec_all_records')||'[]');
+    const idx = all.findIndex(r => r.userId === curUser.id && r.score === score && r.feedback === '분석 중...');
+    if(idx !== -1){
+      all[idx].feedback = feedback;
+      localStorage.setItem('ec_all_records', JSON.stringify(all));
+    }
+    // Supabase 피드백 업데이트
+    sbUpdateFeedback(curUser.id, score, feedback);
+  } catch(e){ console.error('기록 업데이트 실패:', e); }
+}
+function updateStep(step){
+  const labels=['서류선택','소장작성','당사자정보','소송비용납부','전자제출'];
+  for(let i=0;i<5;i++){
+    const circ=document.getElementById('sc'+i);
+    const line=document.getElementById('sl'+i);
+    if(!circ)continue;
+    if(i+1<step){circ.className='scirc done';circ.textContent='✓';if(line)line.className='sline done';}
+    else if(i+1===step){circ.className='scirc active';circ.textContent=String(i+1);if(line)line.className='sline';}
+    else{circ.className='scirc';circ.textContent=String(i+1);if(line)line.className='sline';}
+  }
+  document.querySelectorAll('.slbl').forEach((el,i)=>{
+    if(labels[i])el.textContent=labels[i];
+    if(i+1<step)el.className='slbl done';
+    else if(i+1===step)el.className='slbl active';
+    else el.className='slbl';
+  });
+}
+
+// ─── AI 피드백 요청 ─────────────────────────────────────
 function displayFeedback(text, score){
   document.getElementById('ai-fb-loading').style.display='none';
   const grade = score>=90?'🏆 우수':score>=70?'✅ 양호':score>=50?'📝 보통':'⚠️ 미흡';
@@ -1442,8 +2175,6 @@ function generateLocalFeedback(score){
 function saveRecord(score, feedback){
   if(!curUser) return;
   try {
-    const key = 'ec_records_' + curUser.id;
-    const existing = JSON.parse(sessionStorage.getItem(key)||'[]');
     const won=parties.filter(p=>p.role==='원고');
     const def=parties.filter(p=>p.role==='피고');
     const record = {
@@ -1462,16 +2193,64 @@ function saveRecord(score, feedback){
       hasCause: (document.getElementById('cause-editor')?.innerText?.trim()||'').length>0||causeFileAttached,
       evidenceCount: evList.length,
     };
+    // ── localStorage (백업) ──
+    const key = 'ec_records_' + curUser.id;
+    const existing = JSON.parse(localStorage.getItem(key)||'[]');
     existing.unshift(record);
-    if(existing.length>20) existing.pop(); // 최대 20개
-    sessionStorage.setItem(key, JSON.stringify(existing));
-    // 공유 기록 (admin 열람용) - shared key
-    const sharedKey = 'ec_all_records';
-    const allRecords = JSON.parse(sessionStorage.getItem(sharedKey)||'[]');
+    if(existing.length>50) existing.pop();
+    localStorage.setItem(key, JSON.stringify(existing));
+    const allRecords = JSON.parse(localStorage.getItem('ec_all_records')||'[]');
     allRecords.unshift(record);
-    if(allRecords.length>200) allRecords.pop();
-    sessionStorage.setItem(sharedKey, JSON.stringify(allRecords));
-  } catch(e){ console.error('기록 저장 실패:', e); }
+    if(allRecords.length>500) allRecords.pop();
+    localStorage.setItem('ec_all_records', JSON.stringify(allRecords));
+    // ── Supabase 저장 ──
+    sbInsertRecord(record);
+    console.log('[실습기록] 저장 완료:', curUser.id, score+'점');
+  } catch(e){ console.error('[실습기록] 저장 실패:', e); }
+}
+
+// ── Supabase 설정 ──
+const SB_URL = 'https://knpvayujykoqjncctxrr.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtucHZheXVqeWtvcWpuY2N0eHJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NzA3NDUsImV4cCI6MjA4OTE0Njc0NX0.rXlo5IsOW6FS5N1X3vgqNM1RvzB84TYPqVhnYyc6FSg';
+const SB_HEADERS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
+async function sbInsertRecord(r){
+  try{
+    const res = await fetch(SB_URL+'/rest/v1/practice_records', {
+      method:'POST',
+      headers:{...SB_HEADERS,'Prefer':'return=minimal'},
+      body: JSON.stringify({
+        user_id: r.userId,
+        user_name: r.userName,
+        score: r.score,
+        feedback: r.feedback,
+        case_type: r.caseType,
+        court: r.court,
+        plaintiff: r.plaintiff,
+        defendant: r.defendant,
+        has_agent: r.hasAgent,
+        evidence_count: r.evidenceCount,
+        date_str: r.date,
+      })
+    });
+    if(!res.ok){ const e=await res.text(); console.error('[Supabase] insert 실패:', e); }
+    else console.log('[Supabase] 저장 성공');
+  }catch(e){ console.error('[Supabase] 네트워크 오류:', e); }
+}
+
+async function sbUpdateFeedback(userId, score, feedback){
+  try{
+    // 가장 최근 해당 유저의 분석중 레코드를 업데이트
+    const res = await fetch(
+      SB_URL+'/rest/v1/practice_records?user_id=eq.'+encodeURIComponent(userId)
+        +'&score=eq.'+score+'&feedback=eq.'+encodeURIComponent('분석 중...')
+        +'&order=created_at.desc&limit=1',
+      { method:'PATCH',
+        headers:{...SB_HEADERS,'Prefer':'return=minimal'},
+        body: JSON.stringify({feedback}) }
+    );
+    if(!res.ok){ const e=await res.text(); console.error('[Supabase] update 실패:', e); }
+  }catch(e){ console.error('[Supabase] update 오류:', e); }
 }
 function downloadPDF(){
   const won=parties.filter(p=>p.role==='원고');

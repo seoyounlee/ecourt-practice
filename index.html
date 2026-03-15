@@ -21,7 +21,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 
 /* ── GNB ── */
 .gnb{background:#fff;border-bottom:1px solid #dde0e8;position:sticky;top:0;z-index:500;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.gnb-inner{max-width:1320px;margin:0 auto;display:flex;align-items:stretch;height:64px;padding:0 16px;}
+.gnb-inner{max-width:1320px;margin:0 auto;display:flex;align-items:stretch;height:64px;padding:0 16px;position:relative;}
 .gnb-logo{display:flex;align-items:center;gap:10px;margin-right:32px;flex-shrink:0;}
 .gnb-logo-img{display:flex;align-items:center;gap:8px;}
 .logo-emblem{width:44px;height:44px;position:relative;}
@@ -30,7 +30,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 .logo-text .court{font-size:11px;color:#006699;font-weight:600;letter-spacing:.02em;}
 .logo-text .portal{font-size:17px;font-weight:700;color:#003366;letter-spacing:-.02em;}
 .gnb-nav{display:flex;align-items:stretch;flex:1;}
-.gnb-item{position:relative;display:flex;align-items:center;padding:0 20px;font-size:14px;font-weight:600;color:#222;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s;white-space:nowrap;}
+.gnb-item{position:static;display:flex;align-items:center;padding:0 20px;font-size:14px;font-weight:600;color:#222;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s;white-space:nowrap;}
 .gnb-item:hover,.gnb-item.active{color:#006699;border-bottom-color:#006699;}
 .gnb-item.active{color:#006699;}
 .gnb-right{display:flex;align-items:center;gap:12px;margin-left:auto;}
@@ -43,7 +43,7 @@ a{text-decoration:none;color:inherit;cursor:pointer;}
 .gnb-home-icon{font-size:18px;}
 
 /* ── 메가 드롭다운 ── */
-.mega-drop{display:none;position:fixed;top:101px;left:0;right:0;background:#fff;border-top:3px solid #006699;border-bottom:1px solid #dde0e8;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:499;}
+.mega-drop{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border-top:3px solid #006699;border-bottom:1px solid #dde0e8;box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:499;}
 .gnb-item:hover .mega-drop,.mega-drop:hover{display:flex;}
 .mega-inner{max-width:1320px;margin:0 auto;padding:24px 16px;display:flex;gap:0;}
 .mega-banner{width:220px;min-width:220px;background:#f0f4f8;border-radius:6px;padding:20px;margin-right:24px;display:flex;flex-direction:column;justify-content:center;align-items:center;}
@@ -589,8 +589,8 @@ const DEFAULT_ACC={
   admin:{pw:'admin1234',name:'관리자',org:'운영팀',role:'admin'},
 };
 let curUser=null,idOk=false;
-function getAcc(){try{const s=sessionStorage.getItem('ec_acc');return s?{...DEFAULT_ACC,...JSON.parse(s)}:{...DEFAULT_ACC};}catch{return{...DEFAULT_ACC};}}
-function saveAccSess(id,info){try{const s=sessionStorage.getItem('ec_acc');const a=s?JSON.parse(s):{};a[id]=info;sessionStorage.setItem('ec_acc',JSON.stringify(a));}catch{}}
+function getAcc(){try{const ls=localStorage.getItem('ec_acc');const stored=ls?JSON.parse(ls):{};return {...DEFAULT_ACC,...stored};}catch{return{...DEFAULT_ACC};}}
+function saveAccSess(id,info){try{const s=localStorage.getItem('ec_acc');const a=s?JSON.parse(s):{};a[id]=info;localStorage.setItem('ec_acc',JSON.stringify(a));}catch{}}
 
 function initAuth(){
   try{const u=sessionStorage.getItem('ec_user');if(u){curUser=JSON.parse(u);applyLogin(curUser);return;}}catch{}
