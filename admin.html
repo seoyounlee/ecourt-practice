@@ -1007,105 +1007,42 @@ function renderStudentSummaryWithData(records){
     body.innerHTML='<div style="text-align:center;padding:48px;color:#aaa;"><div style="font-size:40px;margin-bottom:12px;">📋</div><div style="font-size:14px;font-weight:600;color:#888;margin-bottom:6px;">아직 실습 기록이 없습니다</div><div style="font-size:12px;">학생이 소장 작성을 완료하면 자동으로 기록됩니다.</div></div>';
     return;
   }
-  body.innerHTML=students.map(s=>{
+  const rows=students.map(s=>{
     const cnt=s.records.length;
     const avg=Math.round(s.records.reduce((a,r)=>a+r.score,0)/cnt);
     const best=Math.max(...s.records.map(r=>r.score));
     const latest=s.records[0];
+    const recRows=s.records.map(r=>`
+      <div style="padding:12px 20px 12px 40px;border-top:1px solid #f0f4f8;display:flex;gap:12px;">
+        <div style="background:${bgFn(r.score)};border-radius:6px;padding:8px 12px;text-align:center;min-width:56px;flex-shrink:0;">
+          <div style="font-size:18px;font-weight:700;color:${colorFn(r.score)};">${r.score}</div>
+          <div style="font-size:9px;color:${colorFn(r.score)};font-weight:600;">${gradeFn(r.score).split(' ')[1]}</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px;color:#666;margin-bottom:6px;">
+            📅 ${r.date||'–'} | ⚖ ${r.caseType||'소장 실습'} | 🏛 ${r.court||'–'} | 📁 ${r.evidenceCount||0}건
+          </div>
+          <div style="background:#f8f9fc;border:1px solid #e0e6ee;border-radius:4px;padding:8px 12px;">
+            <div style="font-size:11px;font-weight:700;color:#003366;margin-bottom:4px;">🤖 AI 피드백</div>
+            <div style="font-size:11px;color:#444;line-height:1.8;white-space:pre-wrap;">${(r.feedback||'피드백 없음').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+          </div>
+        </div>
+      </div>`).join('');
     return `<div style="border-bottom:1px solid #f0f2f8;">
-      <div style="padding:14px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;background:#fafbfc;transition:background .15s;"
-           onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='#fafbfc'"
-           onclick="toggleStudentDetail('sd-${s.userId}')">
-        <div style="width:44px;height:44px;background:${bgFn(avg)};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:${colorFn(avg)};flex-shrink:0;border:2px solid ${colorFn(avg)};">${avg}</div>
+      <div style="padding:14px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;background:#fafbfc;"
+        onclick="toggleStudentDetail('sd-${s.userId}')">
+        <div style="width:44px;height:44px;background:${bgFn(avg)};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:${colorFn(avg)};border:2px solid ${colorFn(avg)};">${avg}</div>
         <div style="flex:1;">
           <div style="font-size:13px;font-weight:700;color:#003366;">${s.userName}<span style="font-size:11px;font-weight:400;color:#888;margin-left:6px;">(${s.userId})</span></div>
-          <div style="font-size:11px;color:#888;margin-top:3px;">실습 <strong>${cnt}회</strong> &nbsp;·&nbsp; 평균 <strong style="color:${colorFn(avg)};">${avg}점</strong> &nbsp;·&nbsp; 최고 <strong>${best}점</strong> &nbsp;·&nbsp; 최근: ${latest.date||'–'}</div>
+          <div style="font-size:11px;color:#888;margin-top:3px;">실습 <strong>${cnt}회</strong> · 평균 <strong style="color:${colorFn(avg)};">${avg}점</strong> · 최고 <strong>${best}점</strong> · 최근: ${latest.date||'–'}</div>
         </div>
         <span style="font-size:12px;font-weight:700;color:${colorFn(avg)};margin-right:6px;">${gradeFn(avg)}</span>
         <span style="font-size:16px;color:#bbb;" id="arr-${s.userId}">▼</span>
       </div>
-      <div id="sd-${s.userId}" style="display:none;background:#fff;">
-        ${s.records.map(r=>`
-        <div style="padding:14px 20px 14px 40px;border-top:1px solid #f0f4f8;display:flex;gap:14px;align-items:flex-start;">
-          <div style="background:${bgFn(r.score)};border-radius:6px;padding:10px 12px;text-align:center;min-width:60px;flex-shrink:0;">
-            <div style="font-size:20px;font-weight:700;color:${colorFn(r.score)};line-height:1;">${r.score}</div>
-            <div style="font-size:9px;color:${colorFn(r.score)};margin-top:2px;font-weight:600;">${gradeFn(r.score).split(' ')[1]}</div>
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:11px;color:#666;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:10px;">
-              <span>📅 ${r.date||'–'}</span><span>⚖ ${r.caseType||'소장 실습'}</span>
-              <span>🏛 ${r.court||'–'}</span><span>📁 입증서류 ${r.evidenceCount||0}건</span>
-            </div>
-            <div style="background:#f8f9fc;border:1px solid #e0e6ee;border-radius:4px;padding:10px 12px;">
-              <div style="font-size:11px;font-weight:700;color:#003366;margin-bottom:5px;">🤖 AI 피드백</div>
-              <div style="font-size:11px;color:#444;line-height:1.8;white-space:pre-wrap;">${(r.feedback||'피드백 없음').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
-            </div>
-          </div>
-        </div>`).join('')}
-      </div>
+      <div id="sd-${s.userId}" style="display:none;background:#fff;">${recRows}</div>
     </div>`;
   }).join('');
-}
-
-function renderStudentSummary(){
-  // 기존 호환: Supabase 로딩 후 renderStudentSummaryWithData 호출
-  sbGetAllRecords().then(records=>{
-    const localRecs=getAllRecords();
-    renderStudentSummaryWithData(records.length>0?records:localRecs);
-  });
-}
-  const q=(document.getElementById('student-search')||{}).value?.trim().toLowerCase()||'';
-  const byStudent={};
-  records.forEach(r=>{
-    const uid=r.userId||'unknown';
-    if(!byStudent[uid]) byStudent[uid]={userId:uid,userName:r.userName||uid,records:[]};
-    byStudent[uid].records.push(r);
-  });
-  let students=Object.values(byStudent);
-  if(q) students=students.filter(s=>s.userName.toLowerCase().includes(q)||s.userId.toLowerCase().includes(q));
-  const body=document.getElementById('student-summary-body');
-  if(!students.length){
-    body.innerHTML='<div style="text-align:center;padding:48px;color:#aaa;"><div style="font-size:40px;margin-bottom:12px;">📋</div><div style="font-size:14px;font-weight:600;color:#888;margin-bottom:6px;">아직 실습 기록이 없습니다</div><div style="font-size:12px;">학생이 소장 작성을 완료하면 자동으로 기록됩니다.</div></div>';
-    return;
-  }
-  body.innerHTML=students.map(s=>{
-    const cnt=s.records.length;
-    const avg=Math.round(s.records.reduce((a,r)=>a+r.score,0)/cnt);
-    const best=Math.max(...s.records.map(r=>r.score));
-    const latest=s.records[0];
-    return `<div style="border-bottom:1px solid #f0f2f8;">
-      <div style="padding:14px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;background:#fafbfc;transition:background .15s;"
-           onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='#fafbfc'"
-           onclick="toggleStudentDetail('sd-${s.userId}')">
-        <div style="width:44px;height:44px;background:${bgFn(avg)};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:${colorFn(avg)};flex-shrink:0;border:2px solid ${colorFn(avg)};">${avg}</div>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:700;color:#003366;">${s.userName}<span style="font-size:11px;font-weight:400;color:#888;margin-left:6px;">(${s.userId})</span></div>
-          <div style="font-size:11px;color:#888;margin-top:3px;">실습 <strong>${cnt}회</strong> &nbsp;·&nbsp; 평균 <strong style="color:${colorFn(avg)};">${avg}점</strong> &nbsp;·&nbsp; 최고 <strong>${best}점</strong> &nbsp;·&nbsp; 최근: ${latest.date||'–'}</div>
-        </div>
-        <span style="font-size:12px;font-weight:700;color:${colorFn(avg)};margin-right:6px;">${gradeFn(avg)}</span>
-        <span style="font-size:16px;color:#bbb;transition:transform .2s;" id="arr-${s.userId}">▼</span>
-      </div>
-      <div id="sd-${s.userId}" style="display:none;background:#fff;">
-        ${s.records.map(r=>`
-        <div style="padding:14px 20px 14px 40px;border-top:1px solid #f0f4f8;display:flex;gap:14px;align-items:flex-start;">
-          <div style="background:${bgFn(r.score)};border-radius:6px;padding:10px 12px;text-align:center;min-width:60px;flex-shrink:0;">
-            <div style="font-size:20px;font-weight:700;color:${colorFn(r.score)};line-height:1;">${r.score}</div>
-            <div style="font-size:9px;color:${colorFn(r.score)};margin-top:2px;font-weight:600;">${gradeFn(r.score).split(' ')[1]}</div>
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:11px;color:#666;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:10px;">
-              <span>📅 ${r.date||'–'}</span><span>⚖ ${r.caseType||'소장 실습'}</span>
-              <span>🏛 ${r.court||'–'}</span><span>📁 입증서류 ${r.evidenceCount||0}건</span>
-            </div>
-            <div style="background:#f8f9fc;border:1px solid #e0e6ee;border-radius:4px;padding:10px 12px;">
-              <div style="font-size:11px;font-weight:700;color:#003366;margin-bottom:5px;">🤖 AI 피드백</div>
-              <div style="font-size:11px;color:#444;line-height:1.8;white-space:pre-wrap;">${(r.feedback||'피드백 없음').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
-            </div>
-          </div>
-        </div>`).join('')}
-      </div>
-    </div>`;
-  }).join('');
+  body.innerHTML=rows;
 }
 
 function toggleStudentDetail(id){
