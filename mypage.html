@@ -442,7 +442,7 @@ const SAMPLE_SCHEDULE=[
 ];
 
 // ══════ 인증 ══════
-function getAcc(){try{const ls=localStorage.getItem('ec_acc');const stored=ls?JSON.parse(ls):{};return {...DEFAULT_ACC,...stored};}catch{return{...DEFAULT_ACC};}}
+function getAcc(){try{const ls=localStorage.getItem('ec_acc');const stored=ls?JSON.parse(ls):{};return {...stored,...DEFAULT_ACC};}catch{return{...DEFAULT_ACC};}}
 
 function initAuth(){
   try{const u=sessionStorage.getItem('ec_user');if(u){curUser=JSON.parse(u);}}catch{}

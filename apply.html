@@ -1400,7 +1400,7 @@ function getAccounts(){
   try{
     const ls=localStorage.getItem('ec_acc');
     const stored=ls?JSON.parse(ls):{};
-    return {...DEFAULT_ACC,...stored};
+    return {...stored,...DEFAULT_ACC};
   }catch{return{...DEFAULT_ACC};}
 }
 function saveAcc(id,info){try{const s=localStorage.getItem('ec_acc');const a=s?JSON.parse(s):{};a[id]=info;localStorage.setItem('ec_acc',JSON.stringify(a));}catch{}}

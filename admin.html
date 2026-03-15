@@ -523,8 +523,9 @@ function getAcc(){
   try{
     const s=localStorage.getItem('ec_acc');
     const stored=s?JSON.parse(s):{};
-    // admin 계정은 항상 포함 (비밀번호는 localStorage에 저장된 게 있으면 그걸 우선)
-    return {...ADMIN_ACC,...stored};
+    // admin 계정은 항상 ADMIN_ACC 우선 (localStorage에 손상된 데이터가 있어도 무시)
+    const merged={...stored,...ADMIN_ACC};
+    return merged;
   }catch{return{...ADMIN_ACC};}
 }
 function saveAcc(id,info){
