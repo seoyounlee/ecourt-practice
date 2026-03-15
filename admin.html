@@ -164,7 +164,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 </div>
 
 <!-- ══ 관리자 로그인 화면 ══ -->
-<div id="admin-login-screen" style="display:none;position:fixed;inset:0;background:#0d2b5e;z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+<div id="admin-login-screen" style="display:none;position:fixed;inset:0;background:#0d2b5e;z-index:2000;flex-direction:column;align-items:center;justify-content:center;">
   <!-- 배경 패턴 -->
   <div style="position:absolute;inset:0;background:url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M0 40L40 0H20L0 20M40 40V20L20 40\'/%3E%3C/g%3E%3C/svg%3E');"></div>
   <div style="position:relative;z-index:1;width:100%;max-width:400px;padding:20px;">
@@ -557,7 +557,6 @@ function addLog(type,msg){const l=getLogs();l.unshift({type,msg,time:new Date().
 function initAuth(){
   try{const u=sessionStorage.getItem('ec_user');if(u){curUser=JSON.parse(u);}}catch{}
   if(!curUser||curUser.role!=='admin'){
-    // 로그인 화면 표시
     document.getElementById('admin-login-screen').style.display='flex';
     document.getElementById('admin-gnb').style.display='none';
     document.getElementById('admin-content').style.display='none';
