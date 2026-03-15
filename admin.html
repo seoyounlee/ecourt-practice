@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 페이지 — 전자소송 실습 시스템</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<!-- ══ 모의 실습 안내 바 ══ -->
+<div style="background:linear-gradient(90deg,#1a3a6b,#2952a3);color:#fff;text-align:center;padding:7px 20px;font-size:12px;font-weight:600;letter-spacing:.03em;position:relative;z-index:100;line-height:1.5;border-bottom:2px solid #c8a84b;">
+  ⚠️ 본 페이지는 <strong>전자소송 실습 모의 페이지</strong>입니다. 실제 법원 접수 시스템이 아니며, 작성된 내용은 법적 효력이 없습니다.
+  <span style="margin-left:16px;font-size:11px;opacity:.85;">🎓 실습 전용 · 실제 소장 제출 불가</span>
+</div>
+
+<!-- ══ 관리자 로그인 화면 ══ -->
+<div id="admin-login-screen">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="login-emblem">⚖</div>
+      <div class="login-title">전자소송 실습 시스템</div>
+      <div class="login-sub">ADMIN PANEL</div>
+    </div>
+    <div class="login-box">
+      <div class="login-box-hd">
+        <div class="login-box-title">🔐 관리자 로그인</div>
+        <div class="login-box-desc">관리자 계정으로만 접근 가능합니다</div>
+      </div>
+      <div class="login-box-body">
+        <div class="lf">
+          <label>아이디</label>
+          <input type="text" id="adm-id" placeholder="관리자 아이디"
+            onkeydown="if(event.key==='Enter')document.getElementById('adm-pw').focus()">
+        </div>
+        <div class="lf">
+          <label>비밀번호</label>
+          <input type="password" id="adm-pw" placeholder="비밀번호"
+            onkeydown="if(event.key==='Enter')doAdminLogin()">
+        </div>
+        <div id="adm-err" class="adm-err"></div>
+        <button class="login-btn" onclick="doAdminLogin()">로그인</button>
+      </div>
+      <div class="login-box-ft">
+        <a href="index.html">← 메인 페이지로 돌아가기</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GNB (로그인 후 표시) -->
+<div class="gnb" id="admin-gnb" style="display:none;">
+  <div class="gnb-inner">
+    <a class="gnb-logo" href="index.html">
+      <div class="ico">⚖</div>
+      <div class="txt">전자소송포털<span>ADMIN PANEL · 대한민국 법원</span></div>
+    </a>
+    <span class="gnb-badge">🔐 관리자 페이지</span>
+    <a class="gnb-back" href="index.html">← 메인으로 돌아가기</a>
+    <div class="gnb-user" id="gnb-user-area">
+      <span>👤</span>
+      <span id="gnb-uname" style="font-size:12px;color:#fff;font-weight:600;"></span>
+      <span style="font-size:11px;color:rgba(255,255,255,.5);">님</span>
+      <button class="btn-logout" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<!-- 메인 레이아웃 (로그인 후 표시) -->
+<div id="admin-content" style="display:none;">
+<div class="layout">
+
+  <!-- 사이드바 -->
+  <div class="sidebar">
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-hd">⚙ 관리 메뉴</div>
+      <div class="snav-item on" id="nav-dashboard" onclick="showPanel('dashboard')"><span class="ico">📊</span>대시보드</div>
+      <div class="snav-item" id="nav-accounts" onclick="showPanel('accounts')"><span class="ico">👥</span>계정 관리<span class="cnt" id="acc-cnt">0</span></div>
+      <div class="snav-item" id="nav-add" onclick="showPanel('add')"><span class="ico">➕</span>계정 추가</div>
+      <div class="snav-item" id="nav-practice" onclick="showPanel('practice')" style="border-left:3px solid #006699;"><span class="ico">📋</span>실습 현황<span class="cnt" id="practice-cnt" style="background:#15803d;">0</span></div>
+      <div class="snav-item" id="nav-logs" onclick="showPanel('logs')"><span class="ico">📋</span>활동 로그</div>
+      <div class="snav-item" id="nav-settings" onclick="showPanel('settings')"><span class="ico">⚙</span>시스템 설정</div>
+    </nav>
+  </div>
+
+  <!-- 메인 콘텐츠 -->
+  <div class="main">
+
+    <!-- ① 대시보드 -->
+    <div id="panel-dashboard">
+      <div class="dash-grid" style="grid-template-columns:repeat(6,1fr);">
+        <div class="dash-card blue"><div class="dc-label">전체 계정</div><div class="dc-value" id="stat-total">0</div><div class="dc-sub">등록된 실습 계정</div><div class="dc-icon">👥</div></div>
+        <div class="dash-card green"><div class="dc-label">실습생 계정</div><div class="dc-value" id="stat-users">0</div><div class="dc-sub">일반 실습생</div><div class="dc-icon">🎓</div></div>
+        <div class="dash-card orange"><div class="dc-label">관리자 계정</div><div class="dc-value" id="stat-admins">0</div><div class="dc-sub">관리자 권한</div><div class="dc-icon">🔐</div></div>
+        <div class="dash-card red"><div class="dc-label">관리자 계정</div><div class="dc-value" id="stat-default">1</div><div class="dc-sub">admin</div><div class="dc-icon">👑</div></div>
+        <div class="dash-card" style="border-top-color:#006699;"><div class="dc-label">총 실습 기록</div><div class="dc-value" id="stat-practice" style="color:#006699;">0</div><div class="dc-sub" style="cursor:pointer;color:#006699;" onclick="showPanel('practice')">→ 현황 보기</div><div class="dc-icon">📝</div></div>
+        <div class="dash-card" style="border-top-color:#15803d;"><div class="dc-label">실습 평균점수</div><div class="dc-value" id="stat-practice-avg" style="color:#15803d;font-size:22px;">–</div><div class="dc-sub">전체 평균</div><div class="dc-icon">📊</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <!-- 최근 등록 계정 -->
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-hd-title">📝 최근 등록 계정</div><button class="btn btn-gray btn-sm" onclick="showPanel('accounts')">전체보기</button></div>
+          <div class="panel-body" id="recent-accounts" style="padding:0;"></div>
+        </div>
+        <!-- 최근 실습 기록 -->
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-hd-title">📊 최근 실습 기록</div><button class="btn btn-gray btn-sm" onclick="showPanel('practice')">전체보기</button></div>
+          <div id="recent-practice" style="padding:0;max-height:220px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 계정 관리 -->
+    <div id="panel-accounts" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd">
+          <div class="panel-hd-title">👥 계정 목록</div>
+          <div class="panel-hd-actions">
+            <div class="search-bar">
+              <input type="text" class="search-inp" id="acc-search" placeholder="이름 또는 아이디 검색" oninput="renderAccTable()">
+              <select class="filter-sel" id="acc-filter" onchange="renderAccTable()">
+                <option value="">전체</option><option value="user">실습생</option><option value="admin">관리자</option>
+              </select>
+              <button class="btn btn-navy" onclick="showPanel('add')">➕ 계정 추가</button>
+            </div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:32px;"><input type="checkbox" id="chk-all" onchange="togAllChk(this)"></th>
+              <th>아이디</th><th>이름</th><th>소속</th><th>권한</th><th>상태</th><th>등록일</th><th style="width:130px;">관리</th>
+            </tr></thead>
+            <tbody id="acc-tbody"></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+          <button class="btn btn-red btn-sm" onclick="delSelected()">🗑 선택 삭제</button>
+          <button class="btn btn-gray btn-sm" onclick="resetSelected()">🔑 선택 비밀번호 초기화</button>
+          <span style="margin-left:auto;font-size:12px;color:var(--muted);">총 <strong id="acc-total-label">0</strong>명</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 계정 추가 -->
+    <div id="panel-add" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-hd-title">➕ 새 계정 추가</div></div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="fld">
+              <label>이름(변호사명) <span class="req">*</span></label>
+              <input type="text" id="add-name" placeholder="예) 김바른">
+              <div class="ferr" id="add-name-err"></div>
+            </div>
+            <div class="fld">
+              <label>아이디 <span class="req">*</span> <span style="font-size:11px;color:#aaa;">(영소문자+숫자 4~12자)</span></label>
+              <div style="display:flex;gap:6px;">
+                <input type="text" id="add-id" placeholder="아이디 입력" style="flex:1;">
+                <button class="btn btn-outline" onclick="checkAddId()">중복확인</button>
+              </div>
+              <div class="ferr" id="add-id-err"></div>
+              <div style="font-size:11px;color:var(--green);margin-top:3px;display:none;" id="add-id-ok">✅ 사용 가능한 아이디입니다.</div>
+            </div>
+            <div class="fld">
+              <label>비밀번호 <span class="req">*</span></label>
+              <input type="password" id="add-pw" placeholder="6자 이상">
+              <div class="ferr" id="add-pw-err"></div>
+            </div>
+            <div class="fld">
+              <label>비밀번호 확인 <span class="req">*</span></label>
+              <input type="password" id="add-pw2" placeholder="비밀번호 재입력">
+              <div class="ferr" id="add-pw2-err"></div>
+            </div>
+            <div class="fld">
+              <label>소속 법률사무소 <span style="font-size:11px;color:#aaa;">(선택)</span></label>
+              <input type="text" id="add-org" placeholder="예) 바른법률사무소">
+            </div>
+            <div class="fld">
+              <label>변호사 등록번호 <span style="font-size:11px;color:#aaa;">(선택)</span></label>
+              <input type="text" id="add-barnum" placeholder="예) 서울20113">
+            </div>
+            <div class="fld fld-full">
+              <label>사무소 주소 <span style="font-size:11px;color:#aaa;">(선택 — 소장 대리인 자동입력에 사용)</span></label>
+              <input type="text" id="add-addr" placeholder="예) 서울 서초구 서초대로 107 (서초동)">
+            </div>
+            <div class="fld">
+              <label>연락처 <span style="font-size:11px;color:#aaa;">(선택)</span></label>
+              <input type="text" id="add-tel" placeholder="예) 010-1234-5678">
+            </div>
+            <div class="fld">
+              <label>이메일 <span style="font-size:11px;color:#aaa;">(선택)</span></label>
+              <input type="text" id="add-email" placeholder="예) kim@barun.law">
+            </div>
+            <div class="fld">
+              <label>권한</label>
+              <select id="add-role">
+                <option value="user">실습생 (일반)</option>
+                <option value="admin">관리자</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px;">
+            <button class="btn btn-navy" onclick="doAddAccount()">✅ 계정 추가</button>
+            <button class="btn btn-gray" onclick="resetAddForm()">↺ 초기화</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 일괄 추가 -->
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-hd-title">📦 실습생 일괄 추가</div></div>
+        <div class="panel-body">
+          <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:14px 16px;font-size:12px;color:#1e3a5f;line-height:1.8;margin-bottom:16px;">
+            💡 <strong>일괄 추가</strong>: 접두사 + 번호 범위로 한 번에 여러 계정을 생성합니다.<br>
+            예) 접두사 "practice", 번호 01~20 → practice01, practice02 ... practice20
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+            <div class="fld"><label>아이디 접두사</label><input type="text" class="fld input" id="bulk-prefix" placeholder="practice" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;width:140px;"></div>
+            <div class="fld"><label>시작 번호</label><input type="number" id="bulk-start" value="1" min="1" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;width:80px;font-family:inherit;outline:none;"></div>
+            <div class="fld"><label>끝 번호</label><input type="number" id="bulk-end" value="10" min="1" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;width:80px;font-family:inherit;outline:none;"></div>
+            <div class="fld"><label>기본 비밀번호</label><input type="text" id="bulk-pw" value="court1234" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;width:120px;font-family:inherit;outline:none;"></div>
+            <button class="btn btn-green" onclick="doBulkAdd()">📦 일괄 추가</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ 실습 현황 -->
+    <div id="panel-practice" style="display:none;">
+
+      <!-- 탭 -->
+      <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border);">
+        <button id="ptab-summary" onclick="switchPracticeTab('summary')"
+          style="padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:none;color:var(--navy2);border-bottom:3px solid var(--navy2);margin-bottom:-2px;font-family:inherit;">📊 학생별 요약</button>
+        <button id="ptab-detail" onclick="switchPracticeTab('detail')"
+          style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;">📋 전체 실습 기록</button>
+      </div>
+
+      <!-- 학생별 요약 탭 -->
+      <div id="pview-summary">
+        <!-- 통계 카드 -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;" id="practice-stats2"></div>
+
+        <!-- 학생별 카드 목록 -->
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-hd-title">👥 학생별 실습 현황</div>
+            <div class="panel-hd-actions">
+              <input type="text" class="search-inp" style="width:160px;" id="student-search" placeholder="학생 검색" oninput="renderStudentSummary()">
+              <button class="btn btn-gray btn-sm" onclick="renderPracticePanel()">🔄 새로고침</button>
+              <button class="btn btn-gray btn-sm" onclick="exportPracticeCSV()">📊 CSV</button>
+            </div>
+          </div>
+          <div id="student-summary-body"></div>
+        </div>
+      </div>
+
+      <!-- 전체 기록 탭 -->
+      <div id="pview-detail" style="display:none;">
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-hd-title">📋 전체 실습 기록</div>
+            <div class="panel-hd-actions">
+              <input type="text" class="search-inp" style="width:160px;" id="practice-search" placeholder="학생 검색" oninput="renderPracticeDetail()">
+              <select class="filter-sel" id="practice-grade-filter" onchange="renderPracticeDetail()">
+                <option value="">전체 등급</option>
+                <option value="90">🏆 우수 (90+)</option>
+                <option value="70">✅ 양호 (70+)</option>
+                <option value="50">📝 보통 (50+)</option>
+                <option value="0">⚠️ 미흡</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="tbl">
+              <thead><tr>
+                <th>학생</th><th>아이디</th><th>점수</th><th>등급</th>
+                <th>사건유형</th><th>법원</th><th>입증서류</th><th>실습일시</th><th>피드백</th>
+              </tr></thead>
+              <tbody id="practice-tbody"></tbody>
+            </table>
+          </div>
+          <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
+            총 <strong id="practice-total-label">0</strong>건
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑥ 활동 로그 -->
+    <div id="panel-logs" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd">
+          <div class="panel-hd-title">📋 활동 로그</div>
+          <button class="btn btn-gray btn-sm" onclick="clearLogs()">🗑 로그 초기화</button>
+        </div>
+        <div class="panel-body" id="full-logs"></div>
+      </div>
+    </div>
+
+    <!-- ⑤ 시스템 설정 -->
+    <div id="panel-settings" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-hd-title">⚙ 시스템 설정</div></div>
+        <div class="panel-body">
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8f9fc;border-radius:6px;border:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;">전체 학생 비밀번호 초기화</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">모든 학생 계정의 비밀번호를 court1234로 초기화합니다</div></div>
+              <button class="btn btn-orange" style="background:#d97706;color:#fff;" onclick="resetDefaultPw()">초기화</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8f9fc;border-radius:6px;border:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;">학생 계정 전체 삭제</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">admin을 제외한 모든 학생 계정을 삭제합니다 (되돌릴 수 없음)</div></div>
+              <button class="btn btn-red" onclick="deleteAddedAccounts()">전체 삭제</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8f9fc;border-radius:6px;border:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;">활동 로그 초기화</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">저장된 모든 활동 로그를 삭제합니다</div></div>
+              <button class="btn btn-gray" onclick="clearLogs()">초기화</button>
+            </div>
+            <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:14px;font-size:12px;color:#1e3a5f;line-height:1.8;">
+              <strong>ℹ 계정 데이터 저장 방식</strong><br>
+              계정 데이터는 브라우저 <code>localStorage</code>에 저장됩니다. <strong>탭을 닫아도 유지</strong>되며, 브라우저 캐시를 지우면 초기화됩니다.<br>
+              학생 계정은 제한 없이 추가할 수 있습니다 (100명 이상 가능).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /.layout -->
+</div><!-- #admin-content -->
+
+<!-- 계정 수정 팝업 -->
+<div class="pop-overlay" id="pop-edit">
+  <div class="pop-box">
+    <div class="pop-hd">✏️ 계정 수정 <button class="pop-cl" onclick="closePop('pop-edit')">✕</button></div>
+    <div class="pop-bd">
+      <div class="form-grid">
+        <div class="fld"><label>아이디</label><input type="text" id="edit-id" readonly style="background:#f5f5f5;"></div>
+        <div class="fld"><label>이름 <span class="req">*</span></label><input type="text" id="edit-name"></div>
+        <div class="fld"><label>새 비밀번호 <span style="font-size:11px;color:#aaa;">(변경 시만 입력)</span></label><input type="password" id="edit-pw" placeholder="비워두면 변경 안 됨"></div>
+        <div class="fld"><label>소속</label><input type="text" id="edit-org"></div>
+        <div class="fld fld-full"><label>권한</label><select id="edit-role"><option value="user">실습생</option><option value="admin">관리자</option></select></div>
+      </div>
+    </div>
+    <div class="pop-ft"><button class="btn btn-gray" onclick="closePop('pop-edit')">취소</button><button class="btn btn-navy" onclick="doEditAccount()">저장</button></div>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+
+<!-- 푸터 -->
+<footer style="background:#0d2b5e;border-top:3px solid #b8922a;margin-top:20px;">
+  <div style="display:flex;justify-content:center;gap:0;padding:14px 0 8px;flex-wrap:wrap;">
+    <a href="index.html" style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;text-decoration:none;">메인으로</a>
+    <a href="mypage.html" style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;text-decoration:none;">나의전자소송</a>
+    <a href="apply.html" style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;cursor:pointer;text-decoration:none;">소장작성 실습</a>
+  </div>
+  <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.3);padding-bottom:14px;">전자소송 실습 시스템 관리자 패널 · COPYRIGHT © 대한민국 법원.</div>
+</footer>
+</body>
+</html>
+</html>
