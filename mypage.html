@@ -407,6 +407,7 @@ button{font-family:inherit;cursor:pointer;}
       <div class="snav-group">
         <div class="snav-group-hd" style="color:#b8922a;" onclick="toggleGroup('g-practice')">📊 실습 전용 <span class="arrow">∨</span></div>
         <div class="snav-group-body show" id="g-practice">
+          <div class="snav-item" id="nav-assigned-cases" onclick="loadPage('assigned-cases')" style="color:#006699;font-weight:700;">📋 배정된 실습사건</div>
           <div class="snav-item" id="nav-practice-records" onclick="loadPage('practice-records')" style="color:#b8922a;font-weight:600;">나의 실습기록</div>
           <div class="snav-item" onclick="location.href='apply.html'" style="color:#0067c2;font-weight:600;">새 소장 작성하기 +</div>
         </div>
@@ -456,6 +457,111 @@ button{font-family:inherit;cursor:pointer;}
 </footer>
 
 <script>
+
+// ══════ Supabase ══════
+const SB_URL='https://knpvayujykoqjncctxrr.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtucHZheXVqeWtvcWpuY2N0eHJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NzA3NDUsImV4cCI6MjA4OTE0Njc0NX0.rXlo5IsOW6FS5N1X3vgqNM1RvzB84TYPqVhnYyc6FSg';
+const SB_HEADERS={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
+async function sbGetMyAssignments(userId){
+  try{
+    const res=await fetch(
+      SB_URL+'/rest/v1/assignments?select=*,sample_cases(*)&student_id=eq.'+encodeURIComponent(userId)+'&order=assigned_at.desc',
+      {headers:SB_HEADERS}
+    );
+    if(!res.ok)return[];
+    return await res.json();
+  }catch(e){console.error('[Supabase] 배정 조회 실패:',e);return[];}
+}
+
+async function renderAssignedCases(el){
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>배정된 실습사건</div>
+    <div class="page-actions"><button class="page-act-btn" onclick="loadPage('assigned-cases')">🔄 새로고침</button></div>
+  </div>
+  <div style="padding:24px;text-align:center;color:#aaa;background:#fff;border:1px solid #dde0e8;border-top:none;">⏳ 배정된 사건을 불러오는 중...</div>`;
+
+  const assignments=await sbGetMyAssignments(curUser.id);
+
+  if(!assignments.length){
+    el.innerHTML=`
+    <div class="page-header"><div class="page-title"><div class="dot"></div>배정된 실습사건</div></div>
+    <div style="background:#fff;border:1px solid #dde0e8;border-top:none;padding:60px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">📋</div>
+      <div style="font-size:16px;font-weight:700;color:#003366;margin-bottom:8px;">배정된 사건이 없습니다</div>
+      <div style="font-size:13px;color:#888;line-height:1.8;">담당 선생님이 사건을 배정하면 여기서 확인할 수 있습니다.<br>배정된 사건을 바탕으로 소장을 작성해보세요.</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>배정된 실습사건 <span style="font-size:12px;color:#006699;font-weight:400;margin-left:8px;">(총 ${assignments.length}건)</span></div>
+    <div class="page-actions"><button class="page-act-btn" onclick="loadPage('assigned-cases')">🔄 새로고침</button></div>
+  </div>
+  <div style="padding:10px 16px;background:#e8f4fb;border:1px solid #c8ddf5;border-top:none;border-bottom:2px solid #006699;font-size:12px;color:#1a4a6b;">
+    💡 배정된 사건의 사실관계를 읽고 <strong>소장 작성하기</strong> 버튼을 클릭해 소장을 작성하세요.
+  </div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:14px;">
+    ${assignments.map(a=>{
+      const c=a.sample_cases||{};
+      const statusLabel=a.status==='completed'?'✅ 완료':a.status==='in_progress'?'📝 진행중':'📋 배정됨';
+      const statusBg=a.status==='completed'?'#d1fae5':a.status==='in_progress'?'#dbeafe':'#f3f4f6';
+      const statusColor=a.status==='completed'?'#065f46':a.status==='in_progress'?'#1e40af':'#374151';
+      const caseJson=JSON.stringify(c).replace(/"/g,'&quot;');
+      return`
+      <div style="background:#fff;border:1px solid #dde0e8;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+        <div style="background:linear-gradient(135deg,#1a3a6b,#2952a3);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:15px;font-weight:700;color:#fff;">${c.title||'(제목 없음)'}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,.65);margin-top:3px;">[${c.case_type||'민사'}] ${c.court||''}</div>
+          </div>
+          <span style="background:${statusBg};color:${statusColor};padding:4px 12px;border-radius:12px;font-size:11px;font-weight:700;">${statusLabel}</span>
+        </div>
+        <div style="padding:16px 20px;">
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px;">
+            <div style="background:#f7f8fc;border-radius:4px;padding:9px 12px;">
+              <div style="font-size:10px;color:#888;margin-bottom:3px;">원고 (신청인)</div>
+              <div style="font-size:13px;font-weight:600;">${c.plaintiff||'–'}</div>
+            </div>
+            <div style="background:#f7f8fc;border-radius:4px;padding:9px 12px;">
+              <div style="font-size:10px;color:#888;margin-bottom:3px;">피고 (피신청인)</div>
+              <div style="font-size:13px;font-weight:600;">${c.defendant||'–'}</div>
+            </div>
+            ${c.claim_amount?`<div style="background:#f7f8fc;border-radius:4px;padding:9px 12px;">
+              <div style="font-size:10px;color:#888;margin-bottom:3px;">청구 금액</div>
+              <div style="font-size:13px;font-weight:600;color:#003366;">${c.claim_amount}</div>
+            </div>`:''}
+            <div style="background:#f7f8fc;border-radius:4px;padding:9px 12px;">
+              <div style="font-size:10px;color:#888;margin-bottom:3px;">배정일</div>
+              <div style="font-size:12px;">${a.assigned_at?a.assigned_at.split('T')[0]:'–'}</div>
+            </div>
+          </div>
+          ${c.description?`<div style="background:#f0f7ff;border:1px solid #c8ddf5;border-radius:4px;padding:10px 14px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:700;color:#003366;margin-bottom:5px;">📄 사건 개요</div>
+            <div style="font-size:12px;color:#444;line-height:1.8;">${c.description}</div>
+          </div>`:''}
+          ${c.facts?`<div style="background:#fffbe6;border:1px solid #ffe082;border-radius:4px;padding:10px 14px;margin-bottom:10px;">
+            <div style="font-size:11px;font-weight:700;color:#7a6000;margin-bottom:5px;">📋 사실관계</div>
+            <div style="font-size:12px;color:#555;line-height:1.9;white-space:pre-wrap;">${c.facts}</div>
+          </div>`:''}
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;">
+            <button style="height:38px;padding:0 22px;background:#1a3a6b;color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;" onclick="goToApplyWithCase('${caseJson}')">📝 소장 작성하기 →</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function goToApplyWithCase(caseJsonStr){
+  try{
+    const c=JSON.parse(caseJsonStr.replace(/&quot;/g,'"'));
+    sessionStorage.setItem('assigned_case',JSON.stringify(c));
+  }catch(e){}
+  location.href='apply.html';
+}
 
 // ══════ 데이터 ══════
 const DEFAULT_ACC={
@@ -565,11 +671,13 @@ function loadPage(pageId){
     'custom-fact':'사실조회기관회신','custom-third':'제3채무자','custom-api':'오픈API 제출내역',
     'myinfo-user':'사용자정보변경','myinfo-id':'사용자아이름변경','myinfo-pw':'비밀번호변경','myinfo-court':'나의법원설정','myinfo-withdraw':'사용자탈퇴',
     'practice-records':'나의 실습기록',
+    'assigned-cases':'배정된 실습사건',
   };
   document.getElementById('bc-current').textContent=titles[pageId]||pageId;
   const content=document.getElementById('main-content');
 
-  if(pageId==='status')renderStatus(content);
+  if(pageId==='assigned-cases')renderAssignedCases(content);
+  else if(pageId==='status')renderStatus(content);
   else if(pageId==='case-proceeding')renderCaseList(content,'proceeding');
   else if(pageId==='case-interest')renderCaseList(content,'interest');
   else if(pageId==='case-confirmed')renderCaseList(content,'confirmed');

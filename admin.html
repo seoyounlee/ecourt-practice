@@ -269,6 +269,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <div class="snav-item" id="nav-accounts" onclick="showPanel('accounts')"><span class="ico">👥</span>계정 관리<span class="cnt" id="acc-cnt">0</span></div>
       <div class="snav-item" id="nav-add" onclick="showPanel('add')"><span class="ico">➕</span>계정 추가</div>
       <div class="snav-item" id="nav-practice" onclick="showPanel('practice')" style="border-left:3px solid #006699;"><span class="ico">📋</span>실습 현황<span class="cnt" id="practice-cnt" style="background:#15803d;">0</span></div>
+      <div class="snav-item" id="nav-cases" onclick="showPanel('cases')"><span class="ico">📚</span>사건 출제/배정<span class="cnt" id="cases-cnt" style="background:#6366f1;">0</span></div>
       <div class="snav-item" id="nav-logs" onclick="showPanel('logs')"><span class="ico">📋</span>활동 로그</div>
       <div class="snav-item" id="nav-settings" onclick="showPanel('settings')"><span class="ico">⚙</span>시스템 설정</div>
     </nav>
@@ -519,6 +520,97 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       </div>
     </div>
 
+    <!-- ⑦ 사건 출제/배정 -->
+    <div id="panel-cases" style="display:none;">
+      <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border);">
+        <button id="ctab-list" onclick="switchCaseTab('list')" style="padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:none;color:var(--navy2);border-bottom:3px solid var(--navy2);margin-bottom:-2px;font-family:inherit;">📚 사건 목록</button>
+        <button id="ctab-add" onclick="switchCaseTab('add')" style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;">➕ 새 사건 추가</button>
+        <button id="ctab-assign" onclick="switchCaseTab('assign')" style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;">👥 학생 배정</button>
+        <button id="ctab-assignments" onclick="switchCaseTab('assignments')" style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;">📋 배정 현황</button>
+      </div>
+
+      <!-- 사건 목록 탭 -->
+      <div id="cview-list">
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-hd-title">📚 Supabase 사건 목록</div>
+            <div class="panel-hd-actions">
+              <button class="btn btn-gray btn-sm" onclick="loadCases()">🔄 새로고침</button>
+              <button class="btn btn-navy" onclick="switchCaseTab('add')">➕ 새 사건 추가</button>
+            </div>
+          </div>
+          <div id="cases-list-body"><div style="padding:40px;text-align:center;color:#aaa;">⏳ 불러오는 중...</div></div>
+        </div>
+      </div>
+
+      <!-- 새 사건 추가 탭 -->
+      <div id="cview-add" style="display:none;">
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-hd-title">➕ 새 사건 추가 (Supabase)</div></div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="fld"><label>사건 제목 <span class="req">*</span></label><input type="text" id="case-title" placeholder="예) 대여금 청구 사건"></div>
+              <div class="fld"><label>사건 유형 <span class="req">*</span></label>
+                <select id="case-type" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;">
+                  <option>민사</option><option>형사</option><option>가사</option><option>행정</option><option>특허</option><option>회생파산</option>
+                </select>
+              </div>
+              <div class="fld"><label>법원</label><input type="text" id="case-court" placeholder="예) 서울중앙지법"></div>
+              <div class="fld"><label>청구 금액</label><input type="text" id="case-amount" placeholder="예) 50,000,000원"></div>
+              <div class="fld"><label>원고</label><input type="text" id="case-plaintiff" placeholder="원고 이름"></div>
+              <div class="fld"><label>피고</label><input type="text" id="case-defendant" placeholder="피고 이름"></div>
+              <div class="fld fld-full"><label>사건 개요</label>
+                <textarea id="case-description" style="width:100%;height:80px;padding:8px 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;resize:vertical;outline:none;" placeholder="사건의 간략한 개요..."></textarea>
+              </div>
+              <div class="fld fld-full"><label>사실관계 (상세) — 학생 소장 작성 시 참고 자료</label>
+                <textarea id="case-facts" style="width:100%;height:180px;padding:8px 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;resize:vertical;outline:none;" placeholder="사실관계를 자세히 입력하세요..."></textarea>
+              </div>
+            </div>
+            <div style="margin-top:20px;display:flex;gap:10px;">
+              <button class="btn btn-navy" onclick="doAddCase()">✅ 사건 추가</button>
+              <button class="btn btn-gray" onclick="resetCaseForm()">↺ 초기화</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 학생 배정 탭 -->
+      <div id="cview-assign" style="display:none;">
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-hd-title">👥 학생별 사건 배정</div></div>
+          <div class="panel-body">
+            <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:12px 16px;font-size:12px;color:#1e3a5f;margin-bottom:16px;">
+              💡 학생을 선택하고 배정할 사건을 골라 <strong>배정하기</strong>를 클릭하세요. 한 학생에게 여러 사건을 배정할 수 있습니다.
+            </div>
+            <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
+              <div class="fld"><label>학생 선택</label>
+                <select id="assign-student" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;min-width:180px;">
+                  <option value="">-- 학생 선택 --</option>
+                </select>
+              </div>
+              <div class="fld"><label>사건 선택</label>
+                <select id="assign-case" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;min-width:260px;">
+                  <option value="">-- 사건 선택 --</option>
+                </select>
+              </div>
+              <button class="btn btn-navy" style="height:36px;" onclick="doAssign()">배정하기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 배정 현황 탭 -->
+      <div id="cview-assignments" style="display:none;">
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-hd-title">📋 배정 현황</div>
+            <button class="btn btn-gray btn-sm" onclick="loadAssignments()">🔄 새로고침</button>
+          </div>
+          <div id="assignments-list-body"><div style="padding:40px;text-align:center;color:#aaa;">⏳ 불러오는 중...</div></div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /.main -->
 </div><!-- /.layout -->
 </div><!-- #admin-content -->
@@ -655,7 +747,7 @@ function doLogout(){
 
 // ═══ 패널 전환 ═══
 function showPanel(name){
-  ['dashboard','accounts','add','practice','logs','settings'].forEach(p=>{
+  ['dashboard','accounts','add','practice','cases','logs','settings'].forEach(p=>{
     document.getElementById('panel-'+p).style.display=p===name?'block':'none';
     document.getElementById('nav-'+p).className='snav-item'+(p===name?' on':'');
   });
@@ -663,6 +755,7 @@ function showPanel(name){
   if(name==='logs')renderFullLogs();
   if(name==='dashboard')renderDashboard();
   if(name==='practice')renderPracticePanel();
+  if(name==='cases')renderCasesPanel();
 }
 
 // ═══ 대시보드 ═══
@@ -1146,6 +1239,198 @@ function exportPracticeCSV(){
   const a=document.createElement('a');a.href=url;a.download='실습현황_'+new Date().toLocaleDateString('ko-KR')+'.csv';a.click();
   URL.revokeObjectURL(url);
   showToast('CSV 파일이 다운로드되었습니다.','ok');
+}
+
+// ═══ Supabase: 사건/배정 관리 ═══
+const SB_WRITE_HEADERS = {...SB_HEADERS,'Content-Type':'application/json','Prefer':'return=representation'};
+let casesCache=[], assignmentsCache=[];
+
+async function sbGetCases(){
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/sample_cases?select=*&order=created_at.desc',{headers:SB_HEADERS});
+    if(!res.ok)return[];
+    return await res.json();
+  }catch(e){console.error('[Supabase] 사건 읽기 실패:',e);return[];}
+}
+async function sbAddCase(data){
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/sample_cases',{method:'POST',headers:SB_WRITE_HEADERS,body:JSON.stringify(data)});
+    return res.ok;
+  }catch(e){console.error('[Supabase] 사건 추가 실패:',e);return false;}
+}
+async function sbDeleteCase(id){
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/sample_cases?id=eq.'+id,{method:'DELETE',headers:SB_HEADERS});
+    return res.ok;
+  }catch(e){return false;}
+}
+async function sbGetAssignments(){
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/assignments?select=*,sample_cases(*)&order=assigned_at.desc',{headers:SB_HEADERS});
+    if(!res.ok)return[];
+    return await res.json();
+  }catch(e){console.error('[Supabase] 배정 읽기 실패:',e);return[];}
+}
+async function sbAddAssignment(student_id,case_id){
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/assignments',{method:'POST',headers:SB_WRITE_HEADERS,body:JSON.stringify({student_id,case_id,status:'assigned'})});
+    return res.ok;
+  }catch(e){console.error('[Supabase] 배정 추가 실패:',e);return false;}
+}
+async function sbDeleteAssignment(id){
+  try{
+    const res=await fetch(SB_URL+'/rest/v1/assignments?id=eq.'+id,{method:'DELETE',headers:SB_HEADERS});
+    return res.ok;
+  }catch(e){return false;}
+}
+
+function renderCasesPanel(){
+  loadCases();
+  loadAssignments();
+}
+
+async function loadCases(){
+  const body=document.getElementById('cases-list-body');
+  if(body)body.innerHTML='<div style="padding:40px;text-align:center;color:#aaa;">⏳ Supabase에서 사건 목록을 불러오는 중...</div>';
+  casesCache=await sbGetCases();
+  const cntEl=document.getElementById('cases-cnt');
+  if(cntEl)cntEl.textContent=casesCache.length;
+  if(!body)return;
+  if(!casesCache.length){
+    body.innerHTML='<div style="padding:48px;text-align:center;color:#aaa;"><div style="font-size:40px;margin-bottom:12px;">📚</div><div style="font-size:14px;font-weight:600;color:#888;margin-bottom:12px;">등록된 사건이 없습니다</div><button class="btn btn-navy" onclick="switchCaseTab(\'add\')">➕ 사건 추가하기</button></div>';
+    return;
+  }
+  body.innerHTML='<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>No.</th><th>사건 제목</th><th>유형</th><th>법원</th><th>원고</th><th>피고</th><th>청구금액</th><th>등록일</th><th>관리</th></tr></thead><tbody>'+
+    casesCache.map((c,i)=>`<tr>
+      <td style="color:#888;">${i+1}</td>
+      <td><strong>${c.title||'–'}</strong></td>
+      <td><span class="badge badge-user" style="font-size:10px;">${c.case_type||'–'}</span></td>
+      <td style="font-size:11px;">${c.court||'–'}</td>
+      <td>${c.plaintiff||'–'}</td>
+      <td style="font-size:11px;">${c.defendant||'–'}</td>
+      <td style="font-size:11px;">${c.claim_amount||'–'}</td>
+      <td style="font-size:11px;color:#888;">${c.created_at?c.created_at.split('T')[0]:'–'}</td>
+      <td><button class="btn btn-red btn-sm" onclick="doDeleteCase(${c.id})">🗑 삭제</button></td>
+    </tr>`).join('')+
+  '</tbody></table></div>';
+  populateAssignSelects();
+}
+
+async function doAddCase(){
+  const title=document.getElementById('case-title').value.trim();
+  const case_type=document.getElementById('case-type').value;
+  const court=document.getElementById('case-court').value.trim();
+  const claim_amount=document.getElementById('case-amount').value.trim();
+  const plaintiff=document.getElementById('case-plaintiff').value.trim();
+  const defendant=document.getElementById('case-defendant').value.trim();
+  const description=document.getElementById('case-description').value.trim();
+  const facts=document.getElementById('case-facts').value.trim();
+  if(!title){showToast('사건 제목을 입력해주세요.','err');return;}
+  const ok=await sbAddCase({title,case_type,court,claim_amount,plaintiff,defendant,description,facts});
+  if(ok){
+    showToast('✅ 사건이 추가되었습니다.','ok');
+    resetCaseForm();
+    addLog('add','사건 추가: '+title);
+    switchCaseTab('list');
+  }else{
+    showToast('사건 추가 실패. Supabase 연결을 확인해주세요.','err');
+  }
+}
+
+function resetCaseForm(){
+  ['case-title','case-court','case-amount','case-plaintiff','case-defendant','case-description','case-facts'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  const sel=document.getElementById('case-type');if(sel)sel.value='민사';
+}
+
+async function doDeleteCase(id){
+  if(!confirm('이 사건을 삭제하시겠습니까?\n관련 배정도 함께 삭제됩니다.'))return;
+  const ok=await sbDeleteCase(id);
+  if(ok){
+    showToast('🗑 사건이 삭제되었습니다.','ok');
+    loadCases();
+    loadAssignments();
+  }else{
+    showToast('삭제 실패.','err');
+  }
+}
+
+function populateAssignSelects(){
+  const acc=getAcc();
+  const students=Object.entries(acc).filter(([id,a])=>a.role!=='admin');
+  const ssel=document.getElementById('assign-student');
+  if(ssel)ssel.innerHTML='<option value="">-- 학생 선택 --</option>'+students.map(([id,a])=>`<option value="${id}">${a.name} (${id})</option>`).join('');
+  const csel=document.getElementById('assign-case');
+  if(csel)csel.innerHTML='<option value="">-- 사건 선택 --</option>'+casesCache.map(c=>`<option value="${c.id}">[${c.case_type||''}] ${c.title}</option>`).join('');
+}
+
+async function doAssign(){
+  const student_id=document.getElementById('assign-student').value;
+  const case_id=document.getElementById('assign-case').value;
+  if(!student_id){showToast('학생을 선택해주세요.','warn');return;}
+  if(!case_id){showToast('사건을 선택해주세요.','warn');return;}
+  const acc=getAcc()[student_id];
+  const c=casesCache.find(c=>c.id==case_id);
+  const ok=await sbAddAssignment(student_id,parseInt(case_id));
+  if(ok){
+    showToast('✅ '+(acc?.name||student_id)+'에게 "'+c?.title+'" 배정 완료','ok');
+    addLog('add','사건 배정: '+student_id+' ← '+(c?.title||case_id));
+    loadAssignments();
+  }else{
+    showToast('배정 실패.','err');
+  }
+}
+
+async function loadAssignments(){
+  const body=document.getElementById('assignments-list-body');
+  if(body)body.innerHTML='<div style="padding:40px;text-align:center;color:#aaa;">⏳ 불러오는 중...</div>';
+  assignmentsCache=await sbGetAssignments();
+  if(!body)return;
+  if(!assignmentsCache.length){
+    body.innerHTML='<div style="padding:48px;text-align:center;color:#aaa;"><div style="font-size:40px;margin-bottom:12px;">📋</div><div style="font-size:14px;font-weight:600;color:#888;">배정된 사건이 없습니다</div></div>';
+    return;
+  }
+  const acc=getAcc();
+  body.innerHTML='<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>학생</th><th>사건 제목</th><th>유형</th><th>법원</th><th>원고</th><th>피고</th><th>상태</th><th>배정일</th><th>관리</th></tr></thead><tbody>'+
+    assignmentsCache.map(a=>{
+      const c=a.sample_cases||{};
+      const student=acc[a.student_id];
+      const statusLabel=a.status==='completed'?'완료':a.status==='in_progress'?'진행중':'배정됨';
+      const statusClass=a.status==='completed'?'badge-active':a.status==='in_progress'?'badge-user':'badge-inactive';
+      return`<tr>
+        <td><strong>${student?.name||a.student_id}</strong><br><span style="font-size:11px;color:#888;">${a.student_id}</span></td>
+        <td>${c.title||'–'}</td>
+        <td>${c.case_type||'–'}</td>
+        <td style="font-size:11px;">${c.court||'–'}</td>
+        <td style="font-size:11px;">${c.plaintiff||'–'}</td>
+        <td style="font-size:11px;">${c.defendant||'–'}</td>
+        <td><span class="badge ${statusClass}">${statusLabel}</span></td>
+        <td style="font-size:11px;color:#888;">${a.assigned_at?a.assigned_at.split('T')[0]:'–'}</td>
+        <td><button class="btn btn-red btn-sm" onclick="doDeleteAssignment(${a.id})">🗑</button></td>
+      </tr>`;
+    }).join('')+
+  '</tbody></table></div>';
+}
+
+async function doDeleteAssignment(id){
+  if(!confirm('이 배정을 삭제하시겠습니까?'))return;
+  const ok=await sbDeleteAssignment(id);
+  if(ok){showToast('🗑 배정이 삭제되었습니다.','ok');loadAssignments();}
+  else showToast('삭제 실패.','err');
+}
+
+function switchCaseTab(tab){
+  ['list','add','assign','assignments'].forEach(t=>{
+    document.getElementById('cview-'+t).style.display=t===tab?'':'none';
+    const btn=document.getElementById('ctab-'+t);
+    if(btn)btn.style.cssText=t===tab
+      ?'padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:none;color:var(--navy2);border-bottom:3px solid var(--navy2);margin-bottom:-2px;font-family:inherit;'
+      :'padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;';
+  });
+  if(tab==='list')loadCases();
+  if(tab==='assign'){loadCases();populateAssignSelects();}
+  if(tab==='assignments')loadAssignments();
 }
 
 // ═══ 팝업 ═══
