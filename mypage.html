@@ -600,39 +600,6 @@ const SAMPLE_SCHEDULE=[
   {date:'2026-05-08',day:'수',type:'조정',court:'서울중앙지법',dept:'민사합의14부',caseNo:'2024가합123456',judge:'박○○',time:'11:00',room:'제501호'},
 ];
 
-<!--// ══════ 인증 ══════
-function getAcc(){try{const ls=localStorage.getItem('ec_acc');const stored=ls?JSON.parse(ls):{};return {...stored,...DEFAULT_ACC};}catch{return{...DEFAULT_ACC};}}
-
-function initAuth(){
-  try{const u=sessionStorage.getItem('ec_user');if(u){curUser=JSON.parse(u);}}catch{}
-  if(!curUser){
-    document.getElementById('deny-area').style.display='block';
-    return;
-  }
-  document.getElementById('main-layout').style.display='block';
-  document.getElementById('util-org-badge').textContent=curUser.name+' 님';
-  if(curUser.role==='admin'){
-    document.getElementById('util-role').textContent='관리자';
-    // GNB에 관리자 메뉴 추가
-    const nav=document.querySelector('.gnb-nav');
-    if(nav&&!document.getElementById('gnav-admin')){
-      const el=document.createElement('div');
-      el.id='gnav-admin';el.className='gnav-item';
-      el.style.color='#c0392b';el.textContent='관리자';
-      el.onclick=()=>location.href='admin.html';
-      nav.appendChild(el);
-    }
-  } else {
-    document.getElementById('util-role').textContent='일반사용자';
-  }
-  loadPage('status');
-  startTimer();
-}
-
-function doLogout(){
-  sessionStorage.removeItem('ec_user');location.href='index.html';
-}-->
-
   function initAuth(){
   // 1. 세션에서 로그인된 사용자 정보를 가져옵니다.
   try {
