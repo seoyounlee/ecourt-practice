@@ -600,7 +600,7 @@ const SAMPLE_SCHEDULE=[
   {date:'2026-05-08',day:'수',type:'조정',court:'서울중앙지법',dept:'민사합의14부',caseNo:'2024가합123456',judge:'박○○',time:'11:00',room:'제501호'},
 ];
 
-// ══════ 인증 ══════
+<!--// ══════ 인증 ══════
 function getAcc(){try{const ls=localStorage.getItem('ec_acc');const stored=ls?JSON.parse(ls):{};return {...stored,...DEFAULT_ACC};}catch{return{...DEFAULT_ACC};}}
 
 function initAuth(){
@@ -631,6 +631,53 @@ function initAuth(){
 
 function doLogout(){
   sessionStorage.removeItem('ec_user');location.href='index.html';
+}-->
+
+  function initAuth(){
+  // 1. 세션에서 로그인된 사용자 정보를 가져옵니다.
+  try {
+    const u = sessionStorage.getItem('ec_user');
+    if(u) { 
+      curUser = JSON.parse(u); 
+    }
+  } catch(e) {
+    console.error("로그인 정보 읽기 실패", e);
+  }
+
+  // 2. 만약 로그인이 안 되어 있다면 (정보가 없다면) 다시 로그인 페이지로 보냅니다.
+  if(!curUser) {
+    document.getElementById('deny-area').style.display = 'block';
+    document.getElementById('main-layout').style.display = 'none';
+    return; // 여기서 중단하여 에러 방지
+  }
+
+  // 3. 로그인이 확인되었다면 본문 레이아웃을 보여줍니다.
+  document.getElementById('deny-area').style.display = 'none';
+  document.getElementById('main-layout').style.display = 'flex'; // 혹은 'block'
+
+  // 4. 상단 바에 사용자 이름을 표시합니다.
+  const badge = document.getElementById('util-org-badge');
+  if(badge) badge.textContent = curUser.name + ' 님';
+  
+  // 5. 권한에 맞는 메뉴 설정
+  if(curUser.role === 'admin'){
+    document.getElementById('util-role').textContent = '관리자';
+    // 관리자 메뉴 추가 로직 (기존과 동일)
+    const nav = document.querySelector('.gnb-nav');
+    if(nav && !document.getElementById('gnav-admin')){
+      const el = document.createElement('div');
+      el.id = 'gnav-admin'; el.className = 'gnav-item';
+      el.style.color = '#c0392b'; el.textContent = '관리자';
+      el.onclick = () => location.href = 'admin.html';
+      nav.appendChild(el);
+    }
+  } else {
+    document.getElementById('util-role').textContent = '일반사용자';
+  }
+
+  // 6. 무조건 '나의사건현황' 페이지를 첫 화면으로 로드합니다.
+  loadPage('status');
+  startTimer();
 }
 
 // ══════ 타이머 ══════
