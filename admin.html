@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 페이지 — 전자소송 실습 시스템</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0d2b5e;--navy2:#1a3a6b;--navy3:#2952a3;
+  --gold:#b8922a;--gold2:#d4a84b;
+  --bg:#f0f2f7;--surface:#fff;--border:#d8dce8;
+  --text:#1a1f2e;--muted:#5a6480;
+  --green:#16a34a;--red:#dc2626;--orange:#d97706;--blue:#2563eb;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── 유틸 바 ── */
+.util-bar{background:#1a3a6b;height:34px;display:flex;align-items:center;padding:0 24px;}
+.util-bar a{font-size:11px;color:rgba(255,255,255,.75);padding:0 10px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;text-decoration:none;}
+.util-bar a:last-child{border-right:none;}
+.util-bar a:hover{color:#fff;}
+.util-bar-left{display:flex;align-items:center;gap:8px;margin-right:auto;}
+.util-bar-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:2px 10px;font-size:11px;color:#fff;}
+
+/* ── GNB ── */
+.gnb{background:var(--navy);border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.3);}
+.gnb-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;height:60px;padding:0 24px;gap:20px;}
+.gnb-logo{display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;}
+.gnb-emblem{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#f0cc78);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.gnb-logo-txt{display:flex;flex-direction:column;}
+.gnb-logo-txt .court{font-size:10px;color:rgba(255,255,255,.6);font-weight:600;}
+.gnb-logo-txt .portal{font-size:16px;font-weight:700;color:#fff;}
+.gnb-badge{background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;letter-spacing:.05em;}
+.gnb-back{margin-left:auto;font-size:12px;color:rgba(255,255,255,.7);cursor:pointer;display:flex;align-items:center;gap:5px;text-decoration:none;}
+.gnb-back:hover{color:#fff;}
+.gnb-user{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;}
+.gnb-user span{font-size:12px;color:#fff;font-weight:600;}
+.btn-logout{height:26px;padding:0 10px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:3px;color:rgba(255,255,255,.75);font-size:11px;cursor:pointer;font-family:inherit;}
+.btn-logout:hover{background:rgba(255,255,255,.25);}
+
+/* ── 레이아웃 ── */
+.layout{max-width:1400px;margin:0 auto;padding:24px;display:flex;gap:20px;align-items:flex-start;}
+.sidebar{width:200px;min-width:200px;position:sticky;top:78px;}
+.main{flex:1;min-width:0;}
+
+/* ── 사이드바 ── */
+.sidebar-nav{background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.sidebar-nav-hd{padding:14px 16px;background:var(--navy2);color:#fff;font-size:12px;font-weight:700;letter-spacing:.05em;}
+.snav-item{display:flex;align-items:center;gap:10px;padding:11px 16px;font-size:13px;color:#555;cursor:pointer;border-bottom:1px solid #f0f2f8;transition:all .15s;}
+.snav-item:last-child{border-bottom:none;}
+.snav-item:hover{background:#f5f7fc;color:var(--navy2);}
+.snav-item.on{background:#eef2fa;color:var(--navy2);font-weight:700;border-left:3px solid var(--navy2);}
+.snav-item .ico{font-size:16px;width:20px;text-align:center;}
+.snav-item .cnt{margin-left:auto;background:var(--navy2);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;}
+
+/* ── 대시보드 카드 ── */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.dash-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px;position:relative;overflow:hidden;}
+.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.dash-card.blue::before{background:var(--blue);}
+.dash-card.green::before{background:var(--green);}
+.dash-card.orange::before{background:var(--orange);}
+.dash-card.red::before{background:var(--red);}
+.dc-label{font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500;}
+.dc-value{font-size:32px;font-weight:700;color:var(--text);line-height:1;margin-bottom:4px;}
+.dc-sub{font-size:11px;color:var(--muted);}
+.dc-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:36px;opacity:.12;}
+
+/* ── 섹션 패널 ── */
+.panel{background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:20px;overflow:hidden;}
+.panel-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.panel-hd-title{font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;}
+.panel-hd-actions{display:flex;gap:8px;align-items:center;}
+.panel-body{padding:20px;}
+
+/* ── 버튼 ── */
+.btn{height:32px;padding:0 14px;border-radius:4px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .15s;border:none;white-space:nowrap;}
+.btn-navy{background:var(--navy2);color:#fff;}
+.btn-navy:hover{background:var(--navy);}
+.btn-outline{background:#fff;color:var(--navy2);border:1px solid var(--navy2);}
+.btn-outline:hover{background:#eef2f8;}
+.btn-gray{background:#fff;color:#444;border:1px solid var(--border);}
+.btn-gray:hover{background:#f5f7fc;}
+.btn-red{background:#fff;color:var(--red);border:1px solid var(--red);}
+.btn-red:hover{background:#fff5f5;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{background:#15803d;}
+.btn-sm{height:26px;padding:0 10px;font-size:11px;}
+
+/* ── 테이블 ── */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{background:#f5f7fc;padding:10px 12px;font-size:12px;font-weight:700;color:#444;text-align:left;border-bottom:1px solid var(--border);border-right:1px solid #eaecf4;white-space:nowrap;}
+.tbl th:last-child{border-right:none;}
+.tbl td{padding:10px 12px;font-size:12px;color:var(--text);border-bottom:1px solid #eaecf4;border-right:1px solid #eaecf4;vertical-align:middle;}
+.tbl td:last-child{border-right:none;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:#fafbff;}
+
+/* ── 뱃지 ── */
+.badge{display:inline-block;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700;}
+.badge-admin{background:#fef3c7;color:#92400e;}
+.badge-user{background:#dbeafe;color:#1e40af;}
+.badge-active{background:#d1fae5;color:#065f46;}
+.badge-inactive{background:#f3f4f6;color:#6b7280;}
+
+/* ── 검색/필터 바 ── */
+.search-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.search-inp{height:34px;padding:0 12px;border:1px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;transition:border .15s;min-width:200px;}
+.search-inp:focus{border-color:var(--navy2);box-shadow:0 0 0 2px rgba(26,58,107,.08);}
+.filter-sel{height:34px;padding:0 10px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:inherit;outline:none;background:#fff;cursor:pointer;}
+
+/* ── 폼 ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fld{display:flex;flex-direction:column;gap:5px;}
+.fld label{font-size:12px;font-weight:600;color:#555;}
+.fld input,.fld select{height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;transition:border .15s;}
+.fld input:focus,.fld select:focus{border-color:var(--navy2);box-shadow:0 0 0 2px rgba(26,58,107,.08);}
+.fld-full{grid-column:1/-1;}
+.ferr{font-size:11px;color:var(--red);margin-top:2px;display:none;}
+.ferr.show{display:block;}
+.req{color:var(--red);}
+
+/* ── 팝업 ── */
+.pop-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+.pop-overlay.show{display:flex;}
+.pop-box{background:#fff;border-radius:10px;box-shadow:0 16px 48px rgba(0,0,0,.2);overflow:hidden;width:480px;max-width:95vw;animation:popIn .2s ease;}
+@keyframes popIn{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.pop-hd{background:var(--navy2);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700;}
+.pop-cl{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;}
+.pop-bd{padding:20px;}
+.pop-ft{padding:0 20px 20px;display:flex;justify-content:flex-end;gap:8px;}
+
+/* ── 토스트 ── */
+@keyframes toastAni{0%{opacity:0;transform:translateX(-50%) translateY(-12px)}15%{opacity:1;transform:translateX(-50%) translateY(0)}80%{opacity:1}100%{opacity:0}}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:22px;font-size:13px;font-weight:700;z-index:3000;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:toastAni 2.8s ease forwards;pointer-events:none;}
+.toast.ok{background:#16a34a;color:#fff;}
+.toast.err{background:#dc2626;color:#fff;}
+.toast.warn{background:#d97706;color:#fff;}
+
+/* ── 접근제한 ── */
+.access-deny{min-height:70vh;display:flex;align-items:center;justify-content:center;}
+.access-deny-box{text-align:center;padding:48px;}
+.access-deny-box .ico{font-size:60px;margin-bottom:16px;}
+.access-deny-box h2{font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.access-deny-box p{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:24px;}
+
+/* ── 활동 로그 ── */
+.log-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #f0f2f8;}
+.log-item:last-child{border-bottom:none;}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.log-dot.green{background:var(--green);}
+.log-dot.blue{background:var(--blue);}
+.log-dot.orange{background:var(--orange);}
+.log-txt{font-size:12px;color:#333;line-height:1.6;}
+.log-time{font-size:11px;color:#aaa;white-space:nowrap;margin-left:auto;}
+
+/* ── 반응형 ── */
+@media(max-width:900px){
+  .layout{flex-direction:column;}
+  .sidebar{width:100%;position:static;}
+  .dash-grid{grid-template-columns:repeat(2,1fr);}
+  .form-grid{grid-template-columns:1fr;}
+}
+
+/* ── 관리자 로그인 화면 ── */
+#admin-login-screen{display:none;position:fixed;inset:0;background:#0d2b5e;z-index:2000;align-items:center;justify-content:center;}
+.login-wrap{width:100%;max-width:400px;padding:20px;}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-emblem{width:64px;height:64px;background:linear-gradient(135deg,#b8922a,#f0cc78);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px;}
+.login-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
+.login-sub{font-size:13px;color:rgba(255,255,255,.5);letter-spacing:.05em;}
+.login-box{background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.login-box-hd{background:linear-gradient(135deg,#1a3a6b,#2952a3);padding:20px 24px;border-bottom:3px solid #b8922a;}
+.login-box-title{font-size:15px;font-weight:700;color:#fff;}
+.login-box-desc{font-size:11px;color:rgba(255,255,255,.6);margin-top:3px;}
+.login-box-body{padding:24px;}
+.login-box-body .lf{margin-bottom:14px;}
+.login-box-body .lf label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:5px;}
+.login-box-body .lf input{width:100%;height:42px;border:1.5px solid #c8d0dc;border-radius:4px;padding:0 14px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;}
+.login-box-body .lf input:focus{border-color:#1a3a6b;}
+.adm-err{font-size:12px;color:#dc2626;margin-bottom:12px;display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:3px;padding:7px 10px;line-height:1.5;}
+.login-btn{width:100%;height:46px;background:linear-gradient(135deg,#1a3a6b,#2952a3);color:#fff;border:none;border-radius:4px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.03em;}
+.login-btn:hover{opacity:.9;}
+.login-box-ft{background:#f8f9fc;border-top:1px solid #eee;padding:12px 24px;text-align:center;}
+.login-box-ft a{font-size:12px;color:#888;text-decoration:none;}
+.login-box-ft a:hover{color:#003366;}
+
+</style>
+</head>
+<body>
+<!-- ══ 모의 실습 안내 바 ══ -->
+<div style="background:linear-gradient(90deg,#1a3a6b,#2952a3);color:#fff;text-align:center;padding:7px 20px;font-size:12px;font-weight:600;letter-spacing:.03em;position:relative;z-index:100;line-height:1.5;border-bottom:2px solid #c8a84b;">
+  ⚠️ 본 페이지는 <strong>전자소송 실습 모의 페이지</strong>입니다. 실제 법원 접수 시스템이 아니며, 작성된 내용은 법적 효력이 없습니다.
+  <span style="margin-left:16px;font-size:11px;opacity:.85;">🎓 실습 전용 · 실제 소장 제출 불가</span>
+</div>
+
+<!-- ══ 관리자 로그인 화면 ══ -->
+<div id="admin-login-screen" style="display:none;position:fixed;inset:0;background:#0d2b5e;z-index:2000;align-items:center;justify-content:center;">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="login-emblem">⚖</div>
+      <div class="login-title">전자소송 실습 시스템</div>
+      <div class="login-sub">ADMIN PANEL</div>
+    </div>
+    <div class="login-box">
+      <div class="login-box-hd">
+        <div class="login-box-title">🔐 관리자 로그인</div>
+        <div class="login-box-desc">관리자 계정으로만 접근 가능합니다</div>
+      </div>
+      <div class="login-box-body">
+        <div class="lf">
+          <label>아이디</label>
+          <input type="text" id="adm-id" placeholder="관리자 아이디"
+            onkeydown="if(event.key==='Enter')document.getElementById('adm-pw').focus()">
+        </div>
+        <div class="lf">
+          <label>비밀번호</label>
+          <input type="password" id="adm-pw" placeholder="비밀번호"
+            onkeydown="if(event.key==='Enter')doAdminLogin()">
+        </div>
+        <div id="adm-err" class="adm-err"></div>
+        <button class="login-btn" onclick="doAdminLogin()">로그인</button>
+      </div>
+      <div class="login-box-ft">
+        <a href="index.html">← 메인 페이지로 돌아가기</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 유틸 바 (로그인 후 표시) -->
+<div class="util-bar" id="admin-util-bar" style="display:none;">
+  <div class="util-bar-left">
+    <span class="util-bar-badge">🔐 관리자</span>
+    <span id="gnb-uname-util" style="font-size:11px;color:#fff;font-weight:600;"></span>
+    <button class="btn-logout" onclick="doLogout()">로그아웃</button>
+  </div>
+  <a href="index.html">← 메인으로</a>
+  <a>English</a>
+</div>
+<!-- GNB (로그인 후 표시) -->
+<div class="gnb" id="admin-gnb" style="display:none;">
+  <div class="gnb-inner">
+    <a class="gnb-logo" href="index.html">
+      <div class="gnb-emblem">⚖</div>
+      <div class="gnb-logo-txt"><span class="court">대한민국 법원</span><span class="portal">전자소송포털</span></div>
+    </a>
+    <span class="gnb-badge">🔐 관리자 페이지</span>
+    <div class="gnb-user" id="gnb-user-area">
+      <span>👤</span>
+      <span id="gnb-uname" style="font-size:12px;color:#fff;font-weight:600;"></span>
+      <span style="font-size:11px;color:rgba(255,255,255,.5);">님</span>
+    </div>
+  </div>
+</div>
+
+<!-- 메인 레이아웃 (로그인 후 표시) -->
+<div id="admin-content" style="display:none;">
+<div class="layout">
+
+  <!-- 사이드바 -->
+  <div class="sidebar">
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-hd">⚙ 관리 메뉴</div>
+      <div class="snav-item on" id="nav-dashboard" onclick="showPanel('dashboard')"><span class="ico">📊</span>대시보드</div>
+      <div class="snav-item" id="nav-accounts" onclick="showPanel('accounts')"><span class="ico">👥</span>계정 관리<span class="cnt" id="acc-cnt">0</span></div>
+      <div class="snav-item" id="nav-add" onclick="showPanel('add')"><span class="ico">➕</span>계정 추가</div>
+      <div class="snav-item" id="nav-practice" onclick="showPanel('practice')" style="border-left:3px solid #006699;"><span class="ico">📋</span>실습 현황<span class="cnt" id="practice-cnt" style="background:#15803d;">0</span></div>
+      <div class="snav-item" id="nav-logs" onclick="showPanel('logs')"><span class="ico">📋</span>활동 로그</div>
+      <div class="snav-item" id="nav-settings" onclick="showPanel('settings')"><span class="ico">⚙</span>시스템 설정</div>
+    </nav>
+  </div>
+
+  <!-- 메인 콘텐츠 -->
+  <div class="main">
+
+    <!-- ① 대시보드 -->
+    <div id="panel-dashboard">
+      <div class="dash-grid" style="grid-template-columns:repeat(6,1fr);">
+        <div class="dash-card blue"><div class="dc-label">전체 계정</div><div class="dc-value" id="stat-total">0</div><div class="dc-sub">등록된 실습 계정</div><div class="dc-icon">👥</div></div>
+        <div class="dash-card green"><div class="dc-label">실습생 계정</div><div class="dc-value" id="stat-users">0</div><div class="dc-sub">일반 실습생</div><div class="dc-icon">🎓</div></div>
+        <div class="dash-card orange"><div class="dc-label">관리자 계정</div><div class="dc-value" id="stat-admins">0</div><div class="dc-sub">관리자 권한</div><div class="dc-icon">🔐</div></div>
+        <div class="dash-card red"><div class="dc-label">관리자 계정</div><div class="dc-value" id="stat-default">1</div><div class="dc-sub">admin</div><div class="dc-icon">👑</div></div>
+        <div class="dash-card" style="border-top-color:#006699;"><div class="dc-label">총 실습 기록</div><div class="dc-value" id="stat-practice" style="color:#006699;">0</div><div class="dc-sub" style="cursor:pointer;color:#006699;" onclick="showPanel('practice')">→ 현황 보기</div><div class="dc-icon">📝</div></div>
+        <div class="dash-card" style="border-top-color:#15803d;"><div class="dc-label">실습 평균점수</div><div class="dc-value" id="stat-practice-avg" style="color:#15803d;font-size:22px;">–</div><div class="dc-sub">전체 평균</div><div class="dc-icon">📊</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <!-- 최근 등록 계정 -->
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-hd-title">📝 최근 등록 계정</div><button class="btn btn-gray btn-sm" onclick="showPanel('accounts')">전체보기</button></div>
+          <div class="panel-body" id="recent-accounts" style="padding:0;"></div>
+        </div>
+        <!-- 최근 실습 기록 -->
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-hd-title">📊 최근 실습 기록</div><button class="btn btn-gray btn-sm" onclick="showPanel('practice')">전체보기</button></div>
+          <div id="recent-practice" style="padding:0;max-height:220px;overflow-y:auto;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 계정 관리 -->
+    <div id="panel-accounts" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd">
+          <div class="panel-hd-title">👥 계정 목록</div>
+          <div class="panel-hd-actions">
+            <div class="search-bar">
+              <input type="text" class="search-inp" id="acc-search" placeholder="이름 또는 아이디 검색" oninput="renderAccTable()">
+              <select class="filter-sel" id="acc-filter" onchange="renderAccTable()">
+                <option value="">전체</option><option value="user">실습생</option><option value="admin">관리자</option>
+              </select>
+              <button class="btn btn-navy" onclick="showPanel('add')">➕ 계정 추가</button>
+            </div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:32px;"><input type="checkbox" id="chk-all" onchange="togAllChk(this)"></th>
+              <th>아이디</th><th>이름</th><th>소속</th><th>권한</th><th>상태</th><th>등록일</th><th style="width:130px;">관리</th>
+            </tr></thead>
+            <tbody id="acc-tbody"></tbody>
+          </table>
+        </div>
+        <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+          <button class="btn btn-red btn-sm" onclick="delSelected()">🗑 선택 삭제</button>
+          <button class="btn btn-gray btn-sm" onclick="resetSelected()">🔑 선택 비밀번호 초기화</button>
+          <span style="margin-left:auto;font-size:12px;color:var(--muted);">총 <strong id="acc-total-label">0</strong>명</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 계정 추가 -->
+    <div id="panel-add" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-hd-title">➕ 새 계정 추가</div></div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="fld">
+              <label>이름(변호사명) <span class="req">*</span></label>
+              <input type="text" id="add-name" placeholder="예) 김바른">
+              <div class="ferr" id="add-name-err"></div>
+            </div>
+            <div class="fld">
+              <label>아이디 <span class="req">*</span> <span style="font-size:11px;color:#aaa;">(영소문자+숫자 4~12자)</span></label>
+              <div style="display:flex;gap:6px;">
+                <input type="text" id="add-id" placeholder="아이디 입력" style="flex:1;">
+                <button class="btn btn-outline" onclick="checkAddId()">중복확인</button>
+              </div>
+              <div class="ferr" id="add-id-err"></div>
+              <div style="font-size:11px;color:var(--green);margin-top:3px;display:none;" id="add-id-ok">✅ 사용 가능한 아이디입니다.</div>
+            </div>
+            <div class="fld">
+              <label>비밀번호 <span class="req">*</span></label>
+              <input type="password" id="add-pw" placeholder="6자 이상">
+              <div class="ferr" id="add-pw-err"></div>
+            </div>
+            <div class="fld">
+              <label>비밀번호 확인 <span class="req">*</span></label>
+              <input type="password" id="add-pw2" placeholder="비밀번호 재입력">
+              <div class="ferr" id="add-pw2-err"></div>
+            </div>
+            <div class="fld">
+              <label>소속 법률사무소 <span style="font-size:11px;color:#aaa;">(선택)</span></label>
+              <input type="text" id="add-org" placeholder="예) 바른법률사무소">
+            </div>
+            <div class="fld">
+              <label>변호사 등록번호 <span style="font-size:11px;color:#aaa;">(선택)</span></label>
+              <input type="text" id="add-barnum" placeholder="예) 서울20113">
+            </div>
+            <div class="fld fld-full">
+              <label>사무소 주소 <span style="font-size:11px;color:#aaa;">(선택 — 소장 대리인 자동입력에 사용)</span></label>
+              <input type="text" id="add-addr" placeholder="예) 서울 서초구 서초대로 107 (서초동)">
+            </div>
+            <div class="fld">
+              <label>연락처 <span style="font-size:11px;color:#aaa;">(선택)</span></label>
+              <input type="text" id="add-tel" placeholder="예) 010-1234-5678">
+            </div>
+            <div class="fld">
+              <label>이메일 <span style="font-size:11px;color:#aaa;">(선택)</span></label>
+              <input type="text" id="add-email" placeholder="예) kim@barun.law">
+            </div>
+            <div class="fld">
+              <label>권한</label>
+              <select id="add-role">
+                <option value="user">실습생 (일반)</option>
+                <option value="admin">관리자</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px;">
+            <button class="btn btn-navy" onclick="doAddAccount()">✅ 계정 추가</button>
+            <button class="btn btn-gray" onclick="resetAddForm()">↺ 초기화</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 일괄 추가 -->
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-hd-title">📦 실습생 일괄 추가</div></div>
+        <div class="panel-body">
+          <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:14px 16px;font-size:12px;color:#1e3a5f;line-height:1.8;margin-bottom:16px;">
+            💡 <strong>일괄 추가</strong>: 접두사 + 번호 범위로 한 번에 여러 계정을 생성합니다.<br>
+            예) 접두사 "practice", 번호 01~20 → practice01, practice02 ... practice20
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+            <div class="fld"><label>아이디 접두사</label><input type="text" class="fld input" id="bulk-prefix" placeholder="practice" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;width:140px;"></div>
+            <div class="fld"><label>시작 번호</label><input type="number" id="bulk-start" value="1" min="1" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;width:80px;font-family:inherit;outline:none;"></div>
+            <div class="fld"><label>끝 번호</label><input type="number" id="bulk-end" value="10" min="1" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;width:80px;font-family:inherit;outline:none;"></div>
+            <div class="fld"><label>기본 비밀번호</label><input type="text" id="bulk-pw" value="court1234" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;width:120px;font-family:inherit;outline:none;"></div>
+            <button class="btn btn-green" onclick="doBulkAdd()">📦 일괄 추가</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ 실습 현황 -->
+    <div id="panel-practice" style="display:none;">
+
+      <!-- 탭 -->
+      <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border);">
+        <button id="ptab-summary" onclick="switchPracticeTab('summary')"
+          style="padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:none;color:var(--navy2);border-bottom:3px solid var(--navy2);margin-bottom:-2px;font-family:inherit;">📊 학생별 요약</button>
+        <button id="ptab-detail" onclick="switchPracticeTab('detail')"
+          style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;">📋 전체 실습 기록</button>
+      </div>
+
+      <!-- 학생별 요약 탭 -->
+      <div id="pview-summary">
+        <!-- 통계 카드 -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;" id="practice-stats2"></div>
+
+        <!-- 학생별 카드 목록 -->
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-hd-title">👥 학생별 실습 현황</div>
+            <div class="panel-hd-actions">
+              <input type="text" class="search-inp" style="width:160px;" id="student-search" placeholder="학생 검색" oninput="renderStudentSummary()">
+              <button class="btn btn-gray btn-sm" onclick="renderPracticePanel()">🔄 새로고침</button>
+              <button class="btn btn-gray btn-sm" onclick="exportPracticeCSV()">📊 CSV</button>
+            </div>
+          </div>
+          <div id="student-summary-body"></div>
+        </div>
+      </div>
+
+      <!-- 전체 기록 탭 -->
+      <div id="pview-detail" style="display:none;">
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-hd-title">📋 전체 실습 기록</div>
+            <div class="panel-hd-actions">
+              <input type="text" class="search-inp" style="width:160px;" id="practice-search" placeholder="학생 검색" oninput="renderPracticeDetail()">
+              <select class="filter-sel" id="practice-grade-filter" onchange="renderPracticeDetail()">
+                <option value="">전체 등급</option>
+                <option value="90">🏆 우수 (90+)</option>
+                <option value="70">✅ 양호 (70+)</option>
+                <option value="50">📝 보통 (50+)</option>
+                <option value="0">⚠️ 미흡</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="tbl">
+              <thead><tr>
+                <th>학생</th><th>아이디</th><th>점수</th><th>등급</th>
+                <th>사건유형</th><th>법원</th><th>입증서류</th><th>실습일시</th><th>피드백</th>
+              </tr></thead>
+              <tbody id="practice-tbody"></tbody>
+            </table>
+          </div>
+          <div style="padding:10px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">
+            총 <strong id="practice-total-label">0</strong>건
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑥ 활동 로그 -->
+    <div id="panel-logs" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd">
+          <div class="panel-hd-title">📋 활동 로그</div>
+          <button class="btn btn-gray btn-sm" onclick="clearLogs()">🗑 로그 초기화</button>
+        </div>
+        <div class="panel-body" id="full-logs"></div>
+      </div>
+    </div>
+
+    <!-- ⑤ 시스템 설정 -->
+    <div id="panel-settings" style="display:none;">
+      <div class="panel">
+        <div class="panel-hd"><div class="panel-hd-title">⚙ 시스템 설정</div></div>
+        <div class="panel-body">
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8f9fc;border-radius:6px;border:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;">전체 학생 비밀번호 초기화</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">모든 학생 계정의 비밀번호를 court1234로 초기화합니다</div></div>
+              <button class="btn btn-orange" style="background:#d97706;color:#fff;" onclick="resetDefaultPw()">초기화</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8f9fc;border-radius:6px;border:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;">학생 계정 전체 삭제</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">admin을 제외한 모든 학생 계정을 삭제합니다 (되돌릴 수 없음)</div></div>
+              <button class="btn btn-red" onclick="deleteAddedAccounts()">전체 삭제</button>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:#f8f9fc;border-radius:6px;border:1px solid var(--border);">
+              <div><div style="font-size:13px;font-weight:600;">활동 로그 초기화</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">저장된 모든 활동 로그를 삭제합니다</div></div>
+              <button class="btn btn-gray" onclick="clearLogs()">초기화</button>
+            </div>
+            <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:14px;font-size:12px;color:#1e3a5f;line-height:1.8;">
+              <strong>ℹ 계정 데이터 저장 방식</strong><br>
+              계정 데이터는 브라우저 <code>localStorage</code>에 저장됩니다. <strong>탭을 닫아도 유지</strong>되며, 브라우저 캐시를 지우면 초기화됩니다.<br>
+              학생 계정은 제한 없이 추가할 수 있습니다 (100명 이상 가능).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /.layout -->
+</div><!-- #admin-content -->
+
+<!-- 계정 수정 팝업 -->
+<div class="pop-overlay" id="pop-edit">
+  <div class="pop-box">
+    <div class="pop-hd">✏️ 계정 수정 <button class="pop-cl" onclick="closePop('pop-edit')">✕</button></div>
+    <div class="pop-bd">
+      <div class="form-grid">
+        <div class="fld"><label>아이디</label><input type="text" id="edit-id" readonly style="background:#f5f5f5;"></div>
+        <div class="fld"><label>이름 <span class="req">*</span></label><input type="text" id="edit-name"></div>
+        <div class="fld"><label>새 비밀번호 <span style="font-size:11px;color:#aaa;">(변경 시만 입력)</span></label><input type="password" id="edit-pw" placeholder="비워두면 변경 안 됨"></div>
+        <div class="fld"><label>소속</label><input type="text" id="edit-org"></div>
+        <div class="fld fld-full"><label>권한</label><select id="edit-role"><option value="user">실습생</option><option value="admin">관리자</option></select></div>
+      </div>
+    </div>
+    <div class="pop-ft"><button class="btn btn-gray" onclick="closePop('pop-edit')">취소</button><button class="btn btn-navy" onclick="doEditAccount()">저장</button></div>
+  </div>
+</div>
+
+<script>
+
+// ═══ 전역 ═══
+// admin 계정만 하드코딩 — 학생 계정은 모두 localStorage에서 관리
+const ADMIN_ACC={
+  admin:{pw:'admin1234',name:'관리자',org:'운영팀',role:'admin',created:'2026-01-01'},
+};
+let curUser=null,addIdChecked=false,editingId=null;
+
+// ─── 스토리지: localStorage 기반 (탭 닫아도 유지) ───────────
+function getAcc(){
+  try{
+    const s=localStorage.getItem('ec_acc');
+    const stored=s?JSON.parse(s):{};
+    // admin 계정은 항상 ADMIN_ACC 우선 (localStorage에 손상된 데이터가 있어도 무시)
+    const merged={...stored,...ADMIN_ACC};
+    return merged;
+  }catch{return{...ADMIN_ACC};}
+}
+function saveAcc(id,info){
+  try{
+    const s=localStorage.getItem('ec_acc');
+    const a=s?JSON.parse(s):{};
+    a[id]=info;
+    localStorage.setItem('ec_acc',JSON.stringify(a));
+  }catch{}
+}
+function delAcc(id){
+  // admin은 삭제 불가
+  if(id==='admin'){showToast('admin 계정은 삭제할 수 없습니다.','warn');return;}
+  try{
+    const s=localStorage.getItem('ec_acc');
+    const a=s?JSON.parse(s):{};
+    delete a[id];
+    localStorage.setItem('ec_acc',JSON.stringify(a));
+  }catch{}
+}
+function getAllStoredAcc(){
+  // localStorage에 저장된 계정 전체 (admin 포함)
+  try{const s=localStorage.getItem('ec_acc');return s?JSON.parse(s):{};}catch{return{};}
+}
+function getLogs(){try{const s=localStorage.getItem('ec_logs');return s?JSON.parse(s):[];}catch{return[];}}
+function addLog(type,msg){const l=getLogs();l.unshift({type,msg,time:new Date().toLocaleString('ko-KR')});if(l.length>100)l.pop();try{localStorage.setItem('ec_logs',JSON.stringify(l));}catch{}}
+
+// ═══ 인증 ═══
+function initAuth(){
+  try{const u=sessionStorage.getItem('ec_user');if(u){curUser=JSON.parse(u);}}catch{}
+  if(!curUser||curUser.role!=='admin'){
+    document.getElementById('admin-login-screen').style.display='flex';
+    document.getElementById('admin-gnb').style.display='none';
+    document.getElementById('admin-content').style.display='none';
+    setTimeout(()=>{const el=document.getElementById('adm-id');if(el)el.focus();},200);
+    return;
+  }
+  showAdminPanel();
+}
+function showAdminPanel(){
+  document.getElementById('admin-login-screen').style.display='none';
+  document.getElementById('admin-util-bar').style.display='flex';
+  document.getElementById('admin-gnb').style.display='block';
+  document.getElementById('admin-content').style.display='block';
+  const el=document.getElementById('gnb-uname');
+  if(el)el.textContent=curUser.name;
+  const el2=document.getElementById('gnb-uname-util');
+  if(el2)el2.textContent=curUser.name+'님';
+  renderAll();
+}
+function doAdminLogin(){
+  const id=(document.getElementById('adm-id').value||'').trim();
+  const pw=document.getElementById('adm-pw').value||'';
+  const err=document.getElementById('adm-err');
+  err.style.display='none';
+  if(!id||!pw){
+    err.textContent='아이디와 비밀번호를 입력해주세요.';
+    err.style.display='block';
+    return;
+  }
+  const accounts=getAcc();
+  const acc=accounts[id];
+  if(!acc||acc.pw!==pw){
+    err.innerHTML='아이디 또는 비밀번호가 올바르지 않습니다.<br><small>관리자 계정: admin / admin1234</small>';
+    err.style.display='block';
+    document.getElementById('adm-pw').value='';
+    return;
+  }
+  if(acc.role!=='admin'){
+    err.textContent='관리자 계정이 아닙니다.';
+    err.style.display='block';
+    return;
+  }
+  const user={id,name:acc.name,org:acc.org||'',role:'admin'};
+  sessionStorage.setItem('ec_user',JSON.stringify(user));
+  curUser=user;
+  addLog('login','관리자 로그인: '+id);
+  showAdminPanel();
+}
+function doLogout(){
+  if(!confirm('로그아웃 하시겠습니까?'))return;
+  sessionStorage.removeItem('ec_user');
+  curUser=null;
+  document.getElementById('admin-login-screen').style.display='flex';
+  document.getElementById('admin-util-bar').style.display='none';
+  document.getElementById('admin-gnb').style.display='none';
+  document.getElementById('admin-content').style.display='none';
+  const id=document.getElementById('adm-id');
+  const pw=document.getElementById('adm-pw');
+  const err=document.getElementById('adm-err');
+  if(id)id.value='';
+  if(pw)pw.value='';
+  if(err)err.style.display='none';
+  setTimeout(()=>{if(id)id.focus();},100);
+}
+
+// ═══ 패널 전환 ═══
+function showPanel(name){
+  ['dashboard','accounts','add','practice','logs','settings'].forEach(p=>{
+    document.getElementById('panel-'+p).style.display=p===name?'block':'none';
+    document.getElementById('nav-'+p).className='snav-item'+(p===name?' on':'');
+  });
+  if(name==='accounts')renderAccTable();
+  if(name==='logs')renderFullLogs();
+  if(name==='dashboard')renderDashboard();
+  if(name==='practice')renderPracticePanel();
+}
+
+// ═══ 대시보드 ═══
+function renderDashboard(){
+  const acc=getAcc();const ids=Object.keys(acc);
+  const total=ids.length;
+  const users=ids.filter(i=>acc[i].role!=='admin').length;
+  const admins=ids.filter(i=>acc[i].role==='admin').length;
+  document.getElementById('stat-total').textContent=total;
+  document.getElementById('stat-users').textContent=users;
+  document.getElementById('stat-admins').textContent=admins;
+  document.getElementById('acc-cnt').textContent=total;
+
+  // 실습 현황 통계 - Supabase에서 비동기 로딩
+  sbGetAllRecords().then(records=>{
+    const localRecs=getAllRecords();
+    const finalRecords=records.length>0?records:localRecs;
+    const practiceAvg=finalRecords.length?Math.round(finalRecords.reduce((s,r)=>s+r.score,0)/finalRecords.length):0;
+    document.getElementById('stat-practice').textContent=finalRecords.length;
+    document.getElementById('stat-practice-avg').textContent=practiceAvg+'점';
+    document.getElementById('practice-cnt').textContent=finalRecords.length;
+    // 최근 실습 기록
+    const rp=document.getElementById('recent-practice');
+    if(rp){
+      rp.innerHTML=finalRecords.slice(0,5).length?finalRecords.slice(0,5).map(r=>`
+        <div style="padding:10px 16px;border-bottom:1px solid #f0f2f8;display:flex;align-items:center;gap:10px;">
+          <div style="background:${bgFn(r.score)};border-radius:4px;padding:4px 8px;font-size:13px;font-weight:700;color:${colorFn(r.score)};min-width:36px;text-align:center;">${r.score}</div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:600;">${r.userName||'–'} <span style="font-weight:400;color:#888;">(${r.userId||''})</span></div><div style="font-size:11px;color:#aaa;">${r.caseType||'소장 실습'} · ${r.date||''}</div></div>
+          <span style="font-size:12px;color:${colorFn(r.score)};">${gradeFn(r.score)}</span>
+        </div>`).join('')
+      :'<div style="padding:20px;text-align:center;color:#aaa;font-size:12px;">아직 실습 기록이 없습니다.</div>';
+    }
+  });
+  // 최근 계정 (추가된 것 우선)
+  const recent=ids.filter(i=>i!=='admin').slice(0,5);
+  const recentAll=recent.length?recent:ids.slice(0,5);
+  const rb=document.getElementById('recent-accounts');
+  rb.innerHTML=recentAll.map(id=>`<div class="log-item" style="padding:10px 20px;"><div class="log-dot ${acc[id].role==='admin'?'orange':'green'}"></div><div class="log-txt"><strong>${acc[id].name}</strong> (${id})<br><span style="color:#aaa;">${acc[id].org||'소속없음'} · ${acc[id].created||'-'}</span></div><span class="badge ${acc[id].role==='admin'?'badge-admin':'badge-user'}">${acc[id].role==='admin'?'관리자':'실습생'}</span></div>`).join('');
+  // 최근 실습 기록
+  const recentPractice=records.slice(0,5);
+  const rp=document.getElementById('recent-practice');
+  if(rp){
+    rp.innerHTML=recentPractice.length?recentPractice.map(r=>`
+      <div style="padding:10px 16px;border-bottom:1px solid #f0f2f8;display:flex;align-items:center;gap:10px;">
+        <div style="background:${bgFn(r.score)};border-radius:4px;padding:4px 8px;font-size:13px;font-weight:700;color:${colorFn(r.score)};min-width:36px;text-align:center;">${r.score}</div>
+        <div style="flex:1;"><div style="font-size:12px;font-weight:600;">${r.userName||'–'} <span style="font-weight:400;color:#888;">(${r.userId||''})</span></div><div style="font-size:11px;color:#aaa;">${r.caseType||'소장 실습'} · ${r.date||''}</div></div>
+        <span style="font-size:12px;color:${colorFn(r.score)};">${gradeFn(r.score)}</span>
+      </div>`).join('')
+    :'<div style="padding:20px;text-align:center;color:#aaa;font-size:12px;">아직 실습 기록이 없습니다.</div>';
+  }
+}
+
+// ═══ 계정 테이블 ═══
+function renderAccTable(){
+  const acc=getAcc();const ids=Object.keys(acc);
+  const q=(document.getElementById('acc-search')||{}).value?.trim().toLowerCase()||'';
+  const f=(document.getElementById('acc-filter')||{}).value||'';
+  const filtered=ids.filter(id=>{
+    const a=acc[id];
+    if(f&&a.role!==f)return false;
+    if(q&&!id.toLowerCase().includes(q)&&!(a.name||'').toLowerCase().includes(q))return false;
+    return true;
+  });
+  document.getElementById('acc-total-label').textContent=filtered.length;
+  document.getElementById('acc-cnt').textContent=ids.length;
+  const tb=document.getElementById('acc-tbody');
+  tb.innerHTML=filtered.map(id=>{
+    const a=acc[id];
+    const isAdmin=(id==='admin');
+    return`<tr>
+      <td><input type="checkbox" class="accchk" value="${id}" ${isAdmin?'disabled':''}></td>
+      <td><code style="font-size:12px;background:#f0f2f8;padding:2px 6px;border-radius:3px;">${id}</code>${isAdmin?'<span style="font-size:10px;color:#c0392b;margin-left:6px;font-weight:600;">관리자</span>':''}</td>
+      <td><strong>${a.name||'–'}</strong></td>
+      <td style="color:#666;">${a.org||'–'}</td>
+      <td><span class="badge ${a.role==='admin'?'badge-admin':'badge-user'}">${a.role==='admin'?'관리자':'실습생'}</span></td>
+      <td><span class="badge badge-active">활성</span></td>
+      <td style="color:#888;">${a.created||'–'}</td>
+      <td><div style="display:flex;gap:4px;">
+        <button class="btn btn-outline btn-sm" onclick="openEdit('${id}')">수정</button>
+        <button class="btn btn-gray btn-sm" onclick="resetPw('${id}')">PW초기화</button>
+        ${!isAdmin?`<button class="btn btn-red btn-sm" onclick="delAcc1('${id}')">삭제</button>`:''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══ 계정 추가 ═══
+let addIdOk=false;
+function checkAddId(){
+  const id=document.getElementById('add-id').value.trim();
+  const err=document.getElementById('add-id-err');const ok=document.getElementById('add-id-ok');
+  err.classList.remove('show');ok.style.display='none';addIdOk=false;
+  if(!id){err.textContent='아이디를 입력해주세요.';err.classList.add('show');return;}
+  if(!/^[a-z0-9]{4,12}$/.test(id)){err.textContent='영문 소문자+숫자 4~12자로 입력해주세요.';err.classList.add('show');return;}
+  if(getAcc()[id]){err.textContent='이미 사용 중인 아이디입니다.';err.classList.add('show');return;}
+  ok.style.display='block';addIdOk=true;
+}
+function doAddAccount(){
+  const name=document.getElementById('add-name').value.trim();
+  const id=document.getElementById('add-id').value.trim();
+  const pw=document.getElementById('add-pw').value;
+  const pw2=document.getElementById('add-pw2').value;
+  const org=document.getElementById('add-org').value.trim();
+  const role=document.getElementById('add-role').value;
+  const barNum=(document.getElementById('add-barnum')?.value||'').trim();
+  const addr=(document.getElementById('add-addr')?.value||'').trim();
+  const tel=(document.getElementById('add-tel')?.value||'').trim();
+  const email=(document.getElementById('add-email')?.value||'').trim();
+  let valid=true;
+  ['add-name-err','add-id-err','add-pw-err','add-pw2-err'].forEach(e=>document.getElementById(e).classList.remove('show'));
+  if(!name){document.getElementById('add-name-err').textContent='이름을 입력해주세요.';document.getElementById('add-name-err').classList.add('show');valid=false;}
+  if(!addIdOk){document.getElementById('add-id-err').textContent='아이디 중복확인을 해주세요.';document.getElementById('add-id-err').classList.add('show');valid=false;}
+  if(pw.length<6){document.getElementById('add-pw-err').textContent='비밀번호는 6자 이상이어야 합니다.';document.getElementById('add-pw-err').classList.add('show');valid=false;}
+  if(pw!==pw2){document.getElementById('add-pw2-err').textContent='비밀번호가 일치하지 않습니다.';document.getElementById('add-pw2-err').classList.add('show');valid=false;}
+  if(!valid)return;
+  const today=new Date().toISOString().split('T')[0];
+  saveAcc(id,{pw,name,org,role,barNum,addr,tel,email,created:today});
+  addIdOk=false;
+  addLog('add',`계정 추가: ${name} (${id}) - ${role==='admin'?'관리자':'실습생'}`);
+  showToast('✅ "'+name+'" 계정이 추가되었습니다.','ok');
+  resetAddForm();renderAccTable();renderDashboard();
+  document.getElementById('acc-cnt').textContent=Object.keys(getAcc()).length;
+}
+function resetAddForm(){
+  ['add-name','add-id','add-pw','add-pw2','add-org','add-barnum','add-addr','add-tel','add-email'].forEach(i=>{
+    const el=document.getElementById(i);if(el)el.value='';
+  });
+  document.getElementById('add-role').value='user';
+  document.getElementById('add-id-ok').style.display='none';
+  ['add-name-err','add-id-err','add-pw-err','add-pw2-err'].forEach(e=>document.getElementById(e).classList.remove('show'));
+  addIdOk=false;
+}
+
+// 일괄 추가
+function doBulkAdd(){
+  const prefix=document.getElementById('bulk-prefix').value.trim();
+  const start=parseInt(document.getElementById('bulk-start').value)||1;
+  const end=parseInt(document.getElementById('bulk-end').value)||10;
+  const pw=document.getElementById('bulk-pw').value.trim()||'court1234';
+  if(!prefix){showToast('접두사를 입력해주세요.','err');return;}
+  if(end<start||end-start>49){showToast('번호 범위를 확인해주세요. (최대 50개)','warn');return;}
+  const today=new Date().toISOString().split('T')[0];
+  let added=0;
+  for(let i=start;i<=end;i++){
+    const id=prefix+String(i).padStart(2,'0');
+    if(getAcc()[id])continue;
+    saveAcc(id,{pw,name:prefix+String(i).padStart(2,'0'),org:'실습반',role:'user',created:today});
+    added++;
+  }
+  addLog('bulk',`일괄 추가: ${prefix}${String(start).padStart(2,'0')}~${prefix}${String(end).padStart(2,'0')} (${added}개)`);
+  showToast(`✅ ${added}개 계정이 추가되었습니다.`,'ok');
+  renderDashboard();renderAccTable();
+}
+
+// ═══ 계정 수정 ═══
+function openEdit(id){
+  const acc=getAcc()[id];if(!acc)return;
+  editingId=id;
+  document.getElementById('edit-id').value=id;
+  document.getElementById('edit-name').value=acc.name;
+  document.getElementById('edit-pw').value='';
+  document.getElementById('edit-org').value=acc.org||'';
+  document.getElementById('edit-role').value=acc.role||'user';
+  document.getElementById('pop-edit').classList.add('show');
+}
+function doEditAccount(){
+  const name=document.getElementById('edit-name').value.trim();
+  const pw=document.getElementById('edit-pw').value;
+  const org=document.getElementById('edit-org').value.trim();
+  const role=document.getElementById('edit-role').value;
+  if(!name){alert('이름을 입력해주세요.');return;}
+  const acc=getAcc()[editingId];
+  const updated={...acc,name,org,role};
+  if(pw&&pw.length>=6)updated.pw=pw;
+  else if(pw&&pw.length<6){alert('비밀번호는 6자 이상이어야 합니다.');return;}
+  saveAcc(editingId,updated);
+  addLog('edit',`계정 수정: ${name} (${editingId})`);
+  showToast('✅ 계정이 수정되었습니다.','ok');
+  closePop('pop-edit');renderAccTable();renderDashboard();
+}
+
+// ═══ 삭제 & 초기화 ═══
+function delAcc1(id){
+  if(id==='admin'){showToast('admin 계정은 삭제할 수 없습니다.','warn');return;}
+  if(!confirm('"'+id+'" 계정을 삭제하시겠습니까?'))return;
+  delAcc(id);
+  addLog('delete',`계정 삭제: ${id}`);
+  showToast('🗑 계정이 삭제되었습니다.','ok');
+  renderAccTable();renderDashboard();
+}
+function delSelected(){
+  const chk=[...document.querySelectorAll('.accchk:checked')].map(c=>c.value);
+  if(!chk.length){showToast('삭제할 계정을 선택해주세요.','warn');return;}
+  const toDelete=chk.filter(id=>id!=='admin');
+  const adminBlocked=chk.filter(id=>id==='admin');
+  if(adminBlocked.length)showToast('admin 계정은 삭제할 수 없습니다.','warn');
+  if(!toDelete.length)return;
+  if(!confirm(toDelete.length+'개 계정을 삭제하시겠습니까?'))return;
+  toDelete.forEach(id=>delAcc(id));
+  addLog('delete',`계정 일괄 삭제: ${toDelete.join(', ')}`);
+  showToast(`🗑 ${toDelete.length}개 계정이 삭제되었습니다.`,'ok');
+  renderAccTable();renderDashboard();
+}
+function resetPw(id){
+  if(!confirm('"'+id+'" 비밀번호를 court1234로 초기화하시겠습니까?'))return;
+  const acc=getAcc()[id];if(!acc)return;
+  saveAcc(id,{...acc,pw:'court1234'});
+  addLog('edit',`비밀번호 초기화: ${id}`);
+  showToast('🔑 비밀번호가 court1234로 초기화되었습니다.','ok');
+}
+function resetSelected(){
+  const chk=[...document.querySelectorAll('.accchk:checked')].map(c=>c.value);
+  if(!chk.length){showToast('선택된 계정이 없습니다.','warn');return;}
+  if(!confirm(chk.length+'개 계정의 비밀번호를 court1234로 초기화하시겠습니까?'))return;
+  chk.forEach(id=>{const acc=getAcc()[id];if(acc)saveAcc(id,{...acc,pw:'court1234'});});
+  addLog('edit',`비밀번호 일괄 초기화: ${chk.join(', ')}`);
+  showToast(`🔑 ${chk.length}개 계정의 비밀번호가 초기화되었습니다.`,'ok');
+  renderAccTable();
+}
+function resetDefaultPw(){
+  // 더 이상 기본 계정이 없으므로 전체 학생 계정 PW 초기화
+  const acc=getAcc();
+  const students=Object.keys(acc).filter(id=>id!=='admin'&&acc[id].role!=='admin');
+  if(!students.length){showToast('초기화할 학생 계정이 없습니다.','warn');return;}
+  if(!confirm(`학생 계정 ${students.length}개의 비밀번호를 court1234로 초기화하시겠습니까?`))return;
+  students.forEach(id=>saveAcc(id,{...acc[id],pw:'court1234'}));
+  addLog('edit',`학생 계정 전체 비밀번호 초기화 (${students.length}개)`);
+  showToast(`🔑 ${students.length}개 학생 계정의 비밀번호가 초기화되었습니다.`,'ok');
+}
+function deleteAddedAccounts(){
+  const acc=getAcc();
+  const toDelete=Object.keys(acc).filter(id=>id!=='admin'&&acc[id].role!=='admin');
+  if(!toDelete.length){showToast('삭제할 학생 계정이 없습니다.','warn');return;}
+  if(!confirm(`학생 계정 ${toDelete.length}개를 모두 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`))return;
+  toDelete.forEach(id=>delAcc(id));
+  addLog('delete',`학생 계정 전체 삭제 (${toDelete.length}개)`);
+  showToast(`🗑 학생 계정 ${toDelete.length}개가 삭제되었습니다.`,'ok');
+  renderAccTable();renderDashboard();
+}
+
+// ═══ 로그 ═══
+function renderFullLogs(){
+  const logsData=getLogs();
+  const colors={login:'green',signup:'blue',add:'blue',delete:'orange',edit:'orange',bulk:'green'};
+  document.getElementById('full-logs').innerHTML=logsData.length?logsData.map(l=>`<div class="log-item"><div class="log-dot ${colors[l.type]||'blue'}"></div><div class="log-txt">${l.msg}</div><span class="log-time">${l.time}</span></div>`).join(''):'<div style="text-align:center;color:#aaa;font-size:12px;padding:30px;">활동 로그가 없습니다.</div>';
+}
+function clearLogs(){
+  if(!confirm('모든 로그를 삭제하시겠습니까?'))return;
+  localStorage.removeItem('ec_logs');
+  showToast('로그가 초기화되었습니다.','ok');
+  if(document.getElementById('panel-logs').style.display!=='none')renderFullLogs();
+  renderDashboard();
+}
+
+// ═══ 실습 현황 ═══
+// ═══ Supabase 설정 ═══
+const SB_URL = 'https://knpvayujykoqjncctxrr.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtucHZheXVqeWtvcWpuY2N0eHJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NzA3NDUsImV4cCI6MjA4OTE0Njc0NX0.rXlo5IsOW6FS5N1X3vgqNM1RvzB84TYPqVhnYyc6FSg';
+const SB_HEADERS = {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+
+function getAllRecords(){
+  // 동기 호환용: localStorage 반환 (비동기 로딩은 renderPracticePanel에서 처리)
+  try{return JSON.parse(localStorage.getItem('ec_all_records')||'[]');}catch{return[];}
+}
+
+async function sbGetAllRecords(){
+  try{
+    const res = await fetch(
+      SB_URL+'/rest/v1/practice_records?order=created_at.desc&limit=500',
+      {headers: SB_HEADERS}
+    );
+    if(!res.ok) return [];
+    const data = await res.json();
+    return data.map(r=>({
+      userId: r.user_id,
+      userName: r.user_name,
+      score: r.score,
+      feedback: r.feedback,
+      caseType: r.case_type,
+      court: r.court,
+      plaintiff: r.plaintiff,
+      defendant: r.defendant,
+      hasAgent: r.has_agent,
+      evidenceCount: r.evidence_count,
+      date: r.date_str || new Date(r.created_at).toLocaleString('ko-KR'),
+    }));
+  }catch(e){ console.error('[Supabase] 전체기록 읽기 실패:', e); return []; }
+}
+function gradeFn(s){return s>=90?'🏆 우수':s>=70?'✅ 양호':s>=50?'📝 보통':'⚠️ 미흡';}
+function colorFn(s){return s>=90?'#15803d':s>=70?'#1e40af':s>=50?'#92400e':'#991b1b';}
+function bgFn(s){return s>=90?'#f0fdf4':s>=70?'#eff6ff':s>=50?'#fffbeb':'#fef2f2';}
+
+function renderPracticePanel(){
+  // 로딩 표시
+  const statsEl=document.getElementById('practice-stats2');
+  if(statsEl)statsEl.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:#aaa;">⏳ 데이터 불러오는 중...</div>';
+  const body=document.getElementById('student-summary-body');
+  if(body)body.innerHTML='<div style="text-align:center;padding:40px;color:#aaa;">⏳ Supabase에서 기록을 불러오는 중...</div>';
+
+  sbGetAllRecords().then(records=>{
+    // localStorage 백업과 병합
+    const localRecs=getAllRecords();
+    const finalRecords=records.length>0?records:localRecs;
+
+    // localStorage에도 캐시
+    if(records.length>0){
+      try{localStorage.setItem('ec_all_records',JSON.stringify(records));}catch{}
+    }
+
+    const total=finalRecords.length;
+    const avg=total?Math.round(finalRecords.reduce((s,r)=>s+r.score,0)/total):0;
+    const best=total?Math.max(...finalRecords.map(r=>r.score)):0;
+    const participants=new Set(finalRecords.map(r=>r.userId)).size;
+    document.getElementById('practice-cnt').textContent=total;
+
+    if(statsEl)statsEl.innerHTML=`
+      <div style="background:#eff6ff;border-radius:6px;padding:14px;text-align:center;border:1px solid #bfdbfe;">
+        <div style="font-size:28px;font-weight:700;color:#1e40af;">${total}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">총 실습 횟수</div>
+      </div>
+      <div style="background:#f0fdf4;border-radius:6px;padding:14px;text-align:center;border:1px solid #bbf7d0;">
+        <div style="font-size:28px;font-weight:700;color:#15803d;">${participants}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">참여 학생 수</div>
+      </div>
+      <div style="background:#fffbeb;border-radius:6px;padding:14px;text-align:center;border:1px solid #fde68a;">
+        <div style="font-size:28px;font-weight:700;color:#92400e;">${avg}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">전체 평균 점수</div>
+      </div>
+      <div style="background:#fef2f2;border-radius:6px;padding:14px;text-align:center;border:1px solid #fecaca;">
+        <div style="font-size:28px;font-weight:700;color:#991b1b;">${best}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">최고 점수</div>
+      </div>`;
+
+    // 학생별 요약 렌더링 (데이터 전달)
+    renderStudentSummaryWithData(finalRecords);
+  });
+}
+
+function switchPracticeTab(tab){
+  document.getElementById('pview-summary').style.display=tab==='summary'?'':'none';
+  document.getElementById('pview-detail').style.display=tab==='detail'?'':'none';
+  const on='padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:none;color:var(--navy2);border-bottom:3px solid var(--navy2);margin-bottom:-2px;font-family:inherit;';
+  const off='padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;';
+  document.getElementById('ptab-summary').style.cssText=tab==='summary'?on:off;
+  document.getElementById('ptab-detail').style.cssText=tab==='detail'?on:off;
+  if(tab==='detail') renderPracticeDetail();
+  else renderStudentSummary();
+}
+
+function renderStudentSummaryWithData(records){
+  const q=(document.getElementById('student-search')||{}).value?.trim().toLowerCase()||'';
+  const byStudent={};
+  records.forEach(r=>{
+    const uid=r.userId||'unknown';
+    if(!byStudent[uid])byStudent[uid]={userId:uid,userName:r.userName||uid,records:[]};
+    byStudent[uid].records.push(r);
+  });
+  let students=Object.values(byStudent);
+  if(q)students=students.filter(s=>s.userName.toLowerCase().includes(q)||s.userId.toLowerCase().includes(q));
+  const body=document.getElementById('student-summary-body');
+  if(!body)return;
+  if(!students.length){
+    body.innerHTML='<div style="text-align:center;padding:48px;color:#aaa;"><div style="font-size:40px;margin-bottom:12px;">📋</div><div style="font-size:14px;font-weight:600;color:#888;margin-bottom:6px;">아직 실습 기록이 없습니다</div><div style="font-size:12px;">학생이 소장 작성을 완료하면 자동으로 기록됩니다.</div></div>';
+    return;
+  }
+  const rows=students.map(s=>{
+    const cnt=s.records.length;
+    const avg=Math.round(s.records.reduce((a,r)=>a+r.score,0)/cnt);
+    const best=Math.max(...s.records.map(r=>r.score));
+    const latest=s.records[0];
+    const recRows=s.records.map(r=>`
+      <div style="padding:12px 20px 12px 40px;border-top:1px solid #f0f4f8;display:flex;gap:12px;">
+        <div style="background:${bgFn(r.score)};border-radius:6px;padding:8px 12px;text-align:center;min-width:56px;flex-shrink:0;">
+          <div style="font-size:18px;font-weight:700;color:${colorFn(r.score)};">${r.score}</div>
+          <div style="font-size:9px;color:${colorFn(r.score)};font-weight:600;">${gradeFn(r.score).split(' ')[1]}</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px;color:#666;margin-bottom:6px;">
+            📅 ${r.date||'–'} | ⚖ ${r.caseType||'소장 실습'} | 🏛 ${r.court||'–'} | 📁 ${r.evidenceCount||0}건
+          </div>
+          <div style="background:#f8f9fc;border:1px solid #e0e6ee;border-radius:4px;padding:8px 12px;">
+            <div style="font-size:11px;font-weight:700;color:#003366;margin-bottom:4px;">🤖 AI 피드백</div>
+            <div style="font-size:11px;color:#444;line-height:1.8;white-space:pre-wrap;">${(r.feedback||'피드백 없음').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+          </div>
+        </div>
+      </div>`).join('');
+    return `<div style="border-bottom:1px solid #f0f2f8;">
+      <div style="padding:14px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;background:#fafbfc;"
+        onclick="toggleStudentDetail('sd-${s.userId}')">
+        <div style="width:44px;height:44px;background:${bgFn(avg)};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:${colorFn(avg)};border:2px solid ${colorFn(avg)};">${avg}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:700;color:#003366;">${s.userName}<span style="font-size:11px;font-weight:400;color:#888;margin-left:6px;">(${s.userId})</span></div>
+          <div style="font-size:11px;color:#888;margin-top:3px;">실습 <strong>${cnt}회</strong> · 평균 <strong style="color:${colorFn(avg)};">${avg}점</strong> · 최고 <strong>${best}점</strong> · 최근: ${latest.date||'–'}</div>
+        </div>
+        <span style="font-size:12px;font-weight:700;color:${colorFn(avg)};margin-right:6px;">${gradeFn(avg)}</span>
+        <span style="font-size:16px;color:#bbb;" id="arr-${s.userId}">▼</span>
+      </div>
+      <div id="sd-${s.userId}" style="display:none;background:#fff;">${recRows}</div>
+    </div>`;
+  }).join('');
+  body.innerHTML=rows;
+}
+
+function toggleStudentDetail(id){
+  const el=document.getElementById(id);if(!el)return;
+  const uid=id.replace('sd-','');
+  const arr=document.getElementById('arr-'+uid);
+  const open=el.style.display!=='none';
+  el.style.display=open?'none':'block';
+  if(arr)arr.textContent=open?'▼':'▲';
+}
+
+function renderPracticeDetail(){
+  let records=getAllRecords();
+  const q=(document.getElementById('practice-search')||{}).value?.trim().toLowerCase()||'';
+  const gf=(document.getElementById('practice-grade-filter')||{}).value||'';
+  if(q) records=records.filter(r=>(r.userName||'').toLowerCase().includes(q)||(r.userId||'').toLowerCase().includes(q));
+  if(gf) records=records.filter(r=>gf==='90'?r.score>=90:gf==='70'?r.score>=70&&r.score<90:gf==='50'?r.score>=50&&r.score<70:r.score<50);
+  if(document.getElementById('practice-total-label')) document.getElementById('practice-total-label').textContent=records.length;
+  const tbody=document.getElementById('practice-tbody');
+  if(!records.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:#aaa;padding:24px;">실습 기록이 없습니다.</td></tr>';return;}
+  tbody.innerHTML=records.map((r,i)=>`<tr>
+    <td><strong>${r.userName||'–'}</strong></td>
+    <td><code style="font-size:11px;background:#f0f2f8;padding:2px 6px;border-radius:3px;">${r.userId||'–'}</code></td>
+    <td><div style="background:${bgFn(r.score)};border-radius:4px;padding:3px 8px;text-align:center;font-weight:700;font-size:13px;color:${colorFn(r.score)};display:inline-block;">${r.score}</div></td>
+    <td><span style="color:${colorFn(r.score)};font-weight:600;">${gradeFn(r.score)}</span></td>
+    <td style="font-size:11px;">${r.caseType||'–'}</td><td style="font-size:11px;">${r.court||'–'}</td>
+    <td style="text-align:center;">${r.evidenceCount||0}건</td>
+    <td style="font-size:11px;color:#888;">${r.date||'–'}</td>
+    <td><button class="btn btn-gray btn-sm" onclick="showFeedbackDetail(${i})">보기</button></td>
+  </tr>`).join('');
+  window._practiceRecords=records;
+}
+
+function showFeedbackDetail(idx){
+  const r=window._practiceRecords?.[idx];
+  if(!r)return;
+  const existing=document.getElementById('pop-feedback');
+  if(existing)existing.remove();
+  const pop=document.createElement('div');
+  pop.id='pop-feedback';
+  pop.className='pop-overlay show';
+  pop.innerHTML=`<div class="pop-box" style="width:520px;max-height:80vh;overflow-y:auto;">
+    <div class="pop-hd">${r.userName}(${r.userId}) 실습 피드백 <button class="pop-cl" onclick="document.getElementById('pop-feedback').remove()">✕</button></div>
+    <div class="pop-bd">
+      <div style="display:flex;gap:12px;margin-bottom:14px;">
+        <div style="background:${bgFn(r.score)};border-radius:8px;padding:16px;text-align:center;min-width:80px;">
+          <div style="font-size:32px;font-weight:700;color:${colorFn(r.score)};">${r.score}</div>
+          <div style="font-size:10px;color:${colorFn(r.score)};">/ 100점</div>
+          <div style="font-size:12px;font-weight:700;color:${colorFn(r.score)};margin-top:4px;">${gradeFn(r.score).split(' ')[1]}</div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:12px;color:#888;line-height:1.9;">
+            <div>📅 ${r.date}</div>
+            <div>⚖ 사건유형: ${r.caseType||'–'}</div>
+            <div>🏛 법원: ${r.court||'–'}</div>
+            <div>👤 원고: ${r.plaintiff||'–'}</div>
+            <div>👤 피고: ${r.defendant||'–'}</div>
+            <div>📁 입증서류: ${r.evidenceCount||0}건</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#f8f9fc;border:1px solid #e0e6ee;border-radius:4px;padding:14px;">
+        <div style="font-size:12px;font-weight:700;color:#003366;margin-bottom:8px;">🤖 AI 피드백</div>
+        <div style="font-size:12px;color:#333;line-height:1.9;white-space:pre-wrap;">${(r.feedback||'피드백 없음').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
+      </div>
+    </div>
+    <div class="pop-ft"><button class="btn btn-navy" onclick="document.getElementById('pop-feedback').remove()">닫기</button></div>
+  </div>`;
+  pop.addEventListener('click',e=>{if(e.target===pop)pop.remove();});
+  document.body.appendChild(pop);
+}
+
+function exportPracticeCSV(){
+  const records=getAllRecords();
+  if(!records.length){showToast('내보낼 기록이 없습니다.','warn');return;}
+  const header='학생명,아이디,점수,등급,사건유형,법원,입증서류,실습일시\n';
+  const rows=records.map(r=>`${r.userName||''},${r.userId||''},${r.score},${gradeFn(r.score).split(' ')[1]},${r.caseType||''},${r.court||''},${r.evidenceCount||0},${r.date||''}`).join('\n');
+  const blob=new Blob(['\uFEFF'+header+rows],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='실습현황_'+new Date().toLocaleDateString('ko-KR')+'.csv';a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV 파일이 다운로드되었습니다.','ok');
+}
+
+// ═══ 팝업 ═══
+function closePop(id){document.getElementById(id).classList.remove('show');}
+function togAllChk(m){document.querySelectorAll('.accchk').forEach(c=>c.checked=m.checked);}
+
+// ═══ 토스트 ═══
+function showToast(msg,type='ok'){const t=document.createElement('div');t.className='toast '+type;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
+
+// ═══ 전체 렌더 ═══
+function renderAll(){renderDashboard();renderAccTable();}
+
+// ═══ 초기화 ═══
+document.addEventListener('DOMContentLoaded',()=>{
+  initAuth();
+  document.querySelectorAll('.pop-overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('show');});});
+});
+
+</script>
+
+<!-- 푸터 -->
+<footer style="background:#0d2b5e;border-top:3px solid #b8922a;margin-top:20px;">
+  <div style="display:flex;justify-content:center;gap:0;padding:14px 0 8px;flex-wrap:wrap;">
+    <a href="index.html" style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;text-decoration:none;">메인으로</a>
+    <a href="mypage.html" style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;text-decoration:none;">나의전자소송</a>
+    <a href="apply.html" style="font-size:12px;color:rgba(255,255,255,.55);padding:0 14px;cursor:pointer;text-decoration:none;">소장작성 실습</a>
+  </div>
+  <div style="text-align:center;font-size:11px;color:rgba(255,255,255,.3);padding-bottom:14px;">전자소송 실습 시스템 관리자 패널 · COPYRIGHT © 대한민국 법원.</div>
+</footer>
+</body>
+</html>
+</html>
