@@ -179,6 +179,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .assign-stu-row:hover{background:#f5f7fc;}
 .assign-stu-row.sel{background:#eef2fa;}
 .assign-stu-row input[type=checkbox]{accent-color:var(--navy2);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
+/* ── 배정 현황 그룹뷰 ── */
+.assign-group{border:1px solid var(--border);border-radius:8px;margin-bottom:12px;overflow:hidden;}
+.assign-group-hd{padding:14px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;background:#fafbfc;}
+.assign-group-hd:hover{background:#f0f4fc;}
+.assign-group-hd.open{background:#eef2fa;border-bottom:1px solid var(--border);}
+.assign-avatar{width:40px;height:40px;border-radius:50%;background:var(--navy2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;}
 
 /* ── 반응형 ── */
 @media(max-width:900px){
@@ -674,9 +680,21 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 <script>
 
 // ═══ 전역 ═══
-// admin 계정만 하드코딩 — 학생 계정은 모두 localStorage에서 관리
 const ADMIN_ACC={
   admin:{pw:'admin1234',name:'관리자',org:'운영팀',role:'admin',created:'2026-01-01'},
+};
+// 기본 학생 계정 — 캐시 삭제해도 항상 유지 (mypage.html과 동일)
+const DEFAULT_STUDENTS={
+  student01:{pw:'court1234',name:'김바른',org:'바른법률사무소',role:'user',barNum:'서울20113',addr:'서울 서초구 서초대로 107 (서초동)',tel:'010-2111-3077',email:'student01@barun.law',created:'2026-01-01'},
+  student02:{pw:'court1234',name:'이바른',org:'한결법률사무소',role:'user',barNum:'서울20226',addr:'서울 서초구 서초대로 114 (서초동)',tel:'010-2222-3154',email:'student02@barun.law',created:'2026-01-01'},
+  student03:{pw:'court1234',name:'박바른',org:'정직법률사무소',role:'user',barNum:'서울20339',addr:'서울 서초구 서초대로 121 (서초동)',tel:'010-2333-3231',email:'student03@barun.law',created:'2026-01-01'},
+  student04:{pw:'court1234',name:'최바른',org:'신뢰법률사무소',role:'user',barNum:'서울20452',addr:'서울 서초구 서초대로 128 (서초동)',tel:'010-2444-3308',email:'student04@barun.law',created:'2026-01-01'},
+  student05:{pw:'court1234',name:'정바른',org:'공정법률사무소',role:'user',barNum:'서울20565',addr:'서울 서초구 서초대로 135 (서초동)',tel:'010-2555-3385',email:'student05@barun.law',created:'2026-01-01'},
+  student06:{pw:'court1234',name:'강바른',org:'진실법률사무소',role:'user',barNum:'서울20678',addr:'서울 서초구 서초대로 142 (서초동)',tel:'010-2666-3462',email:'student06@barun.law',created:'2026-01-01'},
+  student07:{pw:'court1234',name:'조바른',org:'바른법률사무소',role:'user',barNum:'서울20791',addr:'서울 서초구 서초대로 149 (서초동)',tel:'010-2777-3539',email:'student07@barun.law',created:'2026-01-01'},
+  student08:{pw:'court1234',name:'윤바른',org:'한결법률사무소',role:'user',barNum:'서울20904',addr:'서울 서초구 서초대로 156 (서초동)',tel:'010-2888-3616',email:'student08@barun.law',created:'2026-01-01'},
+  student09:{pw:'court1234',name:'장바른',org:'정직법률사무소',role:'user',barNum:'서울21017',addr:'서울 서초구 서초대로 163 (서초동)',tel:'010-2999-3693',email:'student09@barun.law',created:'2026-01-01'},
+  student10:{pw:'court1234',name:'임바른',org:'신뢰법률사무소',role:'user',barNum:'서울21130',addr:'서울 서초구 서초대로 170 (서초동)',tel:'010-3110-3770',email:'student10@barun.law',created:'2026-01-01'},
 };
 let curUser=null,addIdChecked=false,editingId=null;
 
@@ -685,10 +703,11 @@ function getAcc(){
   try{
     const s=localStorage.getItem('ec_acc');
     const stored=s?JSON.parse(s):{};
-    // admin 계정은 항상 ADMIN_ACC 우선 (localStorage에 손상된 데이터가 있어도 무시)
-    const merged={...stored,...ADMIN_ACC};
+    // DEFAULT_STUDENTS와 ADMIN_ACC는 항상 포함 (캐시 삭제해도 유지)
+    // 우선순위: ADMIN_ACC > localStorage 저장값 > DEFAULT_STUDENTS
+    const merged={...DEFAULT_STUDENTS,...stored,...ADMIN_ACC};
     return merged;
-  }catch{return{...ADMIN_ACC};}
+  }catch{return{...DEFAULT_STUDENTS,...ADMIN_ACC};}
 }
 function saveAcc(id,info){
   try{
@@ -1373,7 +1392,12 @@ async function sbGetAssignments(){
 }
 async function sbAddAssignment(student_id,case_id){
   try{
-    const res=await fetch(SB_URL+'/rest/v1/assignments',{method:'POST',headers:SB_WRITE_HEADERS,body:JSON.stringify({student_id,case_id,status:'assigned'})});
+    const res=await fetch(SB_URL+'/rest/v1/assignments',{method:'POST',headers:SB_WRITE_HEADERS,
+      body:JSON.stringify({student_id,case_id,status:'assigned',assigned_at:new Date().toISOString()})});
+    if(!res.ok){
+      const errText=await res.text();
+      console.error('[Supabase] 배정 실패 HTTP',res.status,errText);
+    }
     return res.ok;
   }catch(e){console.error('[Supabase] 배정 추가 실패:',e);return false;}
 }
@@ -1548,25 +1572,88 @@ async function loadAssignments(){
     return;
   }
   const acc=getAcc();
-  body.innerHTML='<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>학생</th><th>사건 제목</th><th>유형</th><th>법원</th><th>원고</th><th>피고</th><th>상태</th><th>배정일</th><th>관리</th></tr></thead><tbody>'+
-    assignmentsCache.map(a=>{
-      const c=a.sample_cases||{};
-      const student=acc[a.student_id];
-      const statusLabel=a.status==='completed'?'완료':a.status==='in_progress'?'진행중':'배정됨';
-      const statusClass=a.status==='completed'?'badge-active':a.status==='in_progress'?'badge-user':'badge-inactive';
-      return`<tr>
-        <td><strong>${student?.name||a.student_id}</strong><br><span style="font-size:11px;color:#888;">${a.student_id}</span></td>
-        <td>${c.title||'–'}</td>
-        <td>${c.case_type||'–'}</td>
-        <td style="font-size:11px;">${c.court||'–'}</td>
-        <td style="font-size:11px;">${c.plaintiff||'–'}</td>
-        <td style="font-size:11px;">${c.defendant||'–'}</td>
-        <td><span class="badge ${statusClass}">${statusLabel}</span></td>
-        <td style="font-size:11px;color:#888;">${a.assigned_at?a.assigned_at.split('T')[0]:'–'}</td>
-        <td><button class="btn btn-red btn-sm" onclick="doDeleteAssignment(${a.id})">🗑</button></td>
-      </tr>`;
-    }).join('')+
-  '</tbody></table></div>';
+  // 학생별 그룹핑
+  const grouped={};
+  assignmentsCache.forEach(a=>{
+    const sid=a.student_id;
+    if(!grouped[sid])grouped[sid]={student:acc[sid]||{name:sid,org:''},assignments:[]};
+    grouped[sid].assignments.push(a);
+  });
+  const totalStudents=Object.keys(grouped).length;
+  const totalCases=assignmentsCache.length;
+  body.innerHTML=`
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:20px;font-size:12px;color:var(--muted);background:#fafbfc;">
+      <span>👥 배정된 학생 <strong style="color:var(--navy);">${totalStudents}명</strong></span>
+      <span>📚 총 배정 건수 <strong style="color:var(--navy);">${totalCases}건</strong></span>
+    </div>
+    <div style="padding:16px;">
+      ${Object.entries(grouped).map(([sid,g])=>{
+        const s=g.student;
+        const cnt=g.assignments.length;
+        const statusColors={completed:'badge-active',in_progress:'badge-user',assigned:'badge-inactive'};
+        const statusLabels={completed:'완료',in_progress:'진행중',assigned:'배정됨'};
+        const caseRows=g.assignments.map(a=>{
+          const c=a.sample_cases||{};
+          const stLabel=statusLabels[a.status]||'배정됨';
+          const stClass=statusColors[a.status]||'badge-inactive';
+          return`<tr>
+            <td><strong style="font-size:12px;">${c.title||'–'}</strong></td>
+            <td><span class="badge badge-user" style="font-size:10px;">${c.case_type||'–'}</span></td>
+            <td style="font-size:11px;color:#666;">${c.court||'–'}</td>
+            <td style="font-size:11px;">${c.plaintiff||'–'} / ${c.defendant||'–'}</td>
+            <td><span class="badge ${stClass}">${stLabel}</span></td>
+            <td style="font-size:11px;color:#aaa;">${a.assigned_at?a.assigned_at.split('T')[0]:'–'}</td>
+            <td><button class="btn btn-red btn-sm" onclick="doDeleteAssignment(${a.id})">🗑</button></td>
+          </tr>`;
+        }).join('');
+        return`<div class="assign-group">
+          <div class="assign-group-hd open" id="agh-${sid}" onclick="toggleAssignGroup('${sid}')">
+            <div class="assign-avatar">${(s.name||sid).charAt(0)}</div>
+            <div style="flex:1;">
+              <div style="font-size:13px;font-weight:700;color:var(--navy);">${s.name||sid}
+                <span style="font-size:11px;font-weight:400;color:#888;margin-left:4px;">(${sid})</span>
+              </div>
+              ${s.org?`<div style="font-size:11px;color:#aaa;margin-top:1px;">${s.org}</div>`:''}
+            </div>
+            <span class="badge badge-user">${cnt}건 배정</span>
+            <button class="btn btn-red btn-sm" onclick="event.stopPropagation();deleteStudentAssignments('${sid}')">전체삭제</button>
+            <span style="font-size:14px;color:#bbb;margin-left:2px;" id="agarr-${sid}">▲</span>
+          </div>
+          <div id="agb-${sid}">
+            <div style="overflow-x:auto;">
+              <table class="tbl" style="margin:0;">
+                <thead><tr>
+                  <th>사건 제목</th><th>유형</th><th>법원</th><th>당사자</th><th>상태</th><th>배정일</th><th style="width:50px;"></th>
+                </tr></thead>
+                <tbody>${caseRows}</tbody>
+              </table>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function toggleAssignGroup(sid){
+  const body=document.getElementById('agb-'+sid);
+  const hd=document.getElementById('agh-'+sid);
+  const arr=document.getElementById('agarr-'+sid);
+  if(!body)return;
+  const open=body.style.display!=='none';
+  body.style.display=open?'none':'';
+  if(hd)hd.classList.toggle('open',!open);
+  if(arr)arr.textContent=open?'▼':'▲';
+}
+
+async function deleteStudentAssignments(sid){
+  const toDelete=assignmentsCache.filter(a=>a.student_id===sid);
+  const acc=getAcc();
+  const name=acc[sid]?.name||sid;
+  if(!confirm(`"${name}"의 배정 ${toDelete.length}건을 모두 삭제하시겠습니까?`))return;
+  let ok=0;
+  for(const a of toDelete){const r=await sbDeleteAssignment(a.id);if(r)ok++;}
+  showToast(`🗑 ${ok}건 삭제되었습니다.`,'ok');
+  loadAssignments();
 }
 
 async function doDeleteAssignment(id){
