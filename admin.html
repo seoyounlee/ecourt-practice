@@ -157,6 +157,29 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .log-txt{font-size:12px;color:#333;line-height:1.6;}
 .log-time{font-size:11px;color:#aaa;white-space:nowrap;margin-left:auto;}
 
+/* ── 학생 카드 뷰 ── */
+.student-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:20px;}
+.stu-card{background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:box-shadow .15s,transform .1s;cursor:pointer;}
+.stu-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);transform:translateY(-2px);}
+.stu-card-hd{padding:16px;display:flex;align-items:center;gap:12px;}
+.stu-score-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;border:2px solid;}
+.stu-info{flex:1;min-width:0;}
+.stu-name{font-size:13px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.stu-id{font-size:11px;color:#888;margin-top:1px;}
+.stu-stats{display:flex;border-top:1px solid #f0f2f8;}
+.stu-stat{flex:1;padding:10px 0;text-align:center;border-right:1px solid #f0f2f8;}
+.stu-stat:last-child{border-right:none;}
+.stu-stat-val{font-size:16px;font-weight:700;color:var(--navy);}
+.stu-stat-lbl{font-size:10px;color:#aaa;margin-top:2px;}
+.stu-card-ft{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:#fafbfc;border-top:1px solid #f0f2f8;}
+/* ── 배정 멀티셀렉트 ── */
+.assign-stu-list{border:1px solid var(--border);border-radius:6px;max-height:340px;overflow-y:auto;}
+.assign-stu-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f2f8;cursor:pointer;transition:background .1s;user-select:none;}
+.assign-stu-row:last-child{border-bottom:none;}
+.assign-stu-row:hover{background:#f5f7fc;}
+.assign-stu-row.sel{background:#eef2fa;}
+.assign-stu-row input[type=checkbox]{accent-color:var(--navy2);width:15px;height:15px;cursor:pointer;flex-shrink:0;}
+
 /* ── 반응형 ── */
 @media(max-width:900px){
   .layout{flex-direction:column;}
@@ -577,23 +600,39 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <!-- 학생 배정 탭 -->
       <div id="cview-assign" style="display:none;">
         <div class="panel">
-          <div class="panel-hd"><div class="panel-hd-title">👥 학생별 사건 배정</div></div>
+          <div class="panel-hd">
+            <div class="panel-hd-title">👥 학생별 사건 배정</div>
+            <button class="btn btn-gray btn-sm" onclick="renderAssignStudentList()">🔄 새로고침</button>
+          </div>
           <div class="panel-body">
-            <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:12px 16px;font-size:12px;color:#1e3a5f;margin-bottom:16px;">
-              💡 학생을 선택하고 배정할 사건을 골라 <strong>배정하기</strong>를 클릭하세요. 한 학생에게 여러 사건을 배정할 수 있습니다.
+            <div style="background:#f0f7ff;border:1px solid #bfdbfe;border-radius:6px;padding:12px 16px;font-size:12px;color:#1e3a5f;margin-bottom:20px;">
+              💡 배정할 <strong>사건을 선택</strong>하고, 아래 목록에서 <strong>학생을 체크</strong>한 후 <strong>배정하기</strong>를 클릭하세요. 여러 명을 동시에 배정할 수 있습니다.
             </div>
-            <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
-              <div class="fld"><label>학생 선택</label>
-                <select id="assign-student" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;min-width:180px;">
-                  <option value="">-- 학생 선택 --</option>
-                </select>
+            <div class="fld" style="margin-bottom:20px;">
+              <label>📚 배정할 사건 <span class="req">*</span></label>
+              <select id="assign-case" style="height:40px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;max-width:520px;">
+                <option value="">-- 사건을 먼저 선택하세요 --</option>
+              </select>
+            </div>
+            <div style="margin-bottom:16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+                <label style="font-size:12px;font-weight:600;color:#555;">👥 배정할 학생
+                  <span id="assign-sel-cnt" style="color:var(--navy2);font-weight:700;margin-left:4px;"></span>
+                </label>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <input type="text" class="search-inp" id="assign-stu-search" placeholder="이름/아이디 검색" style="width:170px;height:30px;" oninput="filterAssignStudents()">
+                  <label style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">
+                    <input type="checkbox" id="assign-chk-all" onchange="toggleAssignAll(this)"> 전체선택
+                  </label>
+                </div>
               </div>
-              <div class="fld"><label>사건 선택</label>
-                <select id="assign-case" style="height:36px;padding:0 12px;border:1.5px solid var(--border);border-radius:4px;font-size:13px;font-family:inherit;outline:none;min-width:260px;">
-                  <option value="">-- 사건 선택 --</option>
-                </select>
+              <div class="assign-stu-list" id="assign-student-list">
+                <div style="padding:20px;text-align:center;color:#aaa;font-size:12px;">사건 목록을 불러오는 중...</div>
               </div>
-              <button class="btn btn-navy" style="height:36px;" onclick="doAssign()">배정하기</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid var(--border);">
+              <button class="btn btn-navy" style="height:38px;padding:0 24px;" onclick="doAssign()">✅ 선택 학생에게 배정</button>
+              <span style="font-size:12px;color:var(--muted);" id="assign-status-msg"></span>
             </div>
           </div>
         </div>
@@ -1105,7 +1144,14 @@ function switchPracticeTab(tab){
   else renderStudentSummary();
 }
 
+function renderStudentSummary(){
+  const cached=window._lastPracticeRecords;
+  if(cached)renderStudentSummaryWithData(cached);
+  else renderPracticePanel();
+}
+
 function renderStudentSummaryWithData(records){
+  window._lastPracticeRecords=records;
   const q=(document.getElementById('student-search')||{}).value?.trim().toLowerCase()||'';
   const byStudent={};
   records.forEach(r=>{
@@ -1113,59 +1159,113 @@ function renderStudentSummaryWithData(records){
     if(!byStudent[uid])byStudent[uid]={userId:uid,userName:r.userName||uid,records:[]};
     byStudent[uid].records.push(r);
   });
+  // 실습 기록 없는 계정도 카드 표시
+  const acc=getAcc();
+  Object.entries(acc).filter(([id,a])=>a.role!=='admin').forEach(([id,a])=>{
+    if(!byStudent[id])byStudent[id]={userId:id,userName:a.name||id,records:[]};
+  });
   let students=Object.values(byStudent);
   if(q)students=students.filter(s=>s.userName.toLowerCase().includes(q)||s.userId.toLowerCase().includes(q));
+  // 평균 내림차순 정렬 (미실습은 맨 뒤)
+  students.sort((a,b)=>{
+    const aAvg=a.records.length?a.records.reduce((s,r)=>s+r.score,0)/a.records.length:-1;
+    const bAvg=b.records.length?b.records.reduce((s,r)=>s+r.score,0)/b.records.length:-1;
+    return bAvg-aAvg;
+  });
   const body=document.getElementById('student-summary-body');
   if(!body)return;
   if(!students.length){
-    body.innerHTML='<div style="text-align:center;padding:48px;color:#aaa;"><div style="font-size:40px;margin-bottom:12px;">📋</div><div style="font-size:14px;font-weight:600;color:#888;margin-bottom:6px;">아직 실습 기록이 없습니다</div><div style="font-size:12px;">학생이 소장 작성을 완료하면 자동으로 기록됩니다.</div></div>';
+    body.innerHTML='<div style="text-align:center;padding:48px;color:#aaa;"><div style="font-size:40px;margin-bottom:12px;">👥</div><div style="font-size:14px;font-weight:600;color:#888;">등록된 학생이 없습니다</div></div>';
     return;
   }
-  const rows=students.map(s=>{
+  body.innerHTML='<div class="student-cards">'+students.map(s=>{
     const cnt=s.records.length;
+    if(cnt===0){
+      return `<div class="stu-card" onclick="openStudentDetail('${s.userId}','${s.userName}')">
+        <div class="stu-card-hd">
+          <div class="stu-score-circle" style="background:#f3f4f6;color:#9ca3af;border-color:#d1d5db;font-size:14px;">–</div>
+          <div class="stu-info"><div class="stu-name">${s.userName}</div><div class="stu-id">${s.userId}</div></div>
+          <span class="badge badge-inactive">미실습</span>
+        </div>
+        <div style="height:5px;background:#f0f2f8;"></div>
+        <div class="stu-stats">
+          <div class="stu-stat"><div class="stu-stat-val">0</div><div class="stu-stat-lbl">실습횟수</div></div>
+          <div class="stu-stat"><div class="stu-stat-val">–</div><div class="stu-stat-lbl">평균점수</div></div>
+          <div class="stu-stat"><div class="stu-stat-val">–</div><div class="stu-stat-lbl">최고점수</div></div>
+        </div>
+        <div class="stu-card-ft">
+          <span style="font-size:11px;color:#bbb;">실습 기록 없음</span>
+          <button class="btn btn-gray btn-sm">상세보기</button>
+        </div>
+      </div>`;
+    }
     const avg=Math.round(s.records.reduce((a,r)=>a+r.score,0)/cnt);
     const best=Math.max(...s.records.map(r=>r.score));
     const latest=s.records[0];
-    const recRows=s.records.map(r=>`
-      <div style="padding:12px 20px 12px 40px;border-top:1px solid #f0f4f8;display:flex;gap:12px;">
-        <div style="background:${bgFn(r.score)};border-radius:6px;padding:8px 12px;text-align:center;min-width:56px;flex-shrink:0;">
-          <div style="font-size:18px;font-weight:700;color:${colorFn(r.score)};">${r.score}</div>
-          <div style="font-size:9px;color:${colorFn(r.score)};font-weight:600;">${gradeFn(r.score).split(' ')[1]}</div>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:11px;color:#666;margin-bottom:6px;">
-            📅 ${r.date||'–'} | ⚖ ${r.caseType||'소장 실습'} | 🏛 ${r.court||'–'} | 📁 ${r.evidenceCount||0}건
-          </div>
-          <div style="background:#f8f9fc;border:1px solid #e0e6ee;border-radius:4px;padding:8px 12px;">
-            <div style="font-size:11px;font-weight:700;color:#003366;margin-bottom:4px;">🤖 AI 피드백</div>
-            <div style="font-size:11px;color:#444;line-height:1.8;white-space:pre-wrap;">${(r.feedback||'피드백 없음').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
-          </div>
-        </div>
-      </div>`).join('');
-    return `<div style="border-bottom:1px solid #f0f2f8;">
-      <div style="padding:14px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;background:#fafbfc;"
-        onclick="toggleStudentDetail('sd-${s.userId}')">
-        <div style="width:44px;height:44px;background:${bgFn(avg)};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:${colorFn(avg)};border:2px solid ${colorFn(avg)};">${avg}</div>
-        <div style="flex:1;">
-          <div style="font-size:13px;font-weight:700;color:#003366;">${s.userName}<span style="font-size:11px;font-weight:400;color:#888;margin-left:6px;">(${s.userId})</span></div>
-          <div style="font-size:11px;color:#888;margin-top:3px;">실습 <strong>${cnt}회</strong> · 평균 <strong style="color:${colorFn(avg)};">${avg}점</strong> · 최고 <strong>${best}점</strong> · 최근: ${latest.date||'–'}</div>
-        </div>
-        <span style="font-size:12px;font-weight:700;color:${colorFn(avg)};margin-right:6px;">${gradeFn(avg)}</span>
-        <span style="font-size:16px;color:#bbb;" id="arr-${s.userId}">▼</span>
+    return `<div class="stu-card" onclick="openStudentDetail('${s.userId}','${s.userName}')">
+      <div class="stu-card-hd">
+        <div class="stu-score-circle" style="background:${bgFn(avg)};color:${colorFn(avg)};border-color:${colorFn(avg)};">${avg}</div>
+        <div class="stu-info"><div class="stu-name">${s.userName}</div><div class="stu-id">${s.userId}</div></div>
+        <span class="badge" style="background:${bgFn(avg)};color:${colorFn(avg)};">${gradeFn(avg).split(' ')[1]}</span>
       </div>
-      <div id="sd-${s.userId}" style="display:none;background:#fff;">${recRows}</div>
+      <div style="height:5px;background:#f0f2f8;"><div style="height:100%;width:${avg}%;background:${colorFn(avg)};border-radius:0 3px 3px 0;transition:width .4s;"></div></div>
+      <div class="stu-stats">
+        <div class="stu-stat"><div class="stu-stat-val">${cnt}</div><div class="stu-stat-lbl">실습횟수</div></div>
+        <div class="stu-stat"><div class="stu-stat-val" style="color:${colorFn(avg)};">${avg}</div><div class="stu-stat-lbl">평균점수</div></div>
+        <div class="stu-stat"><div class="stu-stat-val">${best}</div><div class="stu-stat-lbl">최고점수</div></div>
+      </div>
+      <div class="stu-card-ft">
+        <span style="font-size:11px;color:#aaa;">최근: ${latest.date||'–'}</span>
+        <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();openStudentDetail('${s.userId}','${s.userName}')">상세보기</button>
+      </div>
     </div>`;
-  }).join('');
-  body.innerHTML=rows;
+  }).join('')+'</div>';
 }
 
-function toggleStudentDetail(id){
-  const el=document.getElementById(id);if(!el)return;
-  const uid=id.replace('sd-','');
-  const arr=document.getElementById('arr-'+uid);
-  const open=el.style.display!=='none';
-  el.style.display=open?'none':'block';
-  if(arr)arr.textContent=open?'▼':'▲';
+function openStudentDetail(userId, userName){
+  const records=(window._lastPracticeRecords||[]).filter(r=>r.userId===userId);
+  const existing=document.getElementById('pop-student-detail');
+  if(existing)existing.remove();
+  const pop=document.createElement('div');
+  pop.id='pop-student-detail';
+  pop.className='pop-overlay show';
+  const avg=records.length?Math.round(records.reduce((a,r)=>a+r.score,0)/records.length):null;
+  const best=records.length?Math.max(...records.map(r=>r.score)):null;
+  const recHTML=records.length
+    ?records.map(r=>`
+      <div style="padding:12px;border:1px solid #e0e6ee;border-radius:6px;margin-bottom:8px;background:#fafbfc;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="background:${bgFn(r.score)};border-radius:6px;padding:8px 12px;text-align:center;min-width:56px;flex-shrink:0;">
+            <div style="font-size:18px;font-weight:700;color:${colorFn(r.score)};">${r.score}</div>
+            <div style="font-size:9px;color:${colorFn(r.score)};font-weight:600;">${gradeFn(r.score).split(' ')[1]}</div>
+          </div>
+          <div style="flex:1;font-size:11px;color:#666;line-height:1.8;">
+            <div>📅 ${r.date||'–'} | ⚖ ${r.caseType||'소장 실습'}</div>
+            <div>🏛 ${r.court||'–'} | 📁 입증서류 ${r.evidenceCount||0}건</div>
+          </div>
+        </div>
+        ${r.feedback?`<div style="background:#fff;border:1px solid #e0e6ee;border-radius:4px;padding:8px 12px;font-size:11px;color:#333;line-height:1.8;">${r.feedback.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`:''}
+      </div>`).join('')
+    :'<div style="text-align:center;padding:32px;color:#aaa;font-size:13px;">아직 실습 기록이 없습니다.</div>';
+  pop.innerHTML=`<div class="pop-box" style="width:560px;max-height:85vh;display:flex;flex-direction:column;">
+    <div class="pop-hd">${userName} (${userId}) 실습 상세 <button class="pop-cl" onclick="document.getElementById('pop-student-detail').remove()">✕</button></div>
+    ${avg!==null?`<div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px;">
+      <div style="background:${bgFn(avg)};border-radius:8px;padding:14px 20px;text-align:center;min-width:80px;">
+        <div style="font-size:28px;font-weight:700;color:${colorFn(avg)};">${avg}</div>
+        <div style="font-size:10px;color:${colorFn(avg)};">평균점수</div>
+        <div style="font-size:12px;font-weight:700;color:${colorFn(avg)};margin-top:2px;">${gradeFn(avg).split(' ')[1]}</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:6px;font-size:12px;color:#555;">
+        <div>📝 총 실습 횟수: <strong>${records.length}회</strong></div>
+        <div>🏆 최고 점수: <strong>${best}점</strong></div>
+        <div>📅 최근 실습: <strong>${records[0]?.date||'–'}</strong></div>
+      </div>
+    </div>`:''}
+    <div class="pop-bd" style="overflow-y:auto;flex:1;">${recHTML}</div>
+    <div class="pop-ft"><button class="btn btn-navy" onclick="document.getElementById('pop-student-detail').remove()">닫기</button></div>
+  </div>`;
+  pop.addEventListener('click',e=>{if(e.target===pop)pop.remove();});
+  document.body.appendChild(pop);
 }
 
 function renderPracticeDetail(){
@@ -1356,30 +1456,86 @@ async function doDeleteCase(id){
   }
 }
 
+let _assignAllStudents=[];
+
 function populateAssignSelects(){
-  const acc=getAcc();
-  const students=Object.entries(acc).filter(([id,a])=>a.role!=='admin');
-  const ssel=document.getElementById('assign-student');
-  if(ssel)ssel.innerHTML='<option value="">-- 학생 선택 --</option>'+students.map(([id,a])=>`<option value="${id}">${a.name} (${id})</option>`).join('');
   const csel=document.getElementById('assign-case');
-  if(csel)csel.innerHTML='<option value="">-- 사건 선택 --</option>'+casesCache.map(c=>`<option value="${c.id}">[${c.case_type||''}] ${c.title}</option>`).join('');
+  if(csel)csel.innerHTML='<option value="">-- 사건을 선택하세요 --</option>'+casesCache.map(c=>`<option value="${c.id}">[${c.case_type||''}] ${c.title}</option>`).join('');
+  renderAssignStudentList();
+}
+
+function renderAssignStudentList(){
+  const acc=getAcc();
+  _assignAllStudents=Object.entries(acc)
+    .filter(([id,a])=>a.role!=='admin')
+    .map(([id,a])=>({id,name:a.name||id,org:a.org||''}));
+  filterAssignStudents();
+}
+
+function filterAssignStudents(){
+  const q=(document.getElementById('assign-stu-search')||{}).value?.trim().toLowerCase()||'';
+  const students=q?_assignAllStudents.filter(s=>s.name.toLowerCase().includes(q)||s.id.toLowerCase().includes(q)):_assignAllStudents;
+  const list=document.getElementById('assign-student-list');
+  if(!list)return;
+  if(!students.length){
+    list.innerHTML='<div style="padding:20px;text-align:center;color:#aaa;font-size:12px;">검색 결과가 없습니다.</div>';
+    updateAssignSelCount();return;
+  }
+  list.innerHTML=students.map(s=>`
+    <div class="assign-stu-row" id="arow-${s.id}" onclick="toggleAssignStudent('${s.id}')">
+      <input type="checkbox" class="assign-stu-chk" value="${s.id}" onclick="event.stopPropagation();updateAssignSelCount();">
+      <div style="width:34px;height:34px;background:#eef2fa;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--navy2);flex-shrink:0;">${s.name.charAt(0)}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:#222;">${s.name}</div>
+        <div style="font-size:11px;color:#888;">${s.id}${s.org?' · '+s.org:''}</div>
+      </div>
+    </div>`).join('');
+  updateAssignSelCount();
+}
+
+function toggleAssignStudent(id){
+  const row=document.getElementById('arow-'+id);
+  const chk=row?.querySelector('.assign-stu-chk');
+  if(chk){chk.checked=!chk.checked;updateAssignSelCount();}
+}
+
+function toggleAssignAll(master){
+  document.querySelectorAll('.assign-stu-chk').forEach(c=>c.checked=master.checked);
+  updateAssignSelCount();
+}
+
+function updateAssignSelCount(){
+  const checked=document.querySelectorAll('.assign-stu-chk:checked');
+  const cnt=checked.length;
+  const el=document.getElementById('assign-sel-cnt');
+  if(el)el.textContent=cnt?`(${cnt}명 선택됨)`:'';
+  document.querySelectorAll('.assign-stu-chk').forEach(c=>{
+    const row=c.closest('.assign-stu-row');
+    if(row)row.classList.toggle('sel',c.checked);
+  });
+  const allChk=document.getElementById('assign-chk-all');
+  const total=document.querySelectorAll('.assign-stu-chk').length;
+  if(allChk){allChk.indeterminate=cnt>0&&cnt<total;allChk.checked=cnt===total&&total>0;}
 }
 
 async function doAssign(){
-  const student_id=document.getElementById('assign-student').value;
   const case_id=document.getElementById('assign-case').value;
-  if(!student_id){showToast('학생을 선택해주세요.','warn');return;}
-  if(!case_id){showToast('사건을 선택해주세요.','warn');return;}
-  const acc=getAcc()[student_id];
-  const c=casesCache.find(c=>c.id==case_id);
-  const ok=await sbAddAssignment(student_id,parseInt(case_id));
-  if(ok){
-    showToast('✅ '+(acc?.name||student_id)+'에게 "'+c?.title+'" 배정 완료','ok');
-    addLog('add','사건 배정: '+student_id+' ← '+(c?.title||case_id));
-    loadAssignments();
-  }else{
-    showToast('배정 실패.','err');
+  const checked=[...document.querySelectorAll('.assign-stu-chk:checked')].map(c=>c.value);
+  const statusEl=document.getElementById('assign-status-msg');
+  if(!case_id){showToast('배정할 사건을 선택해주세요.','warn');return;}
+  if(!checked.length){showToast('배정할 학생을 선택해주세요.','warn');return;}
+  const c=casesCache.find(x=>x.id==case_id);
+  if(statusEl)statusEl.textContent='⏳ 배정 중...';
+  let ok=0,fail=0;
+  for(const student_id of checked){
+    const res=await sbAddAssignment(student_id,parseInt(case_id));
+    if(res){ok++;addLog('add','사건 배정: '+student_id+' ← '+(c?.title||case_id));}
+    else fail++;
   }
+  if(statusEl)statusEl.textContent='';
+  if(ok>0)showToast(`✅ ${ok}명에게 "${c?.title||'사건'}" 배정 완료`+(fail?` (${fail}명 실패)`:''),'ok');
+  else showToast('배정 실패. Supabase 연결을 확인해주세요.','err');
+  if(ok>0)loadAssignments();
 }
 
 async function loadAssignments(){
