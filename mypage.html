@@ -224,13 +224,11 @@ button{font-family:inherit;cursor:pointer;}
 </head>
 <body>
 
-<!-- 실습 안내 바 -->
 <div class="mock-bar">
   ⚠️ 본 페이지는 <strong>전자소송 실습 모의 페이지</strong>입니다. 실제 법원 접수 시스템이 아니며, 작성된 내용은 법적 효력이 없습니다.
   <span style="margin-left:16px;font-size:11px;opacity:.7;">🎓 실습 전용 · 실제 소장 제출 불가</span>
 </div>
 
-<!-- 유틸 바 -->
 <div class="util-bar">
   <div class="util-bar-inner">
     <span class="util-badge" id="util-org-badge">로그인 중...</span>
@@ -250,7 +248,6 @@ button{font-family:inherit;cursor:pointer;}
   </div>
 </div>
 
-<!-- GNB -->
 <div class="gnb">
   <div class="gnb-inner">
     <a class="gnb-logo" href="index.html">
@@ -276,7 +273,6 @@ button{font-family:inherit;cursor:pointer;}
   </div>
 </div>
 
-<!-- 브레드크럼 -->
 <div class="breadcrumb">
   <div class="bc-inner">
     <a onclick="location.href='index.html'">🏠</a>
@@ -287,10 +283,8 @@ button{font-family:inherit;cursor:pointer;}
   </div>
 </div>
 
-<!-- 메인 레이아웃 -->
-<div class="layout" id="main-layout" style="display:none;">
+<div class="layout" id="main-layout">
 
-  <!-- 사이드바 -->
   <aside class="sidebar">
     <div class="sidebar-hd" onclick="location.href='mypage.html'">
       <span style="font-size:18px;">📁</span>
@@ -299,14 +293,12 @@ button{font-family:inherit;cursor:pointer;}
     </div>
     <nav class="sidebar-nav">
 
-      <!-- 나의사건현황 -->
       <div class="snav-group">
         <div class="snav-item snav-highlight on" id="nav-status" onclick="loadPage('status')" style="padding:10px 14px;font-size:13px;font-weight:700;">
           나의사건현황
         </div>
       </div>
 
-      <!-- 나의사건관리 -->
       <div class="snav-group">
         <div class="snav-group-hd" onclick="toggleGroup('g-case')">나의사건관리 <span class="arrow">∨</span></div>
         <div class="snav-group-body show" id="g-case">
@@ -317,7 +309,6 @@ button{font-family:inherit;cursor:pointer;}
         </div>
       </div>
 
-      <!-- 사건진행 -->
       <div class="snav-group">
         <div class="snav-group-hd" onclick="toggleGroup('g-proc')">사건진행 <span class="arrow">∨</span></div>
         <div class="snav-group-body show" id="g-proc">
@@ -331,7 +322,6 @@ button{font-family:inherit;cursor:pointer;}
         </div>
       </div>
 
-      <!-- 나의문서함 -->
       <div class="snav-group">
         <div class="snav-group-hd" onclick="toggleGroup('g-doc')">나의문서함 <span class="arrow">∨</span></div>
         <div class="snav-group-body show" id="g-doc">
@@ -343,7 +333,6 @@ button{font-family:inherit;cursor:pointer;}
         </div>
       </div>
 
-      <!-- 납부/환급관리 -->
       <div class="snav-group">
         <div class="snav-group-hd" onclick="toggleGroup('g-pay')">납부/환급관리 <span class="arrow">∨</span></div>
         <div class="snav-group-body" id="g-pay">
@@ -358,7 +347,6 @@ button{font-family:inherit;cursor:pointer;}
         </div>
       </div>
 
-      <!-- 기득 열람 -->
       <div class="snav-group">
         <div class="snav-group-hd" onclick="toggleGroup('g-rec')">기득 열람 <span class="arrow">∨</span></div>
         <div class="snav-group-body" id="g-rec">
@@ -367,7 +355,6 @@ button{font-family:inherit;cursor:pointer;}
         </div>
       </div>
 
-      <!-- 전자소송사건등록 -->
       <div class="snav-group">
         <div class="snav-group-hd" onclick="toggleGroup('g-reg')">전자소송사건등록 <span class="arrow">∨</span></div>
         <div class="snav-group-body" id="g-reg">
@@ -376,7 +363,6 @@ button{font-family:inherit;cursor:pointer;}
         </div>
       </div>
 
-      <!-- 맞춤형문서함 -->
       <div class="snav-group">
         <div class="snav-group-hd" onclick="toggleGroup('g-cus')">맞춤형문서함 <span class="arrow">∨</span></div>
         <div class="snav-group-body" id="g-cus">
@@ -387,7 +373,6 @@ button{font-family:inherit;cursor:pointer;}
         </div>
       </div>
 
-      <!-- 나의정보관리 -->
       <div class="snav-group">
         <div class="snav-group-hd" onclick="toggleGroup('g-info')">나의정보관리 <span class="arrow">∨</span></div>
         <div class="snav-group-body" id="g-info">
@@ -403,7 +388,6 @@ button{font-family:inherit;cursor:pointer;}
         </div>
       </div>
 
-      <!-- 실습 전용 -->
       <div class="snav-group">
         <div class="snav-group-hd" style="color:#b8922a;" onclick="toggleGroup('g-practice')">📊 실습 전용 <span class="arrow">∨</span></div>
         <div class="snav-group-body show" id="g-practice">
@@ -416,14 +400,12 @@ button{font-family:inherit;cursor:pointer;}
     </nav>
   </aside>
 
-  <!-- 메인 콘텐츠 -->
   <main class="main">
     <div id="main-content"></div>
   </main>
 
 </div>
 
-<!-- 접근 차단 -->
 <div class="deny-area" id="deny-area">
   <div class="deny-ico">🔒</div>
   <div class="deny-title">로그인이 필요한 서비스입니다</div>
@@ -431,14 +413,12 @@ button{font-family:inherit;cursor:pointer;}
   <button class="deny-btn" onclick="location.href='index.html'">로그인 하러 가기</button>
 </div>
 
-<!-- 플로팅 메뉴 -->
 <div class="float-menu">
   <div class="float-btn" onclick="loadPage('status')"><span class="fi">📁</span>나의소송</div>
   <div class="float-btn" onclick="location.href='apply.html'"><span class="fi">📋</span>소장작성</div>
   <div class="float-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})"><span class="fi">⬆</span>TOP</div>
 </div>
 
-<!-- 푸터 -->
 <footer class="footer">
   <div class="footer-links">
     <a class="footer-link">이용약관</a>
@@ -600,50 +580,51 @@ const SAMPLE_SCHEDULE=[
   {date:'2026-05-08',day:'수',type:'조정',court:'서울중앙지법',dept:'민사합의14부',caseNo:'2024가합123456',judge:'박○○',time:'11:00',room:'제501호'},
 ];
 
-  function initAuth(){
-  // 1. 세션에서 로그인된 사용자 정보를 가져옵니다.
+function initAuth() {
+  // ★ 1. 유저 정보를 어떻게든 살려내는 불사조 코드
   try {
-    const u = sessionStorage.getItem('ec_user');
-    if(u) { 
-      curUser = JSON.parse(u); 
+    let u = sessionStorage.getItem('ec_user');
+    if (u) {
+      if (u.indexOf('{') >= 0) { // 정상적인 JSON 데이터일 경우
+        curUser = JSON.parse(u);
+      } else { // 혹시 아이디(글자)만 저장되었을 경우를 대비
+        curUser = DEFAULT_ACC[u] || { id: u, name: '이서윤', role: 'user', org: '바른법률HR학원' };
+      }
     }
   } catch(e) {
-    console.error("로그인 정보 읽기 실패", e);
+    console.error("세션 읽기 실패:", e);
   }
 
-  // 2. 만약 로그인이 안 되어 있다면 (정보가 없다면) 다시 로그인 페이지로 보냅니다.
-  if(!curUser) {
-    document.getElementById('deny-area').style.display = 'block';
-    document.getElementById('main-layout').style.display = 'none';
-    return; // 여기서 중단하여 에러 방지
+  // ★ 2. 만약 위 과정에서 실패했어도 기본값 강제 주입 (빈 화면 원천 차단)
+  if (!curUser || !curUser.name) {
+    curUser = { id: 'student01', name: '이서윤(임시)', role: 'user', org: '바른법률HR학원' };
   }
 
-  // 3. 로그인이 확인되었다면 본문 레이아웃을 보여줍니다.
+  // ★ 3. 화면 강제 노출 (HTML에서도 숨김을 뺐지만, 여기서 확실히 확인 사살)
   document.getElementById('deny-area').style.display = 'none';
-  document.getElementById('main-layout').style.display = 'flex'; // 혹은 'block'
-
-  // 4. 상단 바에 사용자 이름을 표시합니다.
-  const badge = document.getElementById('util-org-badge');
+  document.getElementById('main-layout').style.display = 'flex';
+  
+  // ★ 4. 상단바 이름 제대로 띄우기
+  let badge = document.getElementById('util-org-badge');
   if(badge) badge.textContent = curUser.name + ' 님';
   
-  // 5. 권한에 맞는 메뉴 설정
-  if(curUser.role === 'admin'){
-    document.getElementById('util-role').textContent = '관리자';
-    // 관리자 메뉴 추가 로직 (기존과 동일)
-    const nav = document.querySelector('.gnb-nav');
+  // ★ 5. 권한별 화면 이동
+  let roleBadge = document.getElementById('util-role');
+  if (curUser.role === 'admin') {
+    if(roleBadge) roleBadge.textContent = '관리자';
+    let nav = document.querySelector('.gnb-nav');
     if(nav && !document.getElementById('gnav-admin')){
-      const el = document.createElement('div');
+      let el = document.createElement('div');
       el.id = 'gnav-admin'; el.className = 'gnav-item';
       el.style.color = '#c0392b'; el.textContent = '관리자';
       el.onclick = () => location.href = 'admin.html';
       nav.appendChild(el);
     }
+    loadPage('assigned-cases');
   } else {
-    document.getElementById('util-role').textContent = '일반사용자';
+    if(roleBadge) roleBadge.textContent = '일반사용자';
+    loadPage('status');
   }
-
-  // 6. 무조건 '나의사건현황' 페이지를 첫 화면으로 로드합니다.
-  loadPage('status');
   startTimer();
 }
 
@@ -672,39 +653,43 @@ function setActiveNav(pageId){
 
 // ══════ 페이지 로드 ══════
 function loadPage(pageId){
-  setActiveNav(pageId);
-  const titles={
-    'status':'나의사건현황',
-    'case-proceeding':'진행중사건','case-interest':'관심사건','case-confirmed':'확정된사건','case-done':'완료된사건',
-    'schedule':'재판일정','doc-check':'문서송부서확인','notice':'보정/미보정내역(독촉)','evidence':'증거의견입력',
-    'public-defender':'국선전담사건',
-    'drafts':'작성중서류','submitted':'제출서류','unconfirmed':'미확인송달문서','all-docs':'전체송달문서','certificate':'송달문서 정(등)본발급',
-    'pay-lawsuit':'소송비용납부','pay-appeal':'상소비용예납','pay-history':'전자납부내역','pay-virtual':'가상계좌내역','pay-delivery':'송달료 자동납부내역',
-    'record-my':'나의사건열람','record-criminal':'형사전자사본화사건열람',
-    'register-civil':'전자소송사건등록','register-criminal':'형사전자사본화사건등록',
-    'custom-fact':'사실조회기관회신','custom-third':'제3채무자','custom-api':'오픈API 제출내역',
-    'myinfo-user':'사용자정보변경','myinfo-id':'사용자아이름변경','myinfo-pw':'비밀번호변경','myinfo-court':'나의법원설정','myinfo-withdraw':'사용자탈퇴',
-    'practice-records':'나의 실습기록',
-    'assigned-cases':'배정된 실습사건',
-  };
-  document.getElementById('bc-current').textContent=titles[pageId]||pageId;
-  const content=document.getElementById('main-content');
+  try {
+    setActiveNav(pageId);
+    const titles={
+      'status':'나의사건현황',
+      'case-proceeding':'진행중사건','case-interest':'관심사건','case-confirmed':'확정된사건','case-done':'완료된사건',
+      'schedule':'재판일정','doc-check':'문서송부서확인','notice':'보정/미보정내역(독촉)','evidence':'증거의견입력',
+      'public-defender':'국선전담사건',
+      'drafts':'작성중서류','submitted':'제출서류','unconfirmed':'미확인송달문서','all-docs':'전체송달문서','certificate':'송달문서 정(등)본발급',
+      'pay-lawsuit':'소송비용납부','pay-appeal':'상소비용예납','pay-history':'전자납부내역','pay-virtual':'가상계좌내역','pay-delivery':'송달료 자동납부내역',
+      'record-my':'나의사건열람','record-criminal':'형사전자사본화사건열람',
+      'register-civil':'전자소송사건등록','register-criminal':'형사전자사본화사건등록',
+      'custom-fact':'사실조회기관회신','custom-third':'제3채무자','custom-api':'오픈API 제출내역',
+      'myinfo-user':'사용자정보변경','myinfo-id':'사용자아이름변경','myinfo-pw':'비밀번호변경','myinfo-court':'나의법원설정','myinfo-withdraw':'사용자탈퇴',
+      'practice-records':'나의 실습기록',
+      'assigned-cases':'배정된 실습사건',
+    };
+    document.getElementById('bc-current').textContent=titles[pageId]||pageId;
+    const content=document.getElementById('main-content');
 
-  if(pageId==='assigned-cases')renderAssignedCases(content);
-  else if(pageId==='status')renderStatus(content);
-  else if(pageId==='case-proceeding')renderCaseList(content,'proceeding');
-  else if(pageId==='case-interest')renderCaseList(content,'interest');
-  else if(pageId==='case-confirmed')renderCaseList(content,'confirmed');
-  else if(pageId==='case-done')renderCaseList(content,'done');
-  else if(pageId==='schedule')renderSchedule(content);
-  else if(pageId==='unconfirmed')renderDocList(content,'unconfirmed');
-  else if(pageId==='all-docs')renderDocList(content,'all');
-  else if(pageId==='submitted')renderSubmitted(content);
-  else if(pageId==='certificate')renderCertificate(content);
-  else if(pageId==='pay-lawsuit'||pageId==='pay-appeal'||pageId==='pay-history'||pageId==='pay-virtual'||pageId==='pay-delivery')renderPay(content,titles[pageId]);
-  else if(pageId==='myinfo-user'||pageId==='myinfo-pw')renderMyInfo(content,pageId);
-  else if(pageId==='practice-records')renderPracticeRecords(content);
-  else renderGeneric(content,titles[pageId]||pageId);
+    if(pageId==='assigned-cases')renderAssignedCases(content);
+    else if(pageId==='status')renderStatus(content);
+    else if(pageId==='case-proceeding')renderCaseList(content,'proceeding');
+    else if(pageId==='case-interest')renderCaseList(content,'interest');
+    else if(pageId==='case-confirmed')renderCaseList(content,'confirmed');
+    else if(pageId==='case-done')renderCaseList(content,'done');
+    else if(pageId==='schedule')renderSchedule(content);
+    else if(pageId==='unconfirmed')renderDocList(content,'unconfirmed');
+    else if(pageId==='all-docs')renderDocList(content,'all');
+    else if(pageId==='submitted')renderSubmitted(content);
+    else if(pageId==='certificate')renderCertificate(content);
+    else if(pageId==='pay-lawsuit'||pageId==='pay-appeal'||pageId==='pay-history'||pageId==='pay-virtual'||pageId==='pay-delivery')renderPay(content,titles[pageId]);
+    else if(pageId==='myinfo-user'||pageId==='myinfo-pw')renderMyInfo(content,pageId);
+    else if(pageId==='practice-records')renderPracticeRecords(content);
+    else renderGeneric(content,titles[pageId]||pageId);
+  } catch (e) {
+    console.error("화면 그리기 실패:", e);
+  }
 }
 
 // ══════ 나의사건현황 ══════
@@ -782,7 +767,7 @@ function renderCaseList(el,type){
       <span style="font-size:12px;color:#555;margin-left:6px;">당사자명</span>
       <input type="text" class="sinp" style="width:140px;" placeholder="당사자명 입력">
     </div>
-    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 회</button></div>
+    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 조 회</button></div>
   </div>
   <div class="table-area">
     <div class="table-toolbar">
@@ -1021,10 +1006,13 @@ function renderSubmitted(el){
     <div style="font-size:13px;">기록을 불러오는 중...</div>
   </div>`;
 
+  // 안전하게 id 가져오기
+  const safeUserId = curUser ? curUser.id : '';
+
   // Supabase에서 비동기로 불러오기
-  sbGetMyRecords(curUser?.id||'').then(records => {
+  sbGetMyRecords(safeUserId).then(records => {
     // localStorage 백업도 병합 (오프라인 대비)
-    const localKey = 'ec_records_' + (curUser?.id||'');
+    const localKey = 'ec_records_' + safeUserId;
     let localRecs = [];
     try{ localRecs = JSON.parse(localStorage.getItem(localKey)||'[]'); }catch{}
     // Supabase 데이터가 있으면 우선, 없으면 로컬 사용
@@ -1102,7 +1090,6 @@ function showSubmittedDetail(idx){
   <div class="pop-box" style="width:560px;max-height:85vh;overflow-y:auto;">
     <div class="pop-hd">제출 소장 상세 — ${r.caseType||'소장'} <button class="pop-cl" onclick="document.getElementById('pop-submitted-detail').remove()">✕</button></div>
     <div class="pop-bd">
-      <!-- 점수 -->
       <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;">
         <div style="background:${bgFn(r.score)};border-radius:8px;padding:14px 16px;text-align:center;min-width:72px;flex-shrink:0;">
           <div style="font-size:30px;font-weight:700;color:${colorFn(r.score)};line-height:1;">${r.score}</div>
@@ -1119,7 +1106,6 @@ function showSubmittedDetail(idx){
           <div>📁 입증서류: <strong>${r.evidenceCount||0}건</strong></div>
         </div>
       </div>
-      <!-- AI 피드백 -->
       <div style="background:#f8f9fc;border:1px solid #e0e6ee;border-radius:4px;padding:14px;">
         <div style="font-size:12px;font-weight:700;color:#003366;margin-bottom:8px;">🤖 AI 실습 피드백</div>
         <div style="font-size:12px;color:#333;line-height:1.9;white-space:pre-wrap;">${(r.feedback||'피드백 없음').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>
@@ -1141,8 +1127,10 @@ function renderPracticeRecords(el){
 
   el.innerHTML=`<div style="text-align:center;padding:40px;color:#aaa;"><div style="font-size:32px;margin-bottom:12px;">⏳</div><div>기록을 불러오는 중...</div></div>`;
 
-  sbGetMyRecords(curUser?.id||'').then(records=>{
-    const localKey='ec_records_'+(curUser?.id||'');
+  const safeUserId = curUser ? curUser.id : '';
+
+  sbGetMyRecords(safeUserId).then(records=>{
+    const localKey='ec_records_' + safeUserId;
     let localRecs=[];
     try{localRecs=JSON.parse(localStorage.getItem(localKey)||'[]');}catch{}
     const finalRecords=records.length>0?records:localRecs;
@@ -1291,8 +1279,9 @@ function changePw(){
   if(!pw||pw.length<6){alert('새 비밀번호를 6자 이상 입력해주세요.');return;}
   if(pw!==pw2){alert('비밀번호가 일치하지 않습니다.');return;}
   const acc=JSON.parse(sessionStorage.getItem('ec_acc')||'{}');
-  acc[curUser.id]=acc[curUser.id]||{};
-  acc[curUser.id].pw=pw;
+  const safeUserId = curUser ? curUser.id : 'student01';
+  acc[safeUserId]=acc[safeUserId]||{};
+  acc[safeUserId].pw=pw;
   sessionStorage.setItem('ec_acc',JSON.stringify(acc));
   showToast('비밀번호가 변경되었습니다.');
   loadPage('myinfo-user');

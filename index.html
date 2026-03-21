@@ -145,142 +145,82 @@ ul{list-style:none;}
 /* ────────────────────────────────────────
    1단계 · 히어로
 ──────────────────────────────────────── */
-.hero{background:linear-gradient(180deg,#deeaf6 0%,#eef4fa 60%,#f5f8fc 100%);padding:22px 0 0;}
+.hero{background:linear-gradient(180deg,#d4e8f7 0%,#dfeef8 40%,#e8f4fb 100%);padding:30px 0 0;}
 .hero-inner{max-width:1280px;margin:0 auto;padding:0 20px;}
 
-/* 검색 */
-.hero-search{text-align:center;margin-bottom:16px;}
+/* 상단 row: 검색 + 로그인 */
+.hero-top{
+  display:grid;grid-template-columns:1fr 340px;
+  gap:20px;align-items:start;margin-bottom:20px;
+}
+.hero-search-area{}
+
+/* 검색창 */
 .search-box{
-  display:inline-flex;align-items:center;
-  background:#fff;border:2px solid var(--blue);
-  border-radius:4px;width:100%;max-width:580px;
-  height:48px;overflow:hidden;
-  box-shadow:0 2px 12px rgba(0,103,194,.15);
+  display:flex;align-items:center;
+  background:#fff;border:2px solid #5ab0e8;
+  border-radius:28px;height:52px;overflow:hidden;
+  box-shadow:0 2px 14px rgba(0,103,194,.12);
 }
 .search-box input{
-  flex:1;border:none;outline:none;padding:0 18px;
+  flex:1;border:none;outline:none;padding:0 22px;
   font-size:15px;font-family:inherit;color:#333;
 }
 .search-box input::placeholder{color:#aaa;}
 .search-box button{
-  width:54px;height:48px;background:var(--blue);
-  border:none;color:#fff;font-size:20px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  width:46px;height:46px;background:var(--navy);
+  border:none;color:#fff;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-right:3px;
 }
-.search-box button:hover{background:#0055a5;}
+.search-box button:hover{background:var(--blue);}
 .search-tags{
-  display:flex;gap:7px;margin-top:9px;
-  flex-wrap:wrap;justify-content:center;
+  display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;
 }
 .search-tag{
-  font-size:12px;color:#555;cursor:pointer;
+  font-size:12.5px;color:#444;cursor:pointer;
   background:#fff;border:1px solid #c8cdd6;
-  border-radius:14px;padding:3px 12px;transition:all .15s;
+  border-radius:16px;padding:4px 14px;transition:all .15s;
 }
 .search-tag:hover{border-color:var(--blue);color:var(--blue);background:#eef5fc;}
 
-/* 히어로 3단 */
-.hero-cols{
-  display:grid;
-  grid-template-columns:230px 1fr 260px;
-  gap:12px;align-items:start;
-}
-
-/* 배너 */
-.hero-banner{border-radius:6px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.1);}
-.banner-body{
-  padding:20px;min-height:200px;
-  display:flex;flex-direction:column;justify-content:space-between;
-}
-.banner-badge{
-  display:inline-block;background:rgba(255,255,255,.2);
-  border:1px solid rgba(255,255,255,.4);
-  border-radius:10px;padding:2px 10px;
-  font-size:10px;color:#fff;margin-bottom:10px;
-}
-.banner-title{
-  font-size:17px;font-weight:700;color:#fff;
-  line-height:1.35;margin-bottom:6px;
-}
-.banner-desc{font-size:11px;color:rgba(255,255,255,.78);line-height:1.65;}
-.banner-footer{
-  display:flex;align-items:center;gap:6px;margin-top:12px;
-}
-.banner-go{
-  font-size:11px;color:#fff;background:rgba(255,255,255,.2);
-  border:1px solid rgba(255,255,255,.5);border-radius:3px;
-  padding:3px 10px;cursor:pointer;
-}
-.banner-go:hover{background:rgba(255,255,255,.35);}
-.banner-page{font-size:11px;color:rgba(255,255,255,.6);margin-left:auto;}
-.banner-nav{
-  background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);
-  color:#fff;width:22px;height:22px;border-radius:50%;
-  font-size:13px;display:flex;align-items:center;justify-content:center;
-}
-.banner-nav:hover{background:rgba(255,255,255,.4);}
-
-/* 서비스 아이콘 */
-.hero-services{
-  background:linear-gradient(160deg,#0d3d6b,#0067c2 60%,#1587d6);
-  border-radius:6px;padding:14px 10px;
-  box-shadow:0 2px 10px rgba(0,0,0,.15);
-}
-.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
-.svc-item{
-  display:flex;flex-direction:column;align-items:center;
-  gap:6px;cursor:pointer;padding:14px 6px;
-  border-radius:5px;transition:background .15s;
-}
-.svc-item:hover{background:rgba(255,255,255,.15);}
-.svc-ico{
-  width:54px;height:54px;
-  background:rgba(255,255,255,.12);
-  border:1.5px solid rgba(255,255,255,.25);
-  border-radius:8px;display:flex;align-items:center;
-  justify-content:center;font-size:24px;
-}
-.svc-lbl{font-size:11.5px;font-weight:600;color:#fff;text-align:center;line-height:1.3;}
-
-/* 우측 패널 묶음 */
-.hero-right{display:flex;flex-direction:column;gap:8px;}
-
 /* 로그인 패널 */
 .login-panel{
-  background:#fff;border-radius:6px;
-  box-shadow:0 2px 8px rgba(0,0,0,.09);overflow:hidden;
+  background:#fff;border-radius:10px;
+  box-shadow:0 2px 12px rgba(0,0,0,.1);overflow:hidden;
 }
-.login-panel-body{padding:14px 16px 12px;}
+.login-panel-body{padding:16px 16px 14px;}
 .btn-login-main{
-  display:block;width:100%;height:46px;
+  display:block;width:100%;height:52px;
   background:#009ac7;border:none;color:#fff;
-  font-size:15px;font-weight:700;border-radius:3px;
+  font-size:17px;font-weight:700;border-radius:6px;
   margin-bottom:10px;letter-spacing:.05em;transition:background .15s;
 }
 .btn-login-main:hover{background:#007dab;}
-.panel-links{display:flex;justify-content:center;}
+.panel-links{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
 .panel-links a{
-  font-size:11.5px;color:#666;padding:0 9px;
-  border-right:1px solid #e0e3ea;
+  font-size:12px;color:#555;padding:9px 4px;
+  border:1px solid #dde0e8;border-radius:5px;
+  text-align:center;cursor:pointer;
+  background:#f7f8fb;transition:background .15s;display:block;
 }
-.panel-links a:last-child{border-right:none;}
-.panel-links a:hover{color:var(--blue);}
+.panel-links a:hover{background:#e8f0f9;color:var(--blue);border-color:var(--blue);}
 
 /* 유저 패널 */
 .user-panel{
-  background:#fff;border-radius:6px;
-  box-shadow:0 2px 8px rgba(0,0,0,.09);overflow:hidden;display:none;
+  background:#fff;border-radius:10px;
+  box-shadow:0 2px 12px rgba(0,0,0,.1);overflow:hidden;display:none;
 }
-.up-body{padding:14px 16px;}
+.up-body{padding:16px;}
 .up-name{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:2px;}
 .up-org{font-size:11px;color:#888;margin-bottom:10px;}
 .up-btns{display:flex;gap:6px;margin-bottom:8px;}
-.up-btn{flex:1;height:32px;border-radius:3px;font-size:12px;font-weight:600;}
+.up-btn{flex:1;height:34px;border-radius:4px;font-size:12px;font-weight:600;}
 .up-btn-my{background:var(--blue);color:#fff;border:none;}
 .up-btn-out{background:#fff;color:#666;border:1px solid #ccc;}
 .up-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
 .up-stat{
-  padding:6px 4px;background:#f5f7fb;border-radius:3px;
+  padding:6px 4px;background:#f5f7fb;border-radius:4px;
   text-align:center;font-size:10px;color:#555;cursor:pointer;
 }
 .up-stat strong{display:block;font-size:14px;font-weight:700;color:var(--blue);}
@@ -288,39 +228,118 @@ ul{list-style:none;}
 .up-admin{text-align:center;margin-top:8px;display:none;}
 .up-admin a{font-size:12px;color:#c0392b;font-weight:700;}
 
+/* 히어로 3단 */
+.hero-cols{
+  display:grid;
+  grid-template-columns:1.1fr 1.4fr 1fr;
+  gap:16px;align-items:stretch;
+}
+
+/* 배너 */
+.hero-banner{
+  background:#fff;border-radius:10px;
+  overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1);
+  display:flex;flex-direction:column;min-height:260px;
+}
+.banner-body{
+  flex:1;padding:22px 20px 14px;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+}
+.banner-category{font-size:11px;color:#888;font-weight:500;margin-bottom:8px;}
+.banner-title{
+  font-size:18px;font-weight:700;color:#1a1a2e;
+  line-height:1.4;margin-bottom:8px;
+}
+.banner-title em{font-style:normal;color:var(--blue);}
+.banner-desc{font-size:12px;color:#666;line-height:1.7;flex:1;}
+.banner-illust{
+  position:absolute;right:14px;top:16px;
+  width:88px;height:88px;
+  background:linear-gradient(135deg,#ddeeff,#b8d8f0);
+  border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:42px;
+}
+.banner-footer{
+  display:flex;align-items:center;gap:6px;
+  border-top:1px solid #f0f2f6;padding-top:10px;margin-top:12px;
+}
+.banner-go{
+  font-size:12px;color:#fff;background:var(--navy);
+  border:none;border-radius:4px;padding:5px 14px;cursor:pointer;
+}
+.banner-go:hover{background:var(--blue);}
+.banner-page{font-size:12px;color:#aaa;margin-left:auto;}
+.banner-nav{
+  background:none;border:1px solid #ccc;color:#777;
+  width:24px;height:24px;border-radius:50%;
+  font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.banner-nav:hover{border-color:var(--blue);color:var(--blue);}
+.banner-pause{
+  background:none;border:1px solid #ccc;color:#777;
+  width:24px;height:24px;border-radius:50%;
+  font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+
+/* 서비스 아이콘 */
+.hero-services{
+  background:linear-gradient(155deg,#1a4fa0,#1565c0 55%,#1e88e5);
+  border-radius:10px;padding:18px 14px;
+  box-shadow:0 2px 12px rgba(0,0,0,.15);
+}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.svc-item{
+  display:flex;flex-direction:column;align-items:center;
+  gap:8px;cursor:pointer;padding:16px 6px;
+  border-radius:8px;transition:background .15s;
+}
+.svc-item:hover{background:rgba(255,255,255,.18);}
+.svc-ico{
+  width:62px;height:62px;
+  background:rgba(255,255,255,.15);
+  border:1.5px solid rgba(255,255,255,.3);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
+.svc-ico svg{width:30px;height:30px;}
+.svc-lbl{font-size:12px;font-weight:600;color:#fff;text-align:center;line-height:1.35;}
+
 /* 사건검색 */
 .case-search{
-  background:#fff;border-radius:6px;
-  box-shadow:0 2px 8px rgba(0,0,0,.09);overflow:hidden;
+  background:#fff;border-radius:10px;
+  box-shadow:0 2px 12px rgba(0,0,0,.1);overflow:hidden;
 }
-.cs-tabs{display:flex;border-bottom:1px solid var(--border2);}
+.cs-tabs{display:flex;border-bottom:2px solid #e0e3ea;}
 .cs-tab{
-  flex:1;height:36px;background:#f5f7fb;border:none;
-  font-size:12px;font-weight:600;color:#777;
-  border-bottom:2px solid transparent;cursor:pointer;
+  flex:1;height:42px;background:#fff;border:none;
+  font-size:12.5px;font-weight:600;color:#888;
+  border-bottom:3px solid transparent;margin-bottom:-2px;
+  cursor:pointer;transition:color .15s;
 }
-.cs-tab.on{background:#fff;color:var(--blue);border-bottom-color:var(--blue);}
+.cs-tab.on{color:var(--blue);border-bottom-color:var(--blue);}
 .cs-tab:hover{color:var(--blue);}
-.cs-body{padding:12px 14px;}
-.cs-row{display:flex;align-items:center;gap:5px;margin-bottom:7px;font-size:11px;}
-.cs-lbl{width:52px;flex-shrink:0;color:#444;font-weight:600;}
+.cs-body{padding:14px 16px;}
+.cs-row{display:flex;align-items:center;gap:5px;margin-bottom:8px;font-size:11px;}
+.cs-lbl{width:52px;flex-shrink:0;color:#555;font-weight:600;}
+.cs-lbl em{color:#dc2626;font-style:normal;}
 .cs-sel{
-  height:28px;border:1px solid #c8cdd6;border-radius:3px;
+  flex:1;height:30px;border:1px solid #c8cdd6;border-radius:4px;
   font-size:11px;font-family:inherit;padding:0 6px;outline:none;
 }
 .cs-sel:focus{border-color:var(--blue);}
 .cs-inp{
-  flex:1;height:28px;border:1px solid #c8cdd6;border-radius:3px;
+  flex:1;height:30px;border:1px solid #c8cdd6;border-radius:4px;
   font-size:11px;font-family:inherit;padding:0 8px;outline:none;
 }
 .cs-inp:focus{border-color:var(--blue);}
 .cs-btn{
-  width:100%;height:32px;background:var(--navy);color:#fff;
-  border:none;border-radius:3px;font-size:12px;font-weight:700;
-  margin-top:6px;font-family:inherit;transition:background .15s;
+  width:100%;height:34px;background:var(--navy);color:#fff;
+  border:none;border-radius:4px;font-size:12px;font-weight:700;
+  margin-top:8px;font-family:inherit;transition:background .15s;
 }
 .cs-btn:hover{background:var(--blue);}
 .cs-note{font-size:10px;color:#999;line-height:1.6;margin-top:6px;}
+.cs-info-link{font-size:10.5px;color:var(--blue);text-decoration:none;white-space:nowrap;}
 
 /* ────────────────────────────────────────
    2단계 · 서류제출 섹션
@@ -756,12 +775,18 @@ ul{list-style:none;}
 /* ────────────────────────────────────────
    반응형
 ──────────────────────────────────────── */
+@media(max-width:1080px){
+  .hero-cols{grid-template-columns:1fr 1.4fr;}
+  .case-search{display:none;}
+}
 @media(max-width:960px){
-  .hero-cols{grid-template-columns:200px 1fr;}
-  .hero-right{display:none;}
+  .hero-top{grid-template-columns:1fr;}
+  .login-panel,#user-panel{display:none!important;}
+  .hero-cols{grid-template-columns:1fr 1.4fr;}
   .court-logos{animation:none;}
 }
 @media(max-width:720px){
+  .hero-top{grid-template-columns:1fr;}
   .hero-cols{grid-template-columns:1fr;}
   .gnb-nav{display:none;}
   .doc-list{grid-template-columns:repeat(2,1fr);}
@@ -915,36 +940,71 @@ ul{list-style:none;}
 <!-- ══ 1단계: 히어로 ══ -->
 <div class="hero">
   <div class="hero-inner">
-    <!-- 검색창 -->
-    <div class="hero-search">
-      <div class="search-box">
-        <input type="text" id="hero-search" placeholder="검색어를 입력해 주세요"
-          onkeydown="if(event.key==='Enter')alert('검색 기능은 실습 모드에서 지원되지 않습니다.')">
-        <button onclick="alert('검색 기능은 실습 모드에서 지원되지 않습니다.')">🔍</button>
-      </div>
-      <div class="search-tags">
-        <span class="search-tag">#나의사건</span>
-        <span class="search-tag">#답변서</span>
-        <span class="search-tag">#민사</span>
-        <span class="search-tag">#소송</span>
-      </div>
-    </div>
 
-    <!-- 3단 컬럼 -->
+    <!-- 상단 row: 검색 + 로그인 -->
+    <div class="hero-top">
+      <div class="hero-search-area">
+        <div class="search-box">
+          <input type="text" id="hero-search" placeholder="검색어를 입력해 주세요"
+            onkeydown="if(event.key==='Enter')alert('검색 기능은 실습 모드에서 지원되지 않습니다.')">
+          <button onclick="alert('검색 기능은 실습 모드에서 지원되지 않습니다.')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+        <div class="search-tags">
+          <span class="search-tag">#나의사건</span>
+          <span class="search-tag">#답변서</span>
+          <span class="search-tag">#민사</span>
+          <span class="search-tag">#소송</span>
+        </div>
+      </div>
+
+      <!-- 로그인 패널 (로그아웃 상태) -->
+      <div class="login-panel" id="login-panel">
+        <div class="login-panel-body">
+          <button class="btn-login-main" onclick="showModal()">로그인</button>
+          <div class="panel-links">
+            <a onclick="showModal()">아이디/비밀번호찾기</a>
+            <a onclick="showModal()">사용자등록</a>
+          </div>
+        </div>
+      </div>
+      <!-- 유저 패널 (로그인 상태) -->
+      <div class="user-panel" id="user-panel">
+        <div class="up-body">
+          <div class="up-name" id="up-name">👤 이름</div>
+          <div class="up-org" id="up-org">소속</div>
+          <div class="up-btns">
+            <button class="up-btn up-btn-my" onclick="location.href='mypage.html'">나의전자소송</button>
+            <button class="up-btn up-btn-out" onclick="doLogout()">로그아웃</button>
+          </div>
+          <div class="up-stats">
+            <div class="up-stat" onclick="location.href='mypage.html'"><strong>3</strong>진행중</div>
+            <div class="up-stat" onclick="location.href='mypage.html'"><strong>2</strong>미확인</div>
+            <div class="up-stat" onclick="location.href='mypage.html'"><strong>1</strong>재판일정</div>
+          </div>
+          <div class="up-admin" id="up-admin-link"><a onclick="location.href='admin.html'">🔐 관리자 페이지</a></div>
+        </div>
+      </div>
+    </div><!-- /.hero-top -->
+
+    <!-- 하단 3단 -->
     <div class="hero-cols">
 
       <!-- ① 배너 슬라이드 -->
       <div class="hero-banner">
-        <div class="banner-body" id="banner-body" style="background:linear-gradient(155deg,#155a8a,#1a7ab4);">
+        <div class="banner-body" id="banner-body">
           <div>
-            <div class="banner-badge">공지</div>
-            <div class="banner-title" id="banner-title">개인정보보호조치<br>제/도/시/행 안내</div>
-            <div class="banner-desc" id="banner-desc">민사소송법에 따라 2025. 7. 12.부터 소송 관계인의 생명 또는 신체에 피해 우려가 있는 경우 개인정보 보호조치가 가능합니다.</div>
+            <div class="banner-category" id="banner-category">소송촉진법상</div>
+            <div class="banner-title" id="banner-title"><em>법/정/이/율 안내</em></div>
+            <div class="banner-desc" id="banner-desc">2019.6.1부터 금전채무의 이행을 명하는 판결에 적용되는 법정이율은 연12%로 변경되었습니다.</div>
           </div>
+          <div class="banner-illust" id="banner-illust">💼</div>
           <div class="banner-footer">
             <button class="banner-go">바로가기</button>
-            <span class="banner-page" id="banner-page">1/4</span>
+            <span class="banner-page" id="banner-page">3/7</span>
             <button class="banner-nav" onclick="prevBanner()">‹</button>
+            <button class="banner-pause">‖</button>
             <button class="banner-nav" onclick="nextBanner()">›</button>
           </div>
         </div>
@@ -954,86 +1014,76 @@ ul{list-style:none;}
       <div class="hero-services">
         <div class="svc-grid">
           <div class="svc-item" onclick="checkLogin(event,'mypage.html')">
-            <div class="svc-ico">📁</div><span class="svc-lbl">나의사건관리</span>
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+            </div>
+            <span class="svc-lbl">나의사건관리</span>
           </div>
           <div class="svc-item" onclick="checkLogin(event,'mypage.html')">
-            <div class="svc-ico">📋</div><span class="svc-lbl">작성중서류</span>
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>
+            </div>
+            <span class="svc-lbl">작성중서류</span>
           </div>
           <div class="svc-item" onclick="checkLogin(event,'mypage.html')">
-            <div class="svc-ico">📬</div><span class="svc-lbl">미확인송달문서</span>
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <span class="svc-lbl">미확인송달문서</span>
           </div>
           <div class="svc-item" onclick="checkLogin(event,'mypage.html')">
-            <div class="svc-ico">📜</div><span class="svc-lbl">제증명발급</span>
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="15" r="2.5"/></svg>
+            </div>
+            <span class="svc-lbl">제증명발급</span>
           </div>
           <div class="svc-item" onclick="checkLogin(event,'mypage.html')">
-            <div class="svc-ico">💰</div><span class="svc-lbl">소송비용납부</span>
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/><path d="M12 12v4m-2-2h4" stroke-width="2"/></svg>
+            </div>
+            <span class="svc-lbl">소송비용납부</span>
           </div>
           <div class="svc-item" onclick="checkLogin(event,'mypage.html')">
-            <div class="svc-ico">🔔</div><span class="svc-lbl">알림서비스</span>
+            <div class="svc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            </div>
+            <span class="svc-lbl">알림서비스</span>
           </div>
         </div>
       </div>
 
-      <!-- ③ 우측 패널 -->
-      <div class="hero-right">
-        <!-- 로그인 패널 -->
-        <div class="login-panel" id="login-panel">
-          <div class="login-panel-body">
-            <button class="btn-login-main" onclick="showModal()">로그인</button>
-            <div class="panel-links">
-              <a onclick="showModal()">아이디/비밀번호찾기</a>
-              <a onclick="showModal()">사용자등록</a>
-            </div>
+      <!-- ③ 사건검색 -->
+      <div class="case-search">
+        <div class="cs-tabs">
+          <button class="cs-tab on" id="cptab0" onclick="switchCpTab(0)">사건검색</button>
+          <button class="cs-tab" id="cptab1" onclick="switchCpTab(1)">발급문서조회</button>
+        </div>
+        <div class="cs-body">
+          <div class="cs-row">
+            <span class="cs-lbl">법원선택 <em>*</em></span>
+            <select class="cs-sel">
+              <option>대법원</option><option>서울중앙</option><option>수원</option><option>인천</option>
+            </select>
+            <a class="cs-info-link" style="margin-left:4px;">ℹ 입력방법에시</a>
+          </div>
+          <div class="cs-row" style="margin-bottom:5px;">
+            <label style="font-size:10.5px;color:#777;display:flex;align-items:center;gap:4px;">
+              <input type="checkbox" style="accent-color:var(--blue);">사건구분입력모드
+            </label>
+          </div>
+          <div class="cs-row">
+            <span class="cs-lbl">사건번호 <em>*</em></span>
+            <select class="cs-sel" style="width:56px;flex:none;"><option>2026</option><option>2025</option></select>
+            <select class="cs-sel" style="width:42px;flex:none;margin-left:4px;"><option>다</option><option>가</option><option>나</option></select>
+            <input type="text" class="cs-inp" style="width:60px;flex:none;margin-left:4px;">
+          </div>
+          <div class="cs-row">
+            <span class="cs-lbl">당사자명 <em>*</em></span>
+            <input type="text" class="cs-inp" placeholder="당사자명 필수입력">
+            <button style="margin-left:5px;height:30px;padding:0 10px;background:var(--navy);color:#fff;border:none;border-radius:4px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;" onclick="alert('사건검색은 실습 모드에서 지원되지 않습니다.')">조회</button>
           </div>
         </div>
-        <!-- 유저 패널 -->
-        <div class="user-panel" id="user-panel">
-          <div class="up-body">
-            <div class="up-name" id="up-name">👤 이름</div>
-            <div class="up-org" id="up-org">소속</div>
-            <div class="up-btns">
-              <button class="up-btn up-btn-my" onclick="location.href='mypage.html'">나의전자소송</button>
-              <button class="up-btn up-btn-out" onclick="doLogout()">로그아웃</button>
-            </div>
-            <div class="up-stats">
-              <div class="up-stat" onclick="location.href='mypage.html'"><strong>3</strong>진행중</div>
-              <div class="up-stat" onclick="location.href='mypage.html'"><strong>2</strong>미확인</div>
-              <div class="up-stat" onclick="location.href='mypage.html'"><strong>1</strong>재판일정</div>
-            </div>
-            <div class="up-admin" id="up-admin-link"><a onclick="location.href='admin.html'">🔐 관리자 페이지</a></div>
-          </div>
-        </div>
-        <!-- 사건검색 -->
-        <div class="case-search">
-          <div class="cs-tabs">
-            <button class="cs-tab on" id="cptab0" onclick="switchCpTab(0)">사건검색</button>
-            <button class="cs-tab" id="cptab1" onclick="switchCpTab(1)">빠른문서서비스</button>
-          </div>
-          <div class="cs-body">
-            <div class="cs-row">
-              <span class="cs-lbl">법원선택</span>
-              <select class="cs-sel" style="flex:1;">
-                <option>대법원</option><option>서울중앙</option><option>수원</option><option>인천</option>
-              </select>
-            </div>
-            <div class="cs-row">
-              <span class="cs-lbl">사건연도</span>
-              <select class="cs-sel"><option>2026</option><option>2025</option><option>2024</option></select>
-              <select class="cs-sel" style="width:44px;margin-left:3px;"><option>가</option><option>나</option><option>다</option></select>
-            </div>
-            <div class="cs-row">
-              <span class="cs-lbl">사건번호</span>
-              <input type="text" class="cs-inp" placeholder="번호 입력">
-            </div>
-            <div class="cs-row">
-              <span class="cs-lbl">당사자명</span>
-              <input type="text" class="cs-inp" placeholder="당사자명 입력">
-            </div>
-            <button class="cs-btn" onclick="alert('사건검색은 실습 모드에서 지원되지 않습니다.')">조 회</button>
-            <div class="cs-note">※ 사건번호 없이 당사자명으로도 조회 가능합니다.</div>
-          </div>
-        </div>
-      </div><!-- /.hero-right -->
+      </div>
 
     </div><!-- /.hero-cols -->
   </div><!-- /.hero-inner -->
@@ -1466,22 +1516,25 @@ setInterval(nextNotice,4000);
 
 // ── 배너 슬라이드 ──
 const BANNERS=[
-  {t:'개인정보보호조치<br>제/도/시/행 안내',d:'민사소송법에 따라 2025. 7. 12.부터 소송 관계인의 생명 또는 신체에 피해 우려가 있는 경우 개인정보 보호조치가 가능합니다.',bg:'linear-gradient(155deg,#155a8a,#1a7ab4)'},
-  {t:'부동산가액 및<br>소가계산기 이용안내',d:'부동산 가액이나 소가 계산이 어려운 경우 전자소송 포털에서 소가계산기 서비스를 이용하세요.',bg:'linear-gradient(155deg,#1a3a8b,#2952c3)'},
-  {t:'전자소송 이용방법<br>동영상 안내',d:'전자소송을 처음 이용하시는 분들을 위한 단계별 동영상 안내 서비스를 제공합니다.',bg:'linear-gradient(155deg,#1a5e3a,#28a356)'},
-  {t:'나홀로소송<br>서비스 안내',d:'변호사 없이도 쉽고 간편하게 소송서류를 작성할 수 있는 서비스를 이용해보세요.',bg:'linear-gradient(155deg,#6b1a3a,#c03460)'},
+  {cat:'소송촉진법상',t:'<em>법/정/이/율 안내</em>',d:'2019.6.1부터 금전채무의 이행을 명하는 판결에 적용되는 법정이율은 연12%로 변경되었습니다.',ico:'💼'},
+  {cat:'공지사항',t:'<em>개인정보보호조치</em><br>시행 안내',d:'민사소송법에 따라 2025. 7. 12.부터 소송 관계인의 개인정보 보호조치가 가능합니다.',ico:'🔒'},
+  {cat:'서비스 안내',t:'<em>소가계산기</em><br>이용안내',d:'부동산 가액이나 소가 계산이 어려운 경우 전자소송 포털에서 소가계산기 서비스를 이용하세요.',ico:'🧮'},
+  {cat:'서비스 안내',t:'<em>나홀로소송</em><br>서류작성 서비스',d:'변호사 없이도 쉽고 간편하게 소송서류를 작성할 수 있는 서비스를 이용해보세요.',ico:'📝'},
+  {cat:'이용안내',t:'<em>전자소송</em><br>동영상 안내',d:'전자소송을 처음 이용하시는 분들을 위한 단계별 동영상 안내 서비스를 제공합니다.',ico:'🎬'},
 ];
 let bIdx=0;
 function updateBanner(){
   const b=BANNERS[bIdx];
-  const bb=document.getElementById('banner-body');
+  const bcat=document.getElementById('banner-category');
   const bt=document.getElementById('banner-title');
   const bd=document.getElementById('banner-desc');
   const bp=document.getElementById('banner-page');
-  if(bb)bb.style.background=b.bg;
+  const bi=document.getElementById('banner-illust');
+  if(bcat)bcat.textContent=b.cat;
   if(bt)bt.innerHTML=b.t;
   if(bd)bd.textContent=b.d;
   if(bp)bp.textContent=(bIdx+1)+'/'+BANNERS.length;
+  if(bi)bi.textContent=b.ico;
 }
 function nextBanner(){bIdx=(bIdx+1)%BANNERS.length;updateBanner();}
 function prevBanner(){bIdx=(bIdx-1+BANNERS.length)%BANNERS.length;updateBanner();}
