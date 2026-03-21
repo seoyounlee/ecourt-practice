@@ -960,67 +960,366 @@ ul{list-style:none;}
       </div>
       <!-- 서류제출 -->
       <div class="gnb-item">서류제출
-        <div class="mega-drop"><div class="mega-inner">
-          <div class="mega-col"><div class="mega-col-title">민사</div><ul>
-            <li><a onclick="goLogin()">소장 <span class="doc-badge">E</span></a></li>
-            <li><a onclick="goLogin()">답변서</a></li>
-            <li><a onclick="goLogin()">준비서면</a></li>
-            <li><a onclick="goLogin()">항소장</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">가사/행정</div><ul>
-            <li><a>가사소송·비송</a></li>
-            <li><a>협의이혼</a></li>
-            <li><a>행정소송</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">특허/회생파산</div><ul>
-            <li><a>특허본안</a></li>
-            <li><a>개인회생</a></li>
-            <li><a>개인파산</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">형사/보호</div><ul>
-            <li><a>형사공판서</a></li>
-            <li><a>소년보호</a></li>
-            <li><a>가정아동성보호</a></li>
-          </ul></div>
+        <div class="mega-drop"><div class="mega-inner" style="align-items:stretch;padding:0;">
+          <div class="mega-illust">
+            <svg viewBox="0 0 160 170" width="140" height="140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="80" cy="95" r="68" fill="#eef3fb"/>
+              <ellipse cx="32" cy="55" rx="18" ry="8" fill="#81c784" transform="rotate(-45 32 55)"/>
+              <ellipse cx="128" cy="50" rx="18" ry="8" fill="#81c784" transform="rotate(45 128 50)"/>
+              <rect x="42" y="72" width="76" height="90" rx="5" fill="#78909c"/>
+              <rect x="46" y="76" width="68" height="82" rx="3" fill="#fff"/>
+              <rect x="52" y="84" width="50" height="3" rx="1" fill="#cfd8dc"/>
+              <rect x="52" y="91" width="56" height="2" rx="1" fill="#cfd8dc"/>
+              <rect x="52" y="97" width="44" height="2" rx="1" fill="#cfd8dc"/>
+              <rect x="52" y="103" width="50" height="2" rx="1" fill="#cfd8dc"/>
+              <ellipse cx="100" cy="140" rx="10" ry="4" fill="#90a4ae" opacity=".4"/>
+              <rect x="86" y="100" width="28" height="38" rx="14" fill="#b0bec5"/>
+              <rect x="88" y="102" width="24" height="34" rx="12" fill="#e3f2fd"/>
+              <rect x="93" y="108" width="3" height="20" rx="1.5" fill="#90caf9" transform="rotate(-20 93 108)"/>
+            </svg>
+          </div>
+          <div style="display:flex;flex:1;padding:20px 4px;">
+            <!-- Col1: 서류검색 + 민사서류 -->
+            <div class="mega-col">
+              <div class="mega-col-title">서류검색</div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">민사서류</div>
+                <ul>
+                  <li><a onclick="checkLogin(event,'apply.html')">민사본안</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">민사신청</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">지급명령(독촉)신청</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">전체서류</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col2: 형사서류 -->
+            <div class="mega-col">
+              <div class="mega-col-title">형사서류</div>
+              <ul>
+                <li><a onclick="checkLogin(event,'mypage.html')">형사공판</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">형사신청</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">형사약식</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">영장/즉결</a></li>
+              </ul>
+            </div>
+            <!-- Col3: 가사서류 + 보호서류 -->
+            <div class="mega-col">
+              <div class="mega-col-title">가사서류</div>
+              <ul>
+                <li><a onclick="checkLogin(event,'mypage.html')">가사소송·비송</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">가사조정</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">가사신청</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">과태료/감치</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">가족관계등록비송</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">전체서류</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">보호서류</div>
+                <ul>
+                  <li><a onclick="checkLogin(event,'mypage.html')">소년보호</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">가정아동성보호</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col4: 행정서류 + 특허서류 + 회생파산서류 -->
+            <div class="mega-col">
+              <div class="mega-col-title">행정서류</div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">특허서류</div>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">회생파산서류</div>
+                <ul>
+                  <li><a onclick="checkLogin(event,'mypage.html')">개인회생</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">개인파산</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">법인회생(간이회생 포함)</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">법인파산</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">일반회생(간이회생 포함)</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">기타사건</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col5: 민사집행서류 + 비송/과태료 + 회신서등 -->
+            <div class="mega-col">
+              <div class="mega-col-title">민사집행서류</div>
+              <ul>
+                <li><a onclick="checkLogin(event,'mypage.html')">부동산 등 집행</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">채권압류 등</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">채권배당</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">재산명시/감치</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">재산조회/채무불이행자명부</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">그 밖의 집행</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">비송,과태료 서류</div>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">회신서등 제출</div>
+              </div>
+            </div>
+          </div>
         </div></div>
       </div>
       <!-- 각종신청 -->
       <div class="gnb-item">각종신청
-        <div class="mega-drop"><div class="mega-inner">
-          <div class="mega-col"><div class="mega-col-title">보전신청</div><ul>
-            <li><a>가압류</a></li><li><a>가처분</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">집행신청</div><ul>
-            <li><a>강제집행</a></li><li><a>부동산경매</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">기타신청</div><ul>
-            <li><a>독촉절차</a></li><li><a>공시최고</a></li>
-          </ul></div>
+        <div class="mega-drop"><div class="mega-inner" style="align-items:stretch;padding:0;">
+          <div class="mega-illust">
+            <svg viewBox="0 0 160 170" width="140" height="140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="80" cy="95" r="68" fill="#eef6fb"/>
+              <ellipse cx="30" cy="60" rx="18" ry="8" fill="#81c784" transform="rotate(-40 30 60)"/>
+              <ellipse cx="130" cy="55" rx="18" ry="8" fill="#81c784" transform="rotate(40 130 55)"/>
+              <rect x="30" y="100" width="100" height="60" rx="4" fill="#e3f2fd"/>
+              <rect x="38" y="108" width="36" height="4" rx="2" fill="#90caf9"/>
+              <rect x="38" y="116" width="28" height="3" rx="1.5" fill="#bbdefb"/>
+              <rect x="38" y="122" width="32" height="3" rx="1.5" fill="#bbdefb"/>
+              <rect x="86" y="108" width="36" height="4" rx="2" fill="#90caf9"/>
+              <rect x="86" y="116" width="28" height="3" rx="1.5" fill="#bbdefb"/>
+              <ellipse cx="55" cy="72" rx="20" ry="24" fill="#b0bec5" opacity=".6"/>
+              <ellipse cx="55" cy="72" rx="16" ry="20" fill="#eceff1"/>
+              <rect x="47" y="64" width="16" height="2" rx="1" fill="#90a4ae"/>
+              <rect x="47" y="70" width="16" height="2" rx="1" fill="#90a4ae"/>
+              <rect x="47" y="76" width="12" height="2" rx="1" fill="#90a4ae"/>
+            </svg>
+          </div>
+          <div style="display:flex;flex:1;padding:20px 4px;">
+            <!-- Col1: 판결문전자송달신청 + 알림서비스신청 -->
+            <div class="mega-col">
+              <div class="mega-col-title">판결문전자송달신청</div>
+              <ul>
+                <li><a>판결문전자송달신청</a></li>
+                <li><a>판결문전자송달신청내역</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">알림서비스신청</div>
+              </div>
+            </div>
+            <!-- Col2: 송달료 자동납부신청 + 제증명발급신청 -->
+            <div class="mega-col">
+              <div class="mega-col-title">송달료 자동납부신청</div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">제증명발급신청</div>
+                <ul>
+                  <li><a>제증명발급신청</a></li>
+                  <li><a>제증명발급내역</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col3: 그림자배심 참가신청 -->
+            <div class="mega-col">
+              <div class="mega-col-title">그림자배심 참가신청</div>
+              <ul>
+                <li><a>국민참여재판 일정</a></li>
+                <li><a>그림자배심 참가신청</a></li>
+              </ul>
+            </div>
+            <!-- Col4: 기록 열람 신청 -->
+            <div class="mega-col">
+              <div class="mega-col-title">기록 열람 신청</div>
+              <ul>
+                <li><a>열람제한문서 열람신청</a></li>
+                <li><a>열람제한문서열람</a></li>
+                <li><a>원심사건기록 열람신청</a></li>
+                <li><a>원심사건기록열람</a></li>
+              </ul>
+            </div>
+          </div>
         </div></div>
       </div>
       <!-- 사건유형별 절차안내 -->
       <div class="gnb-item">사건유형별 절차안내
-        <div class="mega-drop"><div class="mega-inner">
-          <div class="mega-col"><div class="mega-col-title">민사</div><ul>
-            <li><a>민사소송의 개요</a></li><li><a>소장 작성방법</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">형사</div><ul>
-            <li><a>형사소송</a></li><li><a>국민참여재판</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">가사</div><ul>
-            <li><a>가사소송</a></li><li><a>협의이혼</a></li>
-          </ul></div>
+        <div class="mega-drop"><div class="mega-inner" style="align-items:stretch;padding:0;">
+          <div class="mega-illust">
+            <svg viewBox="0 0 160 170" width="140" height="140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="80" cy="95" r="68" fill="#f5f0e8"/>
+              <ellipse cx="32" cy="65" rx="18" ry="8" fill="#81c784" transform="rotate(-40 32 65)"/>
+              <rect x="44" y="100" width="32" height="42" rx="3" fill="#8d6e63"/>
+              <rect x="46" y="102" width="28" height="38" rx="2" fill="#a1887f"/>
+              <rect x="49" y="106" width="22" height="2" rx="1" fill="#fff" opacity=".6"/>
+              <rect x="49" y="111" width="18" height="2" rx="1" fill="#fff" opacity=".5"/>
+              <rect x="84" y="106" width="32" height="36" rx="3" fill="#8d6e63"/>
+              <rect x="86" y="108" width="28" height="32" rx="2" fill="#a1887f"/>
+              <rect x="89" y="112" width="22" height="2" rx="1" fill="#fff" opacity=".6"/>
+              <rect x="89" y="117" width="18" height="2" rx="1" fill="#fff" opacity=".5"/>
+              <text x="56" y="128" font-size="10" fill="#fff" font-weight="bold" font-family="serif">LAW</text>
+              <circle cx="62" cy="92" r="12" fill="#d4af7a" opacity=".7"/>
+            </svg>
+          </div>
+          <div style="display:flex;flex:1;padding:20px 4px;">
+            <!-- Col1: 공통안내 + 민사 -->
+            <div class="mega-col">
+              <div class="mega-col-title">공통안내</div>
+              <ul>
+                <li><a>전자소송안내</a></li>
+                <li><a>영상재판안내</a></li>
+                <li><a>재판지원안내</a></li>
+                <li><a>관할법원안내</a></li>
+                <li><a>법률용어안내</a></li>
+                <li><a>납부환급안내</a></li>
+                <li><a>알림서비스안내</a></li>
+                <li><a>양식 및 작성안내</a></li>
+                <li><a>법원상담사례</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">민사</div>
+                <ul>
+                  <li><a>민사소송의 개요</a></li>
+                  <li><a>민사소송의 진행</a></li>
+                  <li><a>민사소송의 종결</a></li>
+                  <li><a>일반소송 외 절차</a></li>
+                  <li><a>민사신청</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col2: 가사 + 행정 + 특허 + 개인파산/회생 -->
+            <div class="mega-col">
+              <div class="mega-col-title">가사</div>
+              <ul>
+                <li><a>가사소송(조정)</a></li>
+                <li><a>가사비송</a></li>
+                <li><a>가사신청</a></li>
+                <li><a>협의이혼</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">행정</div>
+                <ul>
+                  <li><a>행정소송의 개요</a></li>
+                  <li><a>행정소송의 진행</a></li>
+                </ul>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">특허</div>
+                <ul>
+                  <li><a>특허소송의 개념</a></li>
+                  <li><a>특허소송의 진행</a></li>
+                </ul>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">개인파산/회생</div>
+                <ul>
+                  <li><a>개인파산 및 면책</a></li>
+                  <li><a>개인회생</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col3: 강제집행 + 형사 + 가정보호 -->
+            <div class="mega-col">
+              <div class="mega-col-title">강제집행</div>
+              <ul>
+                <li><a>강제집행의 개요</a></li>
+                <li><a>부동산 강제집행</a></li>
+                <li><a>채권에대한 강제집행</a></li>
+                <li><a>동산에대한 강제집행</a></li>
+                <li><a>기타집행절차</a></li>
+                <li><a>강제집행정지</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">형사</div>
+                <ul>
+                  <li><a>형사소송</a></li>
+                  <li><a>국민참여재판</a></li>
+                  <li><a>인신보호제도</a></li>
+                  <li><a>안내(홍보)자료 모음</a></li>
+                </ul>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">가정보호</div>
+                <ul>
+                  <li><a>가정보호재판의 개요</a></li>
+                  <li><a>보호처분 결정</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col4: 소년보호 + 가족관계등록비송 + 가족관계등록 + 공탁 + 나홀로소송 -->
+            <div class="mega-col">
+              <div class="mega-col-title">소년보호</div>
+              <ul>
+                <li><a>소년보호재판의 개요</a></li>
+                <li><a>소년보호재판의 진행</a></li>
+                <li><a>보호처분</a></li>
+                <li><a>통고제도</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">가족관계등록비송</div>
+                <ul>
+                  <li><a>개명</a></li>
+                  <li><a>가족관계등록창설</a></li>
+                  <li><a>국적취득자의 성·본 창설</a></li>
+                  <li><a>가족관계등록부 정정</a></li>
+                </ul>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">가족관계등록</div>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">공탁</div>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">나홀로소송</div>
+              </div>
+            </div>
+          </div>
         </div></div>
       </div>
       <!-- 고객센터 -->
       <div class="gnb-item">고객센터
-        <div class="mega-drop"><div class="mega-inner">
-          <div class="mega-col"><div class="mega-col-title">이용안내</div><ul>
-            <li><a>전자소송안내</a></li><li><a>FAQ</a></li><li><a>이용약관</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">문의</div><ul>
-            <li><a>1:1 문의</a></li><li><a>공지사항</a></li>
-          </ul></div>
+        <div class="mega-drop"><div class="mega-inner" style="align-items:stretch;padding:0;">
+          <div class="mega-illust">
+            <svg viewBox="0 0 160 170" width="140" height="140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="80" cy="95" r="68" fill="#eef6ee"/>
+              <ellipse cx="28" cy="65" rx="18" ry="8" fill="#81c784" transform="rotate(-40 28 65)"/>
+              <ellipse cx="132" cy="60" rx="18" ry="8" fill="#81c784" transform="rotate(40 132 60)"/>
+              <rect x="36" y="98" width="88" height="56" rx="5" fill="#b0bec5"/>
+              <rect x="40" y="102" width="80" height="48" rx="3" fill="#eceff1"/>
+              <rect x="46" y="90" width="68" height="14" rx="3" fill="#78909c"/>
+              <rect x="52" y="94" width="20" height="6" rx="1" fill="#90caf9"/>
+              <rect x="76" y="94" width="20" height="6" rx="1" fill="#a5d6a7"/>
+              <rect x="100" y="94" width="10" height="6" rx="1" fill="#ef9a9a"/>
+              <rect x="46" y="110" width="56" height="3" rx="1" fill="#cfd8dc"/>
+              <rect x="46" y="117" width="64" height="3" rx="1" fill="#cfd8dc"/>
+              <rect x="46" y="124" width="48" height="3" rx="1" fill="#cfd8dc"/>
+              <circle cx="104" cy="128" r="10" fill="#0067c2" opacity=".15"/>
+              <text x="99" y="132" font-size="12" fill="#0067c2">?</text>
+            </svg>
+          </div>
+          <div style="display:flex;flex:1;padding:20px 4px;">
+            <!-- Col1: 공지사항 + 자주하는질문 + 문제해결안내 -->
+            <div class="mega-col">
+              <div class="mega-col-title">공지사항</div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">자주하는질문</div>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">문제해결안내</div>
+              </div>
+            </div>
+            <!-- Col2: 인증/보안 -->
+            <div class="mega-col">
+              <div class="mega-col-title">인증/보안<br><span style="font-size:11px;font-weight:400;">(프로그램설치)</span></div>
+            </div>
+            <!-- Col3: 사이트이용안내 -->
+            <div class="mega-col">
+              <div class="mega-col-title">사이트이용안내</div>
+              <ul>
+                <li><a>이용약관</a></li>
+                <li><a>개인정보처리방침</a></li>
+                <li><a>저작권보호정책</a></li>
+                <li><a>이용안내</a></li>
+              </ul>
+            </div>
+            <!-- Col4: 고객의소리 + 링크시유의사항 + 재판조력자게시판 + 사이트맵 -->
+            <div class="mega-col">
+              <div class="mega-col-title">고객의소리</div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">링크시유의사항</div>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">재판조력자게시판</div>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">사이트맵</div>
+              </div>
+            </div>
+          </div>
         </div></div>
       </div>
     </nav>
