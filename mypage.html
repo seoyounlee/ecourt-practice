@@ -244,6 +244,34 @@ button{font-family:inherit;cursor:pointer;}
   .widget-grid{grid-template-columns:1fr;}
   .quick-bar{grid-template-columns:1fr;}
 }
+
+/* ── 하위 호환 CSS 별칭 (renderXxx 함수들이 사용하는 구버전 클래스명) ── */
+.page-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border:1px solid #dde0e8;border-bottom:2px solid #0067c2;}
+.page-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#003366;}
+.dot{width:8px;height:8px;background:#0067c2;border-radius:50%;flex-shrink:0;}
+.page-actions{display:flex;gap:6px;}
+.page-act-btn{height:30px;padding:0 12px;background:#fff;border:1px solid #c8cdd6;border-radius:3px;font-size:12px;color:#444;display:flex;align-items:center;gap:4px;cursor:pointer;}
+.page-act-btn:hover{background:#f5f7fc;border-color:#0067c2;color:#0067c2;}
+.search-area{background:#f7f8fc;border:1px solid #dde0e8;border-top:none;padding:12px 18px;display:flex;flex-direction:column;gap:8px;}
+.srow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.slbl{font-size:12px;color:#555;font-weight:600;min-width:54px;}
+.sselect,.sinp{height:30px;border:1px solid #c8cdd6;border-radius:3px;font-size:12px;font-family:inherit;padding:0 8px;outline:none;background:#fff;}
+.sselect:focus,.sinp:focus{border-color:#0067c2;}
+.search-btn{height:34px;padding:0 28px;background:#1a3a6b;color:#fff;border:none;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;}
+.search-btn:hover{background:#2952a3;}
+.table-area{background:#fff;border:1px solid #dde0e8;border-top:none;}
+.table-toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #eaecf4;}
+.total-count{font-size:12px;color:#555;}
+.total-count strong{color:#0067c2;}
+.table-tools{display:flex;gap:5px;}
+.paging-btns{display:flex;gap:2px;}
+.empty-row td{text-align:center;padding:32px;color:#aaa;font-size:12px;}
+.status-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
+.status-card{background:#f7f8fc;border:1px solid #dde0e8;border-radius:6px;padding:14px;text-align:center;cursor:pointer;transition:all .15s;}
+.status-card:hover,.status-card.on{background:#e8f0f9;border-color:#0067c2;}
+.sc-num{font-size:28px;font-weight:700;color:#0067c2;line-height:1;}
+.sc-lbl{font-size:12px;font-weight:700;color:#333;margin-top:4px;}
+.sc-sub{font-size:10px;color:#888;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -614,49 +642,121 @@ function renderStatus(el){
   const proceeding=SAMPLE_CASES.filter(c=>c.status==='진행중').length;
   const confirmed=SAMPLE_CASES.filter(c=>c.status==='확정').length;
   el.innerHTML=`
-  <div class="page-header">
-    <div class="page-title"><div class="dot"></div>나의사건현황</div>
-    <div class="page-actions"><button class="page-act-btn" onclick="alert('나의 메뉴 추가 (실습 모드)')">📌 나의 메뉴 추가</button><button class="page-act-btn" onclick="window.print()">🖨 출력</button></div>
-  </div>
-  <div style="padding:16px;background:#fff;border:1px solid #dde0e8;border-top:1px solid #e8eaee;">
-    <div class="status-cards">
-      <div class="status-card on" onclick="loadPage('case-proceeding')"><div class="sc-num">${proceeding}</div><div class="sc-lbl">진행중 사건</div><div class="sc-sub">현재 진행중인 사건</div></div>
-      <div class="status-card" onclick="loadPage('case-interest')"><div class="sc-num">0</div><div class="sc-lbl">관심사건</div><div class="sc-sub">즐겨찾기 사건</div></div>
-      <div class="status-card" onclick="loadPage('case-confirmed')"><div class="sc-num">${confirmed}</div><div class="sc-lbl">확정된 사건</div><div class="sc-sub">판결 확정 사건</div></div>
-      <div class="status-card" onclick="loadPage('case-done')"><div class="sc-num">0</div><div class="sc-lbl">완료된 사건</div><div class="sc-sub">종결된 사건</div></div>
+  <div class="pg-hd">
+    <div class="pg-ttl"><div class="pg-ttl-dot"></div>나의사건현황</div>
+    <div class="pg-acts">
+      <button class="pg-act-btn" onclick="showToast('나의 메뉴 추가는 실습 모드에서 지원되지 않습니다.')">📌 나의 메뉴 추가</button>
+      <button class="pg-act-btn" onclick="window.print()">🖨 출력</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:0;">
-      <div style="background:#f8f9fc;border:1px solid #e5e8ee;border-radius:4px;padding:16px;">
-        <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
-          📅 다가오는 재판일정
-          <span style="font-size:11px;font-weight:400;color:#006699;cursor:pointer;" onclick="loadPage('schedule')">전체보기 ›</span>
+  </div>
+
+  <!-- 사건 카운터 -->
+  <div class="counter-section">
+    <div class="counter-box">
+      <div class="counter-box-title">나의 사건관리</div>
+      <div class="counters">
+        <div class="counter-item" onclick="loadPage('case-proceeding')">
+          <div class="c-num">${proceeding}</div><div class="c-lbl">진행중사건</div>
         </div>
+        <div class="counter-divider"></div>
+        <div class="counter-item" onclick="loadPage('unconfirmed')">
+          <div class="c-num">0</div><div class="c-lbl">미확인송달</div>
+        </div>
+        <div class="counter-divider"></div>
+        <div class="counter-item" onclick="loadPage('case-interest')">
+          <div class="c-num">0</div><div class="c-lbl">관심사건</div>
+        </div>
+      </div>
+      <button class="counter-reg-btn" onclick="location.href='apply.html'">사건등록 +</button>
+    </div>
+    <div class="counter-box">
+      <div class="counter-box-title">나의 문서함</div>
+      <div class="counters">
+        <div class="counter-item" onclick="loadPage('drafts')">
+          <div class="c-num">0</div><div class="c-lbl">임시저장</div>
+        </div>
+        <div class="counter-divider"></div>
+        <div class="counter-item" onclick="loadPage('submitted')">
+          <div class="c-num">0</div><div class="c-lbl">제출서류</div>
+        </div>
+        <div class="counter-divider"></div>
+        <div class="counter-item">
+          <div class="c-num">${confirmed}</div><div class="c-lbl">확정된사건</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 각종신청 / 재판일정 바 -->
+  <div class="quick-bar">
+    <div class="quick-item" onclick="showToast('각종신청은 실습 모드에서 지원되지 않습니다.')">
+      <span class="quick-item-title">각종신청</span>
+      <span class="quick-item-more">상세보기 ›</span>
+    </div>
+    <div class="quick-item" onclick="loadPage('schedule')">
+      <span class="quick-item-title">재판일정</span>
+      <span class="quick-item-more">상세보기 ›</span>
+    </div>
+  </div>
+
+  <!-- 위젯 2×2 -->
+  <div class="widget-grid">
+    <!-- 다가오는 재판일정 -->
+    <div class="widget">
+      <div class="widget-hd">
+        <span class="widget-ttl">다가오는 재판일정</span>
+        <span style="font-size:11px;color:#006699;cursor:pointer;" onclick="loadPage('schedule')">전체보기 ›</span>
+      </div>
+      <div class="widget-body" style="flex-direction:column;align-items:stretch;padding:0 14px;">
         ${SAMPLE_SCHEDULE.map(s=>`
-        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #eee;">
-          <div style="background:#006699;color:#fff;border-radius:3px;padding:4px 8px;text-align:center;min-width:44px;">
-            <div style="font-size:9px;opacity:.8;">${s.date.split('-')[1]}월</div>
-            <div style="font-size:16px;font-weight:700;">${s.date.split('-')[2]}</div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #f0f2f7;">
+          <div style="background:#1a3a6b;color:#fff;border-radius:3px;padding:4px 8px;text-align:center;min-width:44px;flex-shrink:0;">
+            <div style="font-size:9px;opacity:.75;">${s.date.split('-')[1]}월</div>
+            <div style="font-size:16px;font-weight:700;line-height:1.2;">${s.date.split('-')[2]}</div>
             <div style="font-size:9px;opacity:.7;">(${s.day})</div>
           </div>
-          <div>
-            <div style="font-size:12px;color:#006699;cursor:pointer;font-weight:600;">${s.caseNo}</div>
-            <div style="font-size:11px;color:#555;">${s.court} ${s.dept} · ${s.type||s.type} · ${s.time} · ${s.room}</div>
+          <div style="min-width:0;">
+            <div style="font-size:12px;color:#0067c2;font-weight:600;cursor:pointer;" onclick="showCaseDetail('${s.caseNo}')">${s.caseNo}</div>
+            <div style="font-size:11px;color:#666;margin-top:2px;">${s.court} ${s.dept}</div>
+            <div style="font-size:11px;color:#888;">${s.type} · ${s.time} · ${s.room}</div>
           </div>
         </div>`).join('')}
       </div>
-      <div style="background:#f8f9fc;border:1px solid #e5e8ee;border-radius:4px;padding:16px;">
-        <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
-          📬 미확인 송달문서
-          <span style="font-size:11px;font-weight:400;color:#006699;cursor:pointer;" onclick="loadPage('unconfirmed')">전체보기 ›</span>
+    </div>
+
+    <!-- 미확인 송달문서 -->
+    <div class="widget">
+      <div class="widget-hd">
+        <span class="widget-ttl">미확인 송달문서</span>
+        <span style="font-size:11px;color:#006699;cursor:pointer;" onclick="loadPage('unconfirmed')">전체보기 ›</span>
+      </div>
+      <div class="widget-body">
+        <div class="widget-empty">미확인 송달문서가 없습니다.</div>
+      </div>
+    </div>
+
+    <!-- 작성중 서류 -->
+    <div class="widget">
+      <div class="widget-hd">
+        <span class="widget-ttl">작성중 서류</span>
+        <span style="font-size:11px;color:#006699;cursor:pointer;" onclick="loadPage('drafts')">전체보기 ›</span>
+      </div>
+      <div class="widget-body" style="cursor:pointer;" onclick="location.href='apply.html'">
+        <div style="text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">📋</div>
+          <div style="font-size:12px;color:#006699;font-weight:600;">새 소장 작성하기 +</div>
         </div>
-        <div style="text-align:center;color:#888;font-size:12px;padding:24px 0;">미확인 송달문서가 없습니다.</div>
-        <div style="margin-top:12px;font-size:13px;font-weight:700;color:#003366;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
-          📝 작성중 서류
-          <span style="font-size:11px;font-weight:400;color:#006699;cursor:pointer;" onclick="loadPage('drafts')">전체보기 ›</span>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:center;padding:16px;background:#fff;border:1px dashed #c0d8e8;border-radius:4px;cursor:pointer;" onclick="location.href='apply.html'">
-          <div style="text-align:center;"><div style="font-size:24px;margin-bottom:6px;">📋</div><div style="font-size:12px;color:#006699;font-weight:600;">새 소장 작성하기 +</div></div>
-        </div>
+      </div>
+    </div>
+
+    <!-- 배정된 실습사건 -->
+    <div class="widget">
+      <div class="widget-hd">
+        <span class="widget-ttl" style="color:#b8922a;">📋 배정된 실습사건</span>
+        <span style="font-size:11px;color:#006699;cursor:pointer;" onclick="loadPage('assigned-cases')">전체보기 ›</span>
+      </div>
+      <div class="widget-body" style="cursor:pointer;" onclick="loadPage('assigned-cases')">
+        <div class="widget-empty">배정된 사건을 확인하려면 클릭하세요.</div>
       </div>
     </div>
   </div>`;
