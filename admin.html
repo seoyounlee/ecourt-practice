@@ -1393,7 +1393,7 @@ async function sbGetAssignments(){
 async function sbAddAssignment(student_id,case_id){
   try{
     const res=await fetch(SB_URL+'/rest/v1/assignments',{method:'POST',headers:SB_WRITE_HEADERS,
-      body:JSON.stringify({student_id,case_id,status:'assigned',assigned_at:new Date().toISOString()})});
+      body:JSON.stringify({user_id:student_id,case_id,status:'미제출'})});
     if(!res.ok){
       const errText=await res.text();
       console.error('[Supabase] 배정 실패 HTTP',res.status,errText);
@@ -1575,7 +1575,7 @@ async function loadAssignments(){
   // 학생별 그룹핑
   const grouped={};
   assignmentsCache.forEach(a=>{
-    const sid=a.student_id;
+    const sid=a.user_id;
     if(!grouped[sid])grouped[sid]={student:acc[sid]||{name:sid,org:''},assignments:[]};
     grouped[sid].assignments.push(a);
   });
@@ -1646,7 +1646,7 @@ function toggleAssignGroup(sid){
 }
 
 async function deleteStudentAssignments(sid){
-  const toDelete=assignmentsCache.filter(a=>a.student_id===sid);
+  const toDelete=assignmentsCache.filter(a=>a.user_id===sid);
   const acc=getAcc();
   const name=acc[sid]?.name||sid;
   if(!confirm(`"${name}"의 배정 ${toDelete.length}건을 모두 삭제하시겠습니까?`))return;
