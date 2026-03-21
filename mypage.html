@@ -679,6 +679,7 @@ function loadPage(pageId){
     else if(pageId==='case-confirmed')renderCaseList(content,'confirmed');
     else if(pageId==='case-done')renderCaseList(content,'done');
     else if(pageId==='schedule')renderSchedule(content);
+    else if(pageId==='drafts')renderDrafts(content);
     else if(pageId==='unconfirmed')renderDocList(content,'unconfirmed');
     else if(pageId==='all-docs')renderDocList(content,'all');
     else if(pageId==='submitted')renderSubmitted(content);
@@ -696,49 +697,127 @@ function loadPage(pageId){
 function renderStatus(el){
   const proceeding=SAMPLE_CASES.filter(c=>c.status==='진행중').length;
   const confirmed=SAMPLE_CASES.filter(c=>c.status==='확정').length;
+  const today=new Date();
+  const todayStr=today.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+  // 미확인 송달문서 (실습 모드에서는 0)
+  const unconfirmed=0;
+  // 작성중 서류 확인
+  let draftCount=0;
+  try{const d=localStorage.getItem('ec_apply_draft');if(d&&JSON.parse(d).savedAt)draftCount=1;}catch{}
+
   el.innerHTML=`
   <div class="page-header">
     <div class="page-title"><div class="dot"></div>나의사건현황</div>
-    <div class="page-actions"><button class="page-act-btn" onclick="alert('나의 메뉴 추가 (실습 모드)')">📌 나의 메뉴 추가</button><button class="page-act-btn" onclick="window.print()">🖨 출력</button></div>
-  </div>
-  <div style="padding:16px;background:#fff;border:1px solid #dde0e8;border-top:1px solid #e8eaee;">
-    <div class="status-cards">
-      <div class="status-card on" onclick="loadPage('case-proceeding')"><div class="sc-num">${proceeding}</div><div class="sc-lbl">진행중 사건</div><div class="sc-sub">현재 진행중인 사건</div></div>
-      <div class="status-card" onclick="loadPage('case-interest')"><div class="sc-num">0</div><div class="sc-lbl">관심사건</div><div class="sc-sub">즐겨찾기 사건</div></div>
-      <div class="status-card" onclick="loadPage('case-confirmed')"><div class="sc-num">${confirmed}</div><div class="sc-lbl">확정된 사건</div><div class="sc-sub">판결 확정 사건</div></div>
-      <div class="status-card" onclick="loadPage('case-done')"><div class="sc-num">0</div><div class="sc-lbl">완료된 사건</div><div class="sc-sub">종결된 사건</div></div>
+    <div class="page-actions">
+      <button class="page-act-btn" onclick="showToast('나의 메뉴 추가는 실습 모드에서 지원되지 않습니다.')">📌 나의 메뉴 추가</button>
+      <button class="page-act-btn" onclick="window.print()">🖨 출력</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:0;">
-      <div style="background:#f8f9fc;border:1px solid #e5e8ee;border-radius:4px;padding:16px;">
-        <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
-          📅 다가오는 재판일정
-          <span style="font-size:11px;font-weight:400;color:#006699;cursor:pointer;" onclick="loadPage('schedule')">전체보기 ›</span>
-        </div>
-        ${SAMPLE_SCHEDULE.map(s=>`
-        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #eee;">
-          <div style="background:#006699;color:#fff;border-radius:3px;padding:4px 8px;text-align:center;min-width:44px;">
-            <div style="font-size:9px;opacity:.8;">${s.date.split('-')[1]}월</div>
-            <div style="font-size:16px;font-weight:700;">${s.date.split('-')[2]}</div>
-            <div style="font-size:9px;opacity:.7;">(${s.day})</div>
-          </div>
-          <div>
-            <div style="font-size:12px;color:#006699;cursor:pointer;font-weight:600;">${s.caseNo}</div>
-            <div style="font-size:11px;color:#555;">${s.court} ${s.dept} · ${s.type||s.type} · ${s.time} · ${s.room}</div>
-          </div>
-        </div>`).join('')}
+  </div>
+  <div style="background:#fff;border:1px solid #dde0e8;border-top:none;padding:16px 20px;">
+
+    <!-- 사건 요약 카드 -->
+    <div class="status-cards">
+      <div class="status-card on" onclick="loadPage('case-proceeding')">
+        <div class="sc-num">${proceeding}</div>
+        <div class="sc-lbl">진행중 사건</div>
+        <div class="sc-sub">현재 진행중인 사건</div>
       </div>
-      <div style="background:#f8f9fc;border:1px solid #e5e8ee;border-radius:4px;padding:16px;">
-        <div style="font-size:13px;font-weight:700;color:#003366;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
-          📬 미확인 송달문서
-          <span style="font-size:11px;font-weight:400;color:#006699;cursor:pointer;" onclick="loadPage('unconfirmed')">전체보기 ›</span>
+      <div class="status-card" onclick="loadPage('case-interest')">
+        <div class="sc-num">0</div>
+        <div class="sc-lbl">관심사건</div>
+        <div class="sc-sub">즐겨찾기 사건</div>
+      </div>
+      <div class="status-card" onclick="loadPage('case-confirmed')">
+        <div class="sc-num">${confirmed}</div>
+        <div class="sc-lbl">확정된 사건</div>
+        <div class="sc-sub">판결 확정 사건</div>
+      </div>
+      <div class="status-card" onclick="loadPage('case-done')">
+        <div class="sc-num">0</div>
+        <div class="sc-lbl">완료된 사건</div>
+        <div class="sc-sub">종결된 사건</div>
+      </div>
+    </div>
+
+    <!-- 알림 바 -->
+    ${unconfirmed>0?`<div style="background:#fff8e6;border:1px solid #ffc107;border-radius:4px;padding:10px 16px;margin-bottom:14px;font-size:12px;color:#7a5c00;display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="loadPage('unconfirmed')">
+      <span style="font-size:16px;">📬</span> 미확인 송달문서가 <strong>${unconfirmed}건</strong> 있습니다. 확인하시기 바랍니다. <span style="margin-left:auto;color:#0067c2;font-weight:600;">확인하기 ›</span>
+    </div>`:''}
+
+    <!-- 2단 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <!-- 재판일정 -->
+      <div style="background:#f8f9fc;border:1px solid #e0e3ea;border-radius:6px;overflow:hidden;">
+        <div style="background:#fff;padding:12px 16px;border-bottom:1px solid #e0e3ea;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:13px;font-weight:700;color:#003366;">📅 다가오는 재판일정</span>
+          <span style="font-size:11px;color:#0067c2;cursor:pointer;" onclick="loadPage('schedule')">전체보기 ›</span>
         </div>
-        <div style="text-align:center;color:#888;font-size:12px;padding:24px 0;">미확인 송달문서가 없습니다.</div>
-        <div style="margin-top:12px;font-size:13px;font-weight:700;color:#003366;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
-          📝 작성중 서류
-          <span style="font-size:11px;font-weight:400;color:#006699;cursor:pointer;" onclick="loadPage('drafts')">전체보기 ›</span>
+        <div style="padding:10px 16px;">
+          ${SAMPLE_SCHEDULE.map(s=>`
+          <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #eef0f5;" onclick="showToast('${s.caseNo} — ${s.type} ${s.time} ${s.room}')" style="cursor:pointer;">
+            <div style="background:#0067c2;color:#fff;border-radius:4px;padding:5px 8px;text-align:center;min-width:46px;flex-shrink:0;">
+              <div style="font-size:9px;opacity:.8;">${s.date.split('-')[1]}월</div>
+              <div style="font-size:17px;font-weight:700;line-height:1.1;">${s.date.split('-')[2]}</div>
+              <div style="font-size:9px;opacity:.7;">(${s.day})</div>
+            </div>
+            <div>
+              <div style="font-size:12px;color:#0067c2;font-weight:700;cursor:pointer;" onclick="event.stopPropagation();showCaseDetail('${s.caseNo}')">${s.caseNo}</div>
+              <div style="font-size:11px;color:#555;margin-top:2px;">${s.court} · <span style="font-weight:600;color:#1e40af;">${s.type}</span> · ${s.time}</div>
+              <div style="font-size:10px;color:#888;">${s.dept} · ${s.room} · 담당: ${s.judge}</div>
+            </div>
+          </div>`).join('')}
         </div>
-        <div style="display:flex;align-items:center;justify-content:center;padding:16px;background:#fff;border:1px dashed #c0d8e8;border-radius:4px;cursor:pointer;" onclick="location.href='apply.html'">
-          <div style="text-align:center;"><div style="font-size:24px;margin-bottom:6px;">📋</div><div style="font-size:12px;color:#006699;font-weight:600;">새 소장 작성하기 +</div></div>
+      </div>
+
+      <!-- 오른쪽 섹션 -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+
+        <!-- 미확인 송달문서 -->
+        <div style="background:#f8f9fc;border:1px solid #e0e3ea;border-radius:6px;overflow:hidden;">
+          <div style="background:#fff;padding:12px 16px;border-bottom:1px solid #e0e3ea;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;font-weight:700;color:#003366;">📬 미확인 송달문서</span>
+            <span style="font-size:11px;color:#0067c2;cursor:pointer;" onclick="loadPage('unconfirmed')">전체보기 ›</span>
+          </div>
+          <div style="padding:20px 16px;text-align:center;color:#aaa;font-size:12px;">
+            <span style="font-size:28px;display:block;margin-bottom:6px;">✉️</span>
+            미확인 송달문서가 없습니다.
+          </div>
+        </div>
+
+        <!-- 작성중서류 -->
+        <div style="background:#f8f9fc;border:1px solid #e0e3ea;border-radius:6px;overflow:hidden;">
+          <div style="background:#fff;padding:12px 16px;border-bottom:1px solid #e0e3ea;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;font-weight:700;color:#003366;">📝 작성중 서류</span>
+            <span style="font-size:11px;color:#0067c2;cursor:pointer;" onclick="loadPage('drafts')">전체보기 ›</span>
+          </div>
+          ${draftCount>0?
+            `<div style="padding:12px 16px;border-bottom:1px solid #eef0f5;display:flex;align-items:center;gap:10px;">
+              <span style="font-size:22px;">📋</span>
+              <div style="flex:1;"><div style="font-size:12px;font-weight:600;color:#003366;">소장 (작성중)</div><div style="font-size:11px;color:#888;margin-top:2px;">임시저장된 서류가 있습니다</div></div>
+              <button onclick="location.href='apply.html'" style="height:30px;padding:0 12px;background:#0067c2;color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;">이어 작성</button>
+            </div>`:
+            `<div style="padding:14px 16px;display:flex;align-items:center;justify-content:center;gap:8px;">
+              <button onclick="location.href='apply.html'" style="height:34px;padding:0 18px;background:#fff;color:#0067c2;border:1px dashed #0067c2;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">+ 새 서류 작성하기</button>
+            </div>`}
+        </div>
+
+        <!-- 납부 현황 -->
+        <div style="background:#f8f9fc;border:1px solid #e0e3ea;border-radius:6px;overflow:hidden;">
+          <div style="background:#fff;padding:12px 16px;border-bottom:1px solid #e0e3ea;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;font-weight:700;color:#003366;">💳 납부현황</span>
+            <span style="font-size:11px;color:#0067c2;cursor:pointer;" onclick="loadPage('pay-lawsuit')">납부하기 ›</span>
+          </div>
+          <div style="padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="text-align:center;background:#fff;border:1px solid #e0e3ea;border-radius:4px;padding:10px;">
+              <div style="font-size:11px;color:#888;margin-bottom:4px;">납부예정</div>
+              <div style="font-size:18px;font-weight:700;color:#c0392b;">0<span style="font-size:11px;">원</span></div>
+            </div>
+            <div style="text-align:center;background:#fff;border:1px solid #e0e3ea;border-radius:4px;padding:10px;">
+              <div style="font-size:11px;color:#888;margin-bottom:4px;">환급예정</div>
+              <div style="font-size:18px;font-weight:700;color:#16a34a;">0<span style="font-size:11px;">원</span></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -767,7 +846,7 @@ function renderCaseList(el,type){
       <span style="font-size:12px;color:#555;margin-left:6px;">당사자명</span>
       <input type="text" class="sinp" style="width:140px;" placeholder="당사자명 입력">
     </div>
-    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 조 회</button></div>
+    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 회</button></div>
   </div>
   <div class="table-area">
     <div class="table-toolbar">
@@ -1119,6 +1198,90 @@ function showSubmittedDetail(idx){
   document.body.appendChild(pop);
 }
 
+// ══════ 작성중서류 ══════
+function renderDrafts(el){
+  // localStorage에 저장된 draft 데이터 확인
+  const draftKey='ec_draft_'+((curUser&&curUser.id)||'');
+  let drafts=[];
+  try{
+    const raw=localStorage.getItem(draftKey);
+    if(raw)drafts=JSON.parse(raw);
+    // apply.html에서 저장한 임시저장 데이터
+    const applyDraft=localStorage.getItem('ec_apply_draft');
+    if(applyDraft){
+      const d=JSON.parse(applyDraft);
+      if(d&&d.savedAt){
+        drafts=[{
+          id:'apply-draft',
+          type:d.caseType||'민사 소장',
+          court:d.court||'수원지법',
+          plaintiff:d.plaintiff||'–',
+          defendant:d.defendant||'–',
+          savedAt:d.savedAt,
+          page:d.page||1
+        },...drafts.filter(x=>x.id!=='apply-draft')];
+      }
+    }
+  }catch{}
+
+  el.innerHTML=`
+  <div class="page-header">
+    <div class="page-title"><div class="dot"></div>작성중서류</div>
+    <div class="page-actions">
+      <button class="page-act-btn" onclick="window.print()">🖨 출력</button>
+      <button class="page-act-btn" style="background:#0067c2;color:#fff;border:none;" onclick="location.href='apply.html'">+ 새 서류 작성</button>
+    </div>
+  </div>
+  <div class="search-area">
+    <div class="srow">
+      <span class="slbl">법원</span>
+      <select class="sselect"><option>전체</option><option>수원지법</option><option>서울중앙지법</option></select>
+      <select class="sselect" style="margin-left:6px;"><option>전체</option><option>민사</option><option>형사</option><option>행정</option></select>
+      <span class="slbl" style="margin-left:10px;">기간</span>
+      <input type="date" class="sdate-inp" value="${new Date().toISOString().split('T')[0].slice(0,7)+'-01'}">
+      <span style="font-size:12px;margin:0 4px;">~</span>
+      <input type="date" class="sdate-inp" value="${new Date().toISOString().split('T')[0]}">
+    </div>
+    <div style="text-align:center;margin-top:8px;"><button class="search-btn" onclick="showToast('조회되었습니다.')">조 회</button></div>
+  </div>
+  <div class="table-area">
+    <div class="table-toolbar">
+      <span class="total-count">총 <strong>${drafts.length}</strong>건</span>
+      <div class="table-tools"><button class="tbl-btn" onclick="if(confirm('선택한 서류를 삭제하시겠습니까?'))showToast('삭제되었습니다.')">삭제</button></div>
+    </div>
+    ${drafts.length===0?`
+    <div style="text-align:center;padding:56px;color:#aaa;">
+      <div style="font-size:48px;margin-bottom:16px;">📝</div>
+      <div style="font-size:14px;font-weight:600;color:#888;margin-bottom:8px;">작성중인 서류가 없습니다</div>
+      <div style="font-size:12px;color:#aaa;margin-bottom:20px;">소장 등 서류를 작성하면 이곳에서 이어서 작성할 수 있습니다.</div>
+      <button onclick="location.href='apply.html'" style="height:38px;padding:0 22px;background:#0067c2;color:#fff;border:none;border-radius:4px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">+ 서류 작성하기</button>
+    </div>`:
+    `<table class="data-tbl">
+      <thead><tr><th><input type="checkbox"></th><th>서류종류</th><th>법원</th><th>원고(신청인)</th><th>피고(피신청인)</th><th>임시저장일시</th><th>관리</th></tr></thead>
+      <tbody>
+      ${drafts.map(d=>`<tr>
+        <td><input type="checkbox"></td>
+        <td><strong>${d.type}</strong></td>
+        <td>${d.court}</td>
+        <td>${d.plaintiff}</td>
+        <td>${d.defendant}</td>
+        <td style="font-size:11px;color:#888;">${d.savedAt||'–'}</td>
+        <td><button class="tbl-btn" style="background:#0067c2;color:#fff;border-color:#0067c2;" onclick="location.href='apply.html'">이어서 작성</button></td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="paging">
+      <div></div>
+      <div class="paging-btns"><button class="pg-btn">«</button><button class="pg-btn">‹</button><button class="pg-num on">1</button><button class="pg-btn">›</button><button class="pg-btn">»</button></div>
+      <div class="pg-size">보기: <select><option>10개씩</option><option>20개씩</option></select></div>
+    </div>`}
+  </div>
+  ${noteBox([
+    {title:'임시저장 안내',body:'작성 중 임시저장된 서류는 30일 후 자동 삭제됩니다. 작성 완료 후 반드시 최종 제출하시기 바랍니다.'},
+    {title:'서류 제출기한',body:'각 서류의 제출기한을 확인하고 기한 내에 제출하시기 바랍니다. 기한이 도과된 경우 불이익이 발생할 수 있습니다.'}
+  ])}`;
+}
+
 // ══════ 실습기록 ══════
 function renderPracticeRecords(el){
   const gradeFn=s=>s>=90?'🏆 우수':s>=70?'✅ 양호':s>=50?'📝 보통':'⚠️ 미흡';
@@ -1268,8 +1431,41 @@ function noteBox(items){
 // ══════ 사건 상세 팝업 ══════
 function showCaseDetail(caseNo){
   const c=SAMPLE_CASES.find(x=>x.caseNo===caseNo);
-  if(!c){showToast('사건 정보를 찾을 수 없습니다.','err');return;}
-  alert(`[사건 상세]\n\n법원: ${c.court}\n재판부: ${c.dept}\n사건번호: ${c.caseNo}\n사건유형: ${c.type}\n원고: ${c.plaintiff}\n피고: ${c.defendant}\n접수일: ${c.filed}\n다음기일: ${c.next}\n담당판사: ${c.judge}`);
+  if(!c){showToast('사건 정보를 찾을 수 없습니다.');return;}
+  const existing=document.getElementById('pop-case-detail');
+  if(existing)existing.remove();
+  const pop=document.createElement('div');
+  pop.id='pop-case-detail';
+  pop.className='pop-overlay show';
+  pop.innerHTML=`
+  <div class="pop-box" style="width:600px;">
+    <div class="pop-hd">사건 상세 정보 <button class="pop-cl" onclick="document.getElementById('pop-case-detail').remove()">✕</button></div>
+    <div class="pop-bd" style="padding:0;">
+      <div style="background:#f5f7fc;border-bottom:1px solid #e0e3ea;padding:14px 20px;display:flex;align-items:center;gap:10px;">
+        <div style="background:#0067c2;color:#fff;border-radius:4px;padding:4px 10px;font-size:12px;font-weight:700;">${c.type}</div>
+        <div style="font-size:15px;font-weight:700;color:#003366;">${c.caseNo}</div>
+        <div style="margin-left:auto;font-size:12px;padding:3px 10px;border-radius:3px;font-weight:700;background:${c.status==='진행중'?'#dbeafe':'#d1fae5'};color:${c.status==='진행중'?'#1e40af':'#065f46'};">${c.status}</div>
+      </div>
+      <div style="padding:20px;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <tr><td style="width:110px;color:#888;padding:8px 0;border-bottom:1px solid #f0f2f7;font-weight:600;">법원</td><td style="padding:8px 0;border-bottom:1px solid #f0f2f7;">${c.court}</td><td style="width:110px;color:#888;padding:8px 0;border-bottom:1px solid #f0f2f7;font-weight:600;">재판부</td><td style="padding:8px 0;border-bottom:1px solid #f0f2f7;">${c.dept}</td></tr>
+          <tr><td style="color:#888;padding:8px 0;border-bottom:1px solid #f0f2f7;font-weight:600;">원고(신청인)</td><td style="padding:8px 0;border-bottom:1px solid #f0f2f7;">${c.plaintiff}</td><td style="color:#888;padding:8px 0;border-bottom:1px solid #f0f2f7;font-weight:600;">피고(피신청인)</td><td style="padding:8px 0;border-bottom:1px solid #f0f2f7;">${c.defendant}</td></tr>
+          <tr><td style="color:#888;padding:8px 0;border-bottom:1px solid #f0f2f7;font-weight:600;">접수일</td><td style="padding:8px 0;border-bottom:1px solid #f0f2f7;">${c.filed}</td><td style="color:#888;padding:8px 0;border-bottom:1px solid #f0f2f7;font-weight:600;">담당판사</td><td style="padding:8px 0;border-bottom:1px solid #f0f2f7;">${c.judge}</td></tr>
+          <tr><td style="color:#888;padding:8px 0;font-weight:600;">다음기일</td><td colspan="3" style="padding:8px 0;color:${c.next!=='-'?'#c0392b':'#aaa'};font-weight:${c.next!=='-'?'700':'400'};">${c.next}</td></tr>
+        </table>
+        <div style="margin-top:16px;background:#eef4fc;border:1px solid #c8ddf5;border-radius:4px;padding:12px 14px;font-size:12px;color:#1a4a6b;line-height:1.8;">
+          📌 다음기일에 관련 서류를 기한 내에 제출하시기 바랍니다.<br>
+          전자소송 서류 제출은 아래 <strong>서류제출</strong> 버튼을 이용하세요.
+        </div>
+      </div>
+    </div>
+    <div class="pop-ft">
+      <button class="btn btn-gray" onclick="document.getElementById('pop-case-detail').remove()">닫기</button>
+      <button class="btn btn-navy" onclick="location.href='apply.html'">서류제출</button>
+    </div>
+  </div>`;
+  pop.addEventListener('click',e=>{if(e.target===pop)pop.remove();});
+  document.body.appendChild(pop);
 }
 
 // ══════ 비밀번호 변경 ══════
