@@ -285,6 +285,32 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
 /* ── 연락처 행 ── */
 .crow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
 .crow:last-child{margin-bottom:0;}
+
+/* ── 전자소송 동의 화면 ── */
+#consent-area{display:none;max-width:980px;margin:0 auto;padding:24px 12px 80px;}
+.consent-box{background:#fff;border:1px solid #d0d8e4;border-radius:3px;overflow:hidden;}
+.consent-hd{background:#e8edf5;border-bottom:2px solid #006699;padding:13px 20px;display:flex;align-items:center;gap:8px;}
+.consent-hd-dot{width:10px;height:10px;border-radius:50%;background:#006699;}
+.consent-hd-txt{font-size:15px;font-weight:700;color:#003366;}
+.consent-body{padding:28px 32px;}
+.consent-info{background:#f0f7ff;border:1px solid #b3d9f0;border-left:4px solid #006699;border-radius:3px;padding:18px 20px;margin-bottom:24px;}
+.consent-info p{font-size:13px;color:#1a4a6b;line-height:2;margin-bottom:8px;}
+.consent-info p:last-child{margin-bottom:0;}
+.consent-check-row{border:1px solid #d0d8e4;border-radius:3px;padding:14px 18px;background:#fafbfc;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.consent-check-row:hover{background:#f0f7ff;border-color:#006699;}
+.consent-check-row input[type=checkbox]{width:16px;height:16px;accent-color:#006699;cursor:pointer;flex-shrink:0;}
+.consent-check-label{font-size:13px;color:#222;font-weight:600;cursor:pointer;line-height:1.6;}
+.consent-ft{padding:0 32px 24px;display:flex;justify-content:center;gap:8px;}
+.consent-btn{height:38px;padding:0 22px;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;border:none;}
+.consent-btn-cancel{background:#fff;color:#444;border:1px solid #c8cdd6;}
+.consent-btn-cancel:hover{background:#f5f6f8;}
+.consent-btn-upload{background:#fff;color:#006699;border:1px solid #006699;}
+.consent-btn-upload:hover{background:#f0f7ff;}
+.consent-btn-agent{background:#fff;color:#003366;border:1px solid #003366;}
+.consent-btn-agent:hover{background:#eef2f8;}
+.consent-btn-ok{background:#003366;color:#fff;}
+.consent-btn-ok:hover{background:#002244;}
+.consent-btn-ok:disabled{background:#aab8c8;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -414,8 +440,32 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
   </div>
 </div>
 
+<!-- ══ 전자소송 동의 ══ -->
+<div id="consent-area">
+  <div class="consent-box">
+    <div class="consent-hd"><div class="consent-hd-dot"></div><span class="consent-hd-txt">전자소송 동의</span></div>
+    <div class="consent-body">
+      <div class="consent-info">
+        <p>전자소송을 이용하시면 앞으로 이 사건에 관한 모든 소송서류를 전자적인 방법으로 제출하시거나 송달받게 됩니다.</p>
+        <p>전자소송에 동의하신 경우에는 소송서류가 전자적인 방법으로만 제출·송달되므로, 서면에 의한 제출·송달은 이루어지지 않습니다.</p>
+        <p>동의하신 후에는 법원에 그 취소를 신청하실 수 있으나, 진행 중인 사건에는 이미 전자적으로 진행된 절차에 대하여는 소급하여 취소할 수 없습니다.</p>
+      </div>
+      <label class="consent-check-row" for="consent-chk">
+        <input type="checkbox" id="consent-chk" onchange="onConsentChange()">
+        <span class="consent-check-label">이 사건에 관하여 전자소송시스템을 이용한 진행에 동의합니다.</span>
+      </label>
+    </div>
+    <div class="consent-ft">
+      <button class="consent-btn consent-btn-cancel" onclick="location.href='index.html'">취소</button>
+      <button class="consent-btn consent-btn-upload" onclick="showToast('서식파일 업로드는 실습 모드에서 지원되지 않습니다.')">서식파일 업로드</button>
+      <button class="consent-btn consent-btn-agent" onclick="showToast('대리인 작성은 실습 모드에서 지원되지 않습니다.')">대리인작성</button>
+      <button class="consent-btn consent-btn-ok" id="consent-ok-btn" disabled onclick="agreeConsent()">확인</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ 메인 폼 ══ -->
-<div id="main-area">
+<div id="main-area" style="display:none;">
 <div class="pw">
   <div class="pg-ttl-row">
     <div class="pg-ttl"><div class="pg-dot"></div><span class="pg-ttl-txt">민사서류 - 소장</span></div>
@@ -1442,6 +1492,34 @@ function onLoginOk(user,anim){
   const footer=document.getElementById('site-footer');
   if(footer)footer.style.display='block';
   if(anim)showToast('✅ '+user.name+'님, 환영합니다!');
+  // 동의 화면 표시 (main-area는 동의 후 표시)
+  document.getElementById('consent-area').style.display='block';
+  document.getElementById('main-area').style.display='none';
+  document.getElementById('consent-chk').checked=false;
+  document.getElementById('consent-ok-btn').disabled=true;
+}
+function onConsentChange(){
+  document.getElementById('consent-ok-btn').disabled=!document.getElementById('consent-chk').checked;
+}
+function agreeConsent(){
+  document.getElementById('consent-area').style.display='none';
+  document.getElementById('main-area').style.display='block';
+  window.scrollTo(0,0);
+  // 배정된 사건이 있으면 폼에 자동 채우기
+  try{
+    const ac=sessionStorage.getItem('assigned_case');
+    if(ac){
+      const c=JSON.parse(ac);
+      const courtEl=document.getElementById('court');
+      if(courtEl&&c.court){
+        const opt=[...courtEl.options].find(o=>o.text.startsWith(c.court.replace('지법','지방법원').replace('서울고법','서울고등법원')));
+        if(opt)courtEl.value=opt.value;
+      }
+      const catEl=document.getElementById('case-cat');
+      if(catEl&&c.case_type){[...catEl.options].forEach(o=>{if(o.text===c.case_type)catEl.value=o.value;});}
+      sessionStorage.removeItem('assigned_case');
+    }
+  }catch{}
 }
 function doLogout(){
   if(!confirm(curUser.name+'님, 로그아웃 하시겠습니까?'))return;
