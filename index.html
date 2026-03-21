@@ -133,6 +133,12 @@ ul{list-style:none;}
 }
 .mega-col ul li a::before{content:'·';color:var(--blue);font-weight:700;}
 .mega-col ul li a:hover{color:var(--blue);text-decoration:underline;}
+/* 나의전자소송 메가드롭 일러스트 */
+.mega-illust{
+  width:180px;min-width:180px;display:flex;align-items:center;justify-content:center;
+  border-right:1px solid #eee;padding:10px 14px;
+}
+.mega-col-group{margin-top:12px;}
 /* GNB 우측 */
 .gnb-right{display:flex;align-items:center;gap:2px;margin-left:auto;}
 .gnb-btn{
@@ -839,29 +845,117 @@ ul{list-style:none;}
     <nav class="gnb-nav" id="gnb-nav">
       <!-- 나의전자소송 -->
       <div class="gnb-item" onclick="checkLogin(event,'mypage.html')">나의전자소송
-        <div class="mega-drop"><div class="mega-inner">
-          <div class="mega-col"><div class="mega-col-title">나의 사건 현황</div><ul>
-            <li><a onclick="location.href='mypage.html'">나의사건현황</a></li>
-            <li><a onclick="location.href='mypage.html'">진행중사건</a></li>
-            <li><a onclick="location.href='mypage.html'">관심사건</a></li>
-            <li><a onclick="location.href='mypage.html'">완료된사건</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">나의 문서함</div><ul>
-            <li><a onclick="location.href='mypage.html'">작성중서류</a></li>
-            <li><a onclick="location.href='mypage.html'">제출서류</a></li>
-            <li><a onclick="location.href='mypage.html'">미확인송달문서</a></li>
-            <li><a onclick="location.href='mypage.html'">전체송달문서</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">납부/환급 관리</div><ul>
-            <li><a>소송비용납부</a></li>
-            <li><a>전자납부내역</a></li>
-            <li><a>송달료 자동납부</a></li>
-          </ul></div>
-          <div class="mega-col"><div class="mega-col-title">나의 정보 관리</div><ul>
-            <li><a onclick="location.href='mypage.html'">사용자정보변경</a></li>
-            <li><a onclick="location.href='mypage.html'">비밀번호변경</a></li>
-            <li><a onclick="location.href='mypage.html'">나의법원설정</a></li>
-          </ul></div>
+        <div class="mega-drop"><div class="mega-inner" style="align-items:stretch;padding:0;">
+          <!-- 일러스트 -->
+          <div class="mega-illust">
+            <svg viewBox="0 0 160 170" width="148" height="148" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="80" cy="92" r="72" fill="#eef6ee"/>
+              <ellipse cx="24" cy="72" rx="20" ry="9" fill="#81c784" transform="rotate(-40 24 72)"/>
+              <ellipse cx="32" cy="50" rx="18" ry="8" fill="#66bb6a" transform="rotate(-55 32 50)"/>
+              <ellipse cx="136" cy="68" rx="20" ry="9" fill="#81c784" transform="rotate(40 136 68)"/>
+              <ellipse cx="128" cy="46" rx="18" ry="8" fill="#66bb6a" transform="rotate(55 128 46)"/>
+              <rect x="28" y="130" width="104" height="6" rx="3" fill="#b0bec5"/>
+              <rect x="36" y="120" width="88" height="12" rx="3" fill="#90a4ae"/>
+              <rect x="42" y="84" width="76" height="40" rx="4" fill="#78909c"/>
+              <rect x="46" y="87" width="68" height="33" rx="2" fill="#bbdefb"/>
+              <rect x="50" y="91" width="38" height="3" rx="1" fill="#90caf9"/>
+              <rect x="50" y="97" width="56" height="2" rx="1" fill="#90caf9"/>
+              <rect x="50" y="102" width="48" height="2" rx="1" fill="#90caf9"/>
+              <rect x="50" y="107" width="52" height="2" rx="1" fill="#90caf9"/>
+              <rect x="58" y="57" width="44" height="30" rx="8" fill="#5c6bc0"/>
+              <circle cx="80" cy="46" r="15" fill="#ffcc80"/>
+              <ellipse cx="80" cy="33" rx="15" ry="7" fill="#5d4037"/>
+              <rect x="65" y="33" width="30" height="7" fill="#5d4037" rx="2"/>
+              <rect x="34" y="66" width="22" height="9" rx="5" fill="#5c6bc0" transform="rotate(-20 34 66)"/>
+              <rect x="104" y="66" width="22" height="9" rx="5" fill="#5c6bc0" transform="rotate(20 104 66)"/>
+            </svg>
+          </div>
+          <!-- 컬럼 래퍼 -->
+          <div style="display:flex;flex:1;padding:20px 4px;">
+            <!-- Col1: 나의사건현황/관리/사건진행 -->
+            <div class="mega-col">
+              <div class="mega-col-title" style="cursor:pointer;" onclick="checkLogin(event,'mypage.html')">나의사건현황</div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">나의사건관리</div>
+                <ul>
+                  <li><a onclick="checkLogin(event,'apply.html')">진행중사건</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">관심사건</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">확정된사건</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">완료된사건</a></li>
+                </ul>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title">사건진행</div>
+                <ul>
+                  <li><a onclick="checkLogin(event,'mypage.html')">재판일정</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">대조형 쟁점요약</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">사건별게시판</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">문서송부확인</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">서증인부(문서송부)</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">보정/미보정내역(독촉)</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">증거의견입력</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col2: 국선전담사건 + 나의문서함 -->
+            <div class="mega-col">
+              <div class="mega-col-title">국선전담사건</div>
+              <ul>
+                <li><a onclick="checkLogin(event,'mypage.html')">처리내역관리</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">보고된사건조회</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">나의문서함</div>
+                <ul>
+                  <li><a onclick="checkLogin(event,'mypage.html')">작성중서류</a></li>
+                  <li><a onclick="checkLogin(event,'apply.html')">제출서류</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">미확인송달문서</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">전체송달문서</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">송달문서 정(등)본발급</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col3: 납부/환급관리 + 기록열람 -->
+            <div class="mega-col">
+              <div class="mega-col-title">납부/환급관리</div>
+              <ul>
+                <li><a onclick="checkLogin(event,'mypage.html')">소송비용납부</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">상소비용에납</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">전자납부내역</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">가상계좌내역</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">송달료 자동납부내역</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">대표청구인 신고</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">인지액환급청구</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">과오납금반환청구</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">기록 열람</div>
+                <ul>
+                  <li><a onclick="checkLogin(event,'mypage.html')">나의사건열람</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">형사전자사본화사건열람</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Col4: 전자소송사건등록 + 맞춤형문서함 + 나의정보관리 -->
+            <div class="mega-col">
+              <div class="mega-col-title">전자소송사건등록</div>
+              <ul>
+                <li><a onclick="checkLogin(event,'mypage.html')">전자소송사건등록</a></li>
+                <li><a onclick="checkLogin(event,'mypage.html')">형사전자사본화사건등록</a></li>
+              </ul>
+              <div class="mega-col-group">
+                <div class="mega-col-title">맞춤형문서함</div>
+                <ul>
+                  <li><a onclick="checkLogin(event,'mypage.html')">사실조회기관회신</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">제3채무자</a></li>
+                  <li><a onclick="checkLogin(event,'mypage.html')">오픈API 제출내역</a></li>
+                </ul>
+              </div>
+              <div class="mega-col-group">
+                <div class="mega-col-title" onclick="checkLogin(event,'mypage.html')" style="cursor:pointer;">나의정보관리</div>
+              </div>
+            </div>
+          </div>
         </div></div>
       </div>
       <!-- 서류제출 -->
