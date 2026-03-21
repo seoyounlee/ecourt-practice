@@ -525,21 +525,23 @@ function initAuth(){
     document.getElementById('deny-area').style.display='block';
     return;
   }
-  document.getElementById('main-layout').style.display='block';
-  document.getElementById('util-org-badge').textContent=curUser.name+' 님';
+  document.getElementById('main-layout').style.display='flex';
+  const unameBadge=document.getElementById('util-uname')||document.getElementById('util-org-badge');
+  if(unameBadge)unameBadge.textContent=curUser.name+' 님';
   if(curUser.role==='admin'){
-    document.getElementById('util-role').textContent='관리자';
-    // GNB에 관리자 메뉴 추가
+    const roleBadge=document.getElementById('util-role');
+    if(roleBadge)roleBadge.textContent='관리자';
     const nav=document.querySelector('.gnb-nav');
     if(nav&&!document.getElementById('gnav-admin')){
       const el=document.createElement('div');
-      el.id='gnav-admin';el.className='gnav-item';
+      el.id='gnav-admin';el.className='gnb-menu';
       el.style.color='#c0392b';el.textContent='관리자';
       el.onclick=()=>location.href='admin.html';
       nav.appendChild(el);
     }
   } else {
-    document.getElementById('util-role').textContent='일반사용자';
+    const roleBadge=document.getElementById('util-role');
+    if(roleBadge)roleBadge.textContent='일반사용자';
   }
   loadPage('status');
   startTimer();
