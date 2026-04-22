@@ -81,28 +81,34 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
 .tag-def{background:#fce7f3;color:#9d174d;}
 .hi{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#888;color:#fff;font-size:10px;font-weight:700;cursor:pointer;margin-left:3px;vertical-align:middle;}
 
+/* ── 유틸 바 ── */
+.util-bar{background:#1a3a6b;height:34px;display:flex;align-items:center;padding:0 20px;}
+.util-bar a{font-size:11px;color:rgba(255,255,255,.75);padding:0 10px;border-right:1px solid rgba(255,255,255,.2);cursor:pointer;text-decoration:none;}
+.util-bar a:last-child{border-right:none;}
+.util-bar a:hover{color:#fff;}
+.util-bar-left{display:flex;align-items:center;gap:8px;margin-right:auto;}
+.util-bar-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:2px 10px;font-size:11px;color:#fff;}
+.gnb-uname{font-size:11px;color:#fff;font-weight:600;}
+.gnb-logout-btn{font-size:11px;color:rgba(255,255,255,.8);cursor:pointer;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);border-radius:3px;padding:2px 8px;font-family:inherit;}
+.gnb-logout-btn:hover{background:rgba(255,255,255,.2);color:#fff;}
+
 /* ── GNB ── */
-.gnb-top{background:#1a3a6b;height:34px;display:flex;align-items:center;justify-content:flex-end;padding:0 20px;gap:0;}
-.gnb-top a{color:rgba(255,255,255,.75);font-size:11px;cursor:pointer;text-decoration:none;padding:0 10px;border-right:1px solid rgba(255,255,255,.2);}
-.gnb-top a:last-child{border-right:none;}
-.gnb-top a:hover{color:#fff;}
-.gnb-top-left{display:flex;align-items:center;gap:0;margin-right:auto;}
-.gnb-sep{color:rgba(255,255,255,.3);margin:0 2px;}
-.gnb-main{background:#fff;border-bottom:1px solid #dde0e8;display:flex;align-items:center;padding:0 20px;height:60px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
-.gnb-logo{display:flex;align-items:center;gap:10px;margin-right:32px;cursor:pointer;text-decoration:none;}
-.gnb-logo:hover .gnb-txt{color:#006699;}
-.gnb-ico{width:38px;height:38px;background:#e8f0f8;border:1px solid #006699;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;}
-.gnb-txt{font-size:16px;font-weight:700;color:#003366;transition:color .15s;}
-.gnb-txt span{font-size:10px;display:block;font-weight:400;color:#666;}
-.gnb-nav{display:flex;height:60px;}
-.gnb-ni{display:flex;align-items:center;padding:0 18px;font-size:13px;font-weight:500;color:#333;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap;}
-.gnb-ni:hover{color:#006699;}
-.gnb-ni.on{color:#006699;border-bottom-color:#006699;font-weight:700;}
-.gnb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
-.gnb-user{display:inline-flex;align-items:center;gap:8px;background:#f0f4f8;border:1px solid #c8d8e8;border-radius:20px;padding:4px 14px;}
-.gnb-uname{font-size:12px;color:#003366;font-weight:700;}
-.gnb-logout{font-size:11px;color:#555;cursor:pointer;background:#fff;border:1px solid #c8cdd6;border-radius:3px;padding:3px 10px;transition:all .15s;}
-.gnb-logout:hover{background:#f0f4f8;color:#c0392b;border-color:#c0392b;}
+.gnb{background:#fff;border-bottom:1px solid #dde0e8;position:sticky;top:0;z-index:500;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.gnb-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;height:60px;padding:0 20px;}
+.gnb-logo{display:flex;align-items:center;gap:8px;margin-right:32px;cursor:pointer;text-decoration:none;flex-shrink:0;}
+.gnb-emblem{width:40px;height:40px;background:#e8f0f8;border:1px solid #006699;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.gnb-logo-txt{display:flex;flex-direction:column;}
+.gnb-logo-txt .court{font-size:10px;color:#006699;font-weight:600;}
+.gnb-logo-txt .portal{font-size:16px;font-weight:700;color:#003366;transition:color .15s;}
+.gnb-logo:hover .portal{color:#006699;}
+.gnb-nav{display:flex;height:60px;flex:1;}
+.gnb-item{display:flex;align-items:center;padding:0 18px;font-size:14px;font-weight:600;color:#222;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s;white-space:nowrap;}
+.gnb-item:hover,.gnb-item.on{color:#006699;border-bottom-color:#006699;}
+.gnb-right{margin-left:auto;display:flex;align-items:center;gap:2px;}
+.gnb-icon-btn{background:none;border:none;cursor:pointer;padding:6px 8px;color:#555;font-size:18px;border-radius:3px;display:flex;align-items:center;}
+.gnb-icon-btn:hover{color:#006699;background:#f0f4f8;}
+.gnb-home-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 10px;font-size:10px;color:#555;border-left:1px solid #eee;cursor:pointer;text-decoration:none;height:60px;gap:2px;}
+.gnb-home-btn:hover{color:#006699;}
 
 /* ── 서브탭 ── */
 .subtab-bar{background:#fff;border-bottom:1px solid #dde0e8;display:flex;align-items:center;padding:0 20px;height:38px;overflow-x:auto;}
@@ -279,6 +285,32 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
 /* ── 연락처 행 ── */
 .crow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
 .crow:last-child{margin-bottom:0;}
+
+/* ── 전자소송 동의 화면 ── */
+#consent-area{display:none;max-width:980px;margin:0 auto;padding:24px 12px 80px;}
+.consent-box{background:#fff;border:1px solid #d0d8e4;border-radius:3px;overflow:hidden;}
+.consent-hd{background:#e8edf5;border-bottom:2px solid #006699;padding:13px 20px;display:flex;align-items:center;gap:8px;}
+.consent-hd-dot{width:10px;height:10px;border-radius:50%;background:#006699;}
+.consent-hd-txt{font-size:15px;font-weight:700;color:#003366;}
+.consent-body{padding:28px 32px;}
+.consent-info{background:#f0f7ff;border:1px solid #b3d9f0;border-left:4px solid #006699;border-radius:3px;padding:18px 20px;margin-bottom:24px;}
+.consent-info p{font-size:13px;color:#1a4a6b;line-height:2;margin-bottom:8px;}
+.consent-info p:last-child{margin-bottom:0;}
+.consent-check-row{border:1px solid #d0d8e4;border-radius:3px;padding:14px 18px;background:#fafbfc;display:flex;align-items:center;gap:10px;cursor:pointer;}
+.consent-check-row:hover{background:#f0f7ff;border-color:#006699;}
+.consent-check-row input[type=checkbox]{width:16px;height:16px;accent-color:#006699;cursor:pointer;flex-shrink:0;}
+.consent-check-label{font-size:13px;color:#222;font-weight:600;cursor:pointer;line-height:1.6;}
+.consent-ft{padding:0 32px 24px;display:flex;justify-content:center;gap:8px;}
+.consent-btn{height:38px;padding:0 22px;border-radius:3px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;border:none;}
+.consent-btn-cancel{background:#fff;color:#444;border:1px solid #c8cdd6;}
+.consent-btn-cancel:hover{background:#f5f6f8;}
+.consent-btn-upload{background:#fff;color:#006699;border:1px solid #006699;}
+.consent-btn-upload:hover{background:#f0f7ff;}
+.consent-btn-agent{background:#fff;color:#003366;border:1px solid #003366;}
+.consent-btn-agent:hover{background:#eef2f8;}
+.consent-btn-ok{background:#003366;color:#fff;}
+.consent-btn-ok:hover{background:#002244;}
+.consent-btn-ok:disabled{background:#aab8c8;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -344,36 +376,38 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
   </div>
 </div>
 
-<!-- ══ GNB ══ -->
-<div class="gnb-top" id="gnb-top">
-  <span id="gnb-guest" style="display:flex;align-items:center;gap:0;">
-    <a onclick="showLogin()">로그인</a>
-  </span>
-  <span id="gnb-user" style="display:none;" class="gnb-user">
-    <span style="font-size:12px;">👤</span>
+<!-- ══ 유틸 바 ══ -->
+<div class="util-bar">
+  <div class="util-bar-left" id="gnb-user" style="display:none;">
+    <span class="util-bar-badge">👤</span>
     <span class="gnb-uname" id="gnb-uname"></span>
-    <span style="font-size:11px;color:rgba(255,255,255,.6);">님</span>
-    <button class="gnb-logout" onclick="doLogout()">로그아웃</button>
-  </span>
+    <button class="gnb-logout-btn" onclick="doLogout()">로그아웃</button>
+  </div>
+  <div class="util-bar-left" id="gnb-guest">
+    <a onclick="showLogin()">로그인</a>
+  </div>
   <a>사이트맵</a>
   <a>이용안내</a>
 </div>
-<div class="gnb-main">
-  <a class="gnb-logo" href="index.html">
-    <div class="gnb-ico">⚖</div>
-    <div class="gnb-txt">전자소송포털<span>대한민국 법원 ELECTRONIC LITIGATION</span></div>
-  </a>
-  <nav class="gnb-nav">
-    <div class="gnb-ni" onclick="location.href='mypage.html'">나의전자소송</div>
-    <div class="gnb-ni on">서류제출</div>
-    <div class="gnb-ni" onclick="alert('준비 중입니다.')">각종신청</div>
-    <div class="gnb-ni" onclick="alert('준비 중입니다.')">사건유형별 절차안내</div>
-    <div class="gnb-ni" onclick="alert('준비 중입니다.')">고객센터</div>
-  </nav>
-  <div class="gnb-right">
-    <span style="font-size:18px;color:#555;cursor:pointer;">🔍</span>
-    <span style="font-size:18px;color:#555;cursor:pointer;margin-left:8px;">☰</span>
-    <a href="index.html" style="font-size:12px;color:#555;margin-left:12px;border-left:1px solid #eee;padding-left:12px;display:flex;align-items:center;gap:4px;text-decoration:none;">🏠 HOME</a>
+<!-- ══ GNB ══ -->
+<div class="gnb">
+  <div class="gnb-inner">
+    <a class="gnb-logo" href="index.html">
+      <div class="gnb-emblem">⚖</div>
+      <div class="gnb-logo-txt"><span class="court">대한민국 법원</span><span class="portal">전자소송포털</span></div>
+    </a>
+    <nav class="gnb-nav">
+      <div class="gnb-item" onclick="location.href='mypage.html'">나의전자소송</div>
+      <div class="gnb-item on">서류제출</div>
+      <div class="gnb-item" onclick="alert('준비 중입니다.')">각종신청</div>
+      <div class="gnb-item" onclick="alert('준비 중입니다.')">사건유형별 절차안내</div>
+      <div class="gnb-item" onclick="alert('준비 중입니다.')">고객센터</div>
+    </nav>
+    <div class="gnb-right">
+      <button class="gnb-icon-btn">🔍</button>
+      <button class="gnb-icon-btn">☰</button>
+      <a class="gnb-home-btn" href="index.html"><span style="font-size:18px;">🏠</span><span>HOME</span></a>
+    </div>
   </div>
 </div>
 <div class="subtab-bar">
@@ -406,8 +440,32 @@ textarea.inp{height:auto;padding:7px 8px;resize:vertical;line-height:1.7;}
   </div>
 </div>
 
+<!-- ══ 전자소송 동의 ══ -->
+<div id="consent-area">
+  <div class="consent-box">
+    <div class="consent-hd"><div class="consent-hd-dot"></div><span class="consent-hd-txt">전자소송 동의</span></div>
+    <div class="consent-body">
+      <div class="consent-info">
+        <p>전자소송을 이용하시면 앞으로 이 사건에 관한 모든 소송서류를 전자적인 방법으로 제출하시거나 송달받게 됩니다.</p>
+        <p>전자소송에 동의하신 경우에는 소송서류가 전자적인 방법으로만 제출·송달되므로, 서면에 의한 제출·송달은 이루어지지 않습니다.</p>
+        <p>동의하신 후에는 법원에 그 취소를 신청하실 수 있으나, 진행 중인 사건에는 이미 전자적으로 진행된 절차에 대하여는 소급하여 취소할 수 없습니다.</p>
+      </div>
+      <label class="consent-check-row" for="consent-chk">
+        <input type="checkbox" id="consent-chk" onchange="onConsentChange()">
+        <span class="consent-check-label">이 사건에 관하여 전자소송시스템을 이용한 진행에 동의합니다.</span>
+      </label>
+    </div>
+    <div class="consent-ft">
+      <button class="consent-btn consent-btn-cancel" onclick="location.href='index.html'">취소</button>
+      <button class="consent-btn consent-btn-upload" onclick="showToast('서식파일 업로드는 실습 모드에서 지원되지 않습니다.')">서식파일 업로드</button>
+      <button class="consent-btn consent-btn-agent" onclick="showToast('대리인 작성은 실습 모드에서 지원되지 않습니다.')">대리인작성</button>
+      <button class="consent-btn consent-btn-ok" id="consent-ok-btn" disabled onclick="agreeConsent()">확인</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ 메인 폼 ══ -->
-<div id="main-area">
+<div id="main-area" style="display:none;">
 <div class="pw">
   <div class="pg-ttl-row">
     <div class="pg-ttl"><div class="pg-dot"></div><span class="pg-ttl-txt">민사서류 - 소장</span></div>
@@ -1434,6 +1492,34 @@ function onLoginOk(user,anim){
   const footer=document.getElementById('site-footer');
   if(footer)footer.style.display='block';
   if(anim)showToast('✅ '+user.name+'님, 환영합니다!');
+  // 동의 화면 표시 (main-area는 동의 후 표시)
+  document.getElementById('consent-area').style.display='block';
+  document.getElementById('main-area').style.display='none';
+  document.getElementById('consent-chk').checked=false;
+  document.getElementById('consent-ok-btn').disabled=true;
+}
+function onConsentChange(){
+  document.getElementById('consent-ok-btn').disabled=!document.getElementById('consent-chk').checked;
+}
+function agreeConsent(){
+  document.getElementById('consent-area').style.display='none';
+  document.getElementById('main-area').style.display='block';
+  window.scrollTo(0,0);
+  // 배정된 사건이 있으면 폼에 자동 채우기
+  try{
+    const ac=sessionStorage.getItem('assigned_case');
+    if(ac){
+      const c=JSON.parse(ac);
+      const courtEl=document.getElementById('court');
+      if(courtEl&&c.court){
+        const opt=[...courtEl.options].find(o=>o.text.startsWith(c.court.replace('지법','지방법원').replace('서울고법','서울고등법원')));
+        if(opt)courtEl.value=opt.value;
+      }
+      const catEl=document.getElementById('case-cat');
+      if(catEl&&c.case_type){[...catEl.options].forEach(o=>{if(o.text===c.case_type)catEl.value=o.value;});}
+      sessionStorage.removeItem('assigned_case');
+    }
+  }catch{}
 }
 function doLogout(){
   if(!confirm(curUser.name+'님, 로그아웃 하시겠습니까?'))return;
