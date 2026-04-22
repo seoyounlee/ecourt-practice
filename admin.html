@@ -251,6 +251,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <div class="snav-item on" id="nav-dashboard" onclick="showPanel('dashboard')"><span class="ico">📊</span>대시보드</div>
       <div class="snav-item" id="nav-accounts" onclick="showPanel('accounts')"><span class="ico">👥</span>계정 관리<span class="cnt" id="acc-cnt">0</span></div>
       <div class="snav-item" id="nav-add" onclick="showPanel('add')"><span class="ico">➕</span>계정 추가</div>
+      <div class="snav-item" id="nav-cases" onclick="showPanel('cases')"><span class="ico">🗂</span>사건 관리</div>
       <div class="snav-item" id="nav-practice" onclick="showPanel('practice')" style="border-left:3px solid #006699;"><span class="ico">📋</span>실습 현황<span class="cnt" id="practice-cnt" style="background:#15803d;">0</span></div>
       <div class="snav-item" id="nav-logs" onclick="showPanel('logs')"><span class="ico">📋</span>활동 로그</div>
       <div class="snav-item" id="nav-settings" onclick="showPanel('settings')"><span class="ico">⚙</span>시스템 설정</div>
@@ -401,6 +402,90 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       </div>
     </div>
 
+    <!-- ④ 사건 관리 -->
+    <div id="panel-cases" style="display:none;">
+
+      <!-- 탭 -->
+      <div style="display:flex;gap:0;margin-bottom:16px;border-bottom:2px solid var(--border);">
+        <button id="ctab-list" onclick="switchCaseTab('list')"
+          style="padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:none;color:var(--navy2);border-bottom:3px solid var(--navy2);margin-bottom:-2px;font-family:inherit;">
+          🗂 전체 사건 목록
+        </button>
+        <button id="ctab-assign" onclick="switchCaseTab('assign')"
+          style="padding:10px 22px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;">
+          👤 학습자별 배정
+        </button>
+      </div>
+
+      <!-- 전체 사건 목록 탭 -->
+      <div id="cview-list">
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-hd-title">🗂 전체 사건 목록 <span style="font-size:11px;color:#888;font-weight:400;">(총 ${CASE_DB.length}건 · 인증번호는 관리자만 확인 가능)</span></div>
+            <div class="panel-hd-actions">
+              <input type="text" class="search-inp" style="width:180px;" id="case-search" placeholder="사건번호 / 유형 / 법원" oninput="renderCaseTable()">
+              <select class="filter-sel" id="case-type-filter" onchange="renderCaseTable()">
+                <option value="">전체 유형</option>
+                <option value="민사">민사</option>
+                <option value="가사">가사</option>
+                <option value="행정">행정</option>
+                <option value="민사집행">민사집행</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="tbl" id="case-tbl">
+              <thead><tr>
+                <th>No.</th><th>사건번호</th><th>법원</th><th>재판부</th>
+                <th>소송유형</th><th>사건유형</th><th>원고(신청인)</th><th>피고(피신청인)</th>
+                <th>상태</th><th style="background:#fff8e1;color:#92400e;">🔑 전자소송인증번호</th>
+              </tr></thead>
+              <tbody id="case-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 학습자별 배정 탭 -->
+      <div id="cview-assign" style="display:none;">
+        <div style="display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:flex-start;">
+
+          <!-- 왼쪽: 학습자 선택 -->
+          <div class="panel" style="position:sticky;top:78px;">
+            <div class="panel-hd"><div class="panel-hd-title">👤 학습자 선택</div></div>
+            <div class="panel-body" style="padding:12px;">
+              <select id="assign-student" class="filter-sel" style="width:100%;height:36px;font-size:13px;margin-bottom:12px;" onchange="renderAssignChecklist()">
+                <option value="">— 학습자를 선택하세요 —</option>
+              </select>
+              <div id="assign-student-info" style="font-size:12px;color:#555;background:#f8f9fc;border-radius:4px;padding:10px;margin-bottom:12px;display:none;"></div>
+              <button class="btn btn-navy" style="width:100%;" onclick="saveAssignmentAdmin()">💾 배정 저장</button>
+              <div style="margin-top:8px;font-size:11px;color:#888;text-align:center;">선택 후 체크박스로 사건을 배정하세요</div>
+            </div>
+
+            <!-- 배정 현황 요약 -->
+            <div style="border-top:1px solid var(--border);padding:12px;">
+              <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px;">📊 현재 배정 현황</div>
+              <div id="assign-summary" style="font-size:12px;color:#555;"></div>
+            </div>
+          </div>
+
+          <!-- 오른쪽: 사건 체크리스트 -->
+          <div class="panel">
+            <div class="panel-hd">
+              <div class="panel-hd-title">📋 배정할 사건 선택</div>
+              <div class="panel-hd-actions">
+                <button class="btn btn-gray btn-sm" onclick="checkAllCases(true)">전체 선택</button>
+                <button class="btn btn-gray btn-sm" onclick="checkAllCases(false)">전체 해제</button>
+              </div>
+            </div>
+            <div id="assign-checklist" style="padding:12px;">
+              <div style="text-align:center;color:#aaa;padding:24px;">먼저 왼쪽에서 학습자를 선택해 주세요.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ⑤ 실습 현황 -->
     <div id="panel-practice" style="display:none;">
 
@@ -523,6 +608,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   </div>
 </div>
 
+<script src="data.js"></script>
 <script>
 
 // ═══ 전역 ═══
@@ -634,14 +720,17 @@ function doLogout(){
 
 // ═══ 패널 전환 ═══
 function showPanel(name){
-  ['dashboard','accounts','add','practice','logs','settings'].forEach(p=>{
-    document.getElementById('panel-'+p).style.display=p===name?'block':'none';
-    document.getElementById('nav-'+p).className='snav-item'+(p===name?' on':'');
+  ['dashboard','accounts','add','cases','practice','logs','settings'].forEach(p=>{
+    const pel=document.getElementById('panel-'+p);
+    const nel=document.getElementById('nav-'+p);
+    if(pel)pel.style.display=p===name?'block':'none';
+    if(nel)nel.className='snav-item'+(p===name?' on':'');
   });
   if(name==='accounts')renderAccTable();
   if(name==='logs')renderFullLogs();
   if(name==='dashboard')renderDashboard();
   if(name==='practice')renderPracticePanel();
+  if(name==='cases')renderCasePanel();
 }
 
 // ═══ 대시보드 ═══
@@ -1125,6 +1214,137 @@ function exportPracticeCSV(){
   const a=document.createElement('a');a.href=url;a.download='실습현황_'+new Date().toLocaleDateString('ko-KR')+'.csv';a.click();
   URL.revokeObjectURL(url);
   showToast('CSV 파일이 다운로드되었습니다.','ok');
+}
+
+// ══════════════════════════════════════════════════
+//  사건 관리
+// ══════════════════════════════════════════════════
+function renderCasePanel(){
+  renderCaseTable();
+  renderAssignSummary();
+  renderAssignStudentDropdown();
+}
+
+function switchCaseTab(tab){
+  const isList = tab==='list';
+  document.getElementById('ctab-list').style.cssText=`padding:10px 22px;font-size:13px;font-weight:${isList?700:600};cursor:pointer;border:none;background:none;color:${isList?'var(--navy2)':'#888'};border-bottom:3px solid ${isList?'var(--navy2)':'transparent'};margin-bottom:-2px;font-family:inherit;`;
+  document.getElementById('ctab-assign').style.cssText=`padding:10px 22px;font-size:13px;font-weight:${!isList?700:600};cursor:pointer;border:none;background:none;color:${!isList?'var(--navy2)':'#888'};border-bottom:3px solid ${!isList?'var(--navy2)':'transparent'};margin-bottom:-2px;font-family:inherit;`;
+  document.getElementById('cview-list').style.display=isList?'block':'none';
+  document.getElementById('cview-assign').style.display=isList?'none':'block';
+  if(!isList){ renderAssignStudentDropdown(); renderAssignSummary(); }
+}
+
+function renderCaseTable(){
+  const q=(document.getElementById('case-search')||{}).value?.trim().toLowerCase()||'';
+  const tf=(document.getElementById('case-type-filter')||{}).value||'';
+  let list=CASE_DB;
+  if(q) list=list.filter(c=>c.caseNo.toLowerCase().includes(q)||c.type.includes(q)||c.court.includes(q)||c.plaintiff.includes(q)||c.defendant.includes(q));
+  if(tf) list=list.filter(c=>c.suitType===tf);
+  const assignments=getAssignments();
+  const tbody=document.getElementById('case-tbody');
+  if(!tbody)return;
+  tbody.innerHTML=list.map((c,i)=>{
+    const assignedTo=Object.entries(assignments).filter(([uid,nos])=>nos.includes(c.caseNo)).map(([uid])=>uid).join(', ')||'–';
+    return `<tr>
+      <td style="color:#aaa;font-size:11px;">${i+1}</td>
+      <td><strong style="color:var(--navy2);font-size:12px;">${c.caseNo}</strong></td>
+      <td style="font-size:12px;">${c.court}</td>
+      <td style="font-size:11px;color:#666;">${c.dept}</td>
+      <td><span style="background:#e8f0fb;color:#1e40af;font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;">${c.suitType}</span></td>
+      <td style="font-size:12px;">${c.type}</td>
+      <td style="font-size:12px;">${c.plaintiff}</td>
+      <td style="font-size:12px;">${c.defendant}</td>
+      <td><span style="color:${c.status==='진행중'?'var(--green)':'#888'};font-size:11px;font-weight:700;">${c.status}</span></td>
+      <td style="background:#fff8e1;">
+        <code style="font-size:12px;font-weight:700;color:#92400e;background:#fef3c7;padding:3px 8px;border-radius:3px;letter-spacing:.05em;">${c.certNo}</code>
+        <div style="font-size:10px;color:#aaa;margin-top:2px;">배정: ${assignedTo}</div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAssignStudentDropdown(){
+  const sel=document.getElementById('assign-student');
+  if(!sel)return;
+  const acc=getAcc();
+  const students=Object.entries(acc).filter(([id,a])=>a.role!=='admin').map(([id,a])=>({id,name:a.name,org:a.org||''}));
+  sel.innerHTML='<option value="">— 학습자를 선택하세요 —</option>'+
+    students.map(s=>`<option value="${s.id}">${s.name} (${s.id}) · ${s.org||'소속없음'}</option>`).join('');
+}
+
+function renderAssignChecklist(){
+  const uid=document.getElementById('assign-student')?.value;
+  const info=document.getElementById('assign-student-info');
+  const list=document.getElementById('assign-checklist');
+  if(!uid||!list){if(list)list.innerHTML='<div style="text-align:center;color:#aaa;padding:24px;">먼저 왼쪽에서 학습자를 선택해 주세요.</div>';return;}
+
+  const acc=getAcc();
+  const u=acc[uid];
+  if(info&&u){ info.style.display='block'; info.innerHTML=`<strong>${u.name}</strong> (${uid})<br>${u.org||'소속없음'}`; }
+
+  const assignments=getAssignments();
+  const assigned=assignments[uid]||[];
+
+  // 유형별로 그룹화
+  const groups={};
+  CASE_DB.forEach(c=>{
+    if(!groups[c.suitType])groups[c.suitType]=[];
+    groups[c.suitType].push(c);
+  });
+
+  list.innerHTML=Object.entries(groups).map(([type,cases])=>`
+    <div style="margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #eee;">
+        ${type} (${cases.length}건)
+      </div>
+      ${cases.map(c=>{
+        const checked=assigned.includes(c.caseNo);
+        return `<label style="display:flex;align-items:flex-start;gap:8px;padding:6px 4px;cursor:pointer;border-radius:3px;${checked?'background:#f0f7ff;':''}hover:background:#f5f5f5;" class="case-chk-row">
+          <input type="checkbox" class="case-chk" data-caseno="${c.caseNo}"
+            ${checked?'checked':''}
+            style="margin-top:2px;accent-color:var(--navy2);cursor:pointer;flex-shrink:0;">
+          <div style="flex:1;">
+            <div style="font-size:12px;font-weight:600;color:var(--navy2);">${c.caseNo}</div>
+            <div style="font-size:11px;color:#555;">${c.court} · ${c.type} · ${c.plaintiff} vs ${c.defendant}</div>
+          </div>
+        </label>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+function checkAllCases(val){
+  document.querySelectorAll('.case-chk').forEach(c=>c.checked=val);
+}
+
+function saveAssignmentAdmin(){
+  const uid=document.getElementById('assign-student')?.value;
+  if(!uid){showToast('학습자를 먼저 선택해 주세요.','warn');return;}
+  const checked=[...document.querySelectorAll('.case-chk:checked')].map(c=>c.dataset.caseno);
+  const assignments=getAssignments();
+  assignments[uid]=checked;
+  saveAssignments(assignments);
+  addLog('case-assign',`사건 배정: ${uid} → ${checked.length}건`);
+  showToast(`✅ ${uid} 학습자에게 ${checked.length}건 배정 완료`,'ok');
+  renderAssignSummary();
+  renderCaseTable();
+}
+
+function renderAssignSummary(){
+  const el=document.getElementById('assign-summary');
+  if(!el)return;
+  const assignments=getAssignments();
+  const acc=getAcc();
+  const lines=Object.entries(assignments)
+    .filter(([uid])=>acc[uid])
+    .map(([uid,nos])=>{
+      const name=acc[uid]?.name||uid;
+      return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0f0f0;">
+        <span>${name} (${uid})</span>
+        <span style="font-weight:700;color:var(--navy2);">${nos.length}건</span>
+      </div>`;
+    });
+  el.innerHTML=lines.length?lines.join(''):'<div style="color:#aaa;font-size:11px;">배정된 사건이 없습니다.</div>';
 }
 
 // ═══ 팝업 ═══
