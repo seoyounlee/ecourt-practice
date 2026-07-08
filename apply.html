@@ -2303,8 +2303,8 @@ function saveRecord(score, feedback){
 }
 
 // ── Supabase 설정 ──
-const SB_URL = 'https://knpvayujykoqjncctxrr.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtucHZheXVqeWtvcWpuY2N0eHJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NzA3NDUsImV4cCI6MjA4OTE0Njc0NX0.rXlo5IsOW6FS5N1X3vgqNM1RvzB84TYPqVhnYyc6FSg';
+const SB_URL = 'https://ecmeafiajoksyeuisreh.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVjbWVhZmlham9rc3lldWlzcmVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNzI2MzgsImV4cCI6MjA4OTY0ODYzOH0.ja3E_eEQZdf9H7puShfZzkQpb2xyNTBO7XeFqDWsoIs';
 const SB_HEADERS = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
 
 async function sbInsertRecord(r){
@@ -2313,7 +2313,7 @@ async function sbInsertRecord(r){
       method:'POST',
       headers:{...SB_HEADERS,'Prefer':'return=minimal'},
       body: JSON.stringify({
-        user_id: r.userId,
+        student_id: r.userId,
         user_name: r.userName,
         score: r.score,
         feedback: r.feedback,
@@ -2323,7 +2323,6 @@ async function sbInsertRecord(r){
         defendant: r.defendant,
         has_agent: r.hasAgent,
         evidence_count: r.evidenceCount,
-        date_str: r.date,
       })
     });
     if(!res.ok){ const e=await res.text(); console.error('[Supabase] insert 실패:', e); }
@@ -2335,7 +2334,7 @@ async function sbUpdateFeedback(userId, score, feedback){
   try{
     // 가장 최근 해당 유저의 분석중 레코드를 업데이트
     const res = await fetch(
-      SB_URL+'/rest/v1/practice_records?user_id=eq.'+encodeURIComponent(userId)
+      SB_URL+'/rest/v1/practice_records?student_id=eq.'+encodeURIComponent(userId)
         +'&score=eq.'+score+'&feedback=eq.'+encodeURIComponent('분석 중...')
         +'&order=created_at.desc&limit=1',
       { method:'PATCH',
